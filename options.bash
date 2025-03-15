@@ -41,7 +41,7 @@ define_program() {
 define_command() {
   # names description has_arg
   # has_arg: "" - no argument
-  # has_arg: "arg" - required argument
+  # has_arg: "arg" - required argument, where "arg" is the name of the argument
 
   local names
   IFS=', ' read -ra names <<< "$1"
@@ -76,10 +76,10 @@ parse_options() {
     if [[ "$option" == "--"* ]]; then
       if [[ -n "$long_options" ]]; then long_options+=","; fi
       long_options+="${option#--}"
-      if [[ "${__options_bash_command_has_arg[$command]}" == "arg" ]]; then long_options+=":"; fi
+      if [[ -n "${__options_bash_command_has_arg[$command]}" ]]; then long_options+=":"; fi
     elif [[ "$option" == "-"* ]]; then
       short_options+="${option#-}"
-      if [[ "${__options_bash_command_has_arg[$command]}" == "arg" ]]; then short_options+=":"; fi
+      if [[ -n "${__options_bash_command_has_arg[$command]}" ]]; then short_options+=":"; fi
     fi
   done
 
@@ -105,7 +105,7 @@ parse_options() {
       exit 1
     fi
     shift
-    if [[ "${__options_bash_command_has_arg[$option]}" == "arg" ]]; then
+    if [[ -n "${__options_bash_command_has_arg[$option]}" ]]; then
       __options_bash["$option"]="$1"
       shift
     else
