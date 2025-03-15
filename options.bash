@@ -14,8 +14,8 @@ if [[ $? -ne 4 ]]; then
   exit 1
 fi
 
-__options_bash_skip_help=false
-__options_bash_skip_version=false
+__options_bash_skip_help=1
+__options_bash_skip_version=1
 
 __options_bash_program_name=""
 __options_bash_program_version=""
@@ -25,9 +25,11 @@ declare -A __options_bash_command_names
 declare -A __options_bash_command_descriptions
 declare -A __options_bash_command_has_arg
 declare -A __options_bash_command_aliases
+__options_bash_check_commands=1
 
 declare -A __options_bash
 __options_bash_args=""
+__options_bash_command=""
 
 define_program() {
   # name version description
@@ -48,6 +50,19 @@ define_command() {
   __options_bash_command_has_arg["${names[0]}"]="${3:-}"
 
   for name in "${names[@]}"; do
+    if [[ "$name" == "--"* ]]; then
+      if [[ "$name" == "--" ]]; then
+        echo "Error: Invalid long option '$name'"
+        exit 1
+      fi
+    elif [[ "$name" == "-"* ]]; then
+      if [[ ! "$name" =~ ^-[a-zA-Z0-9]$ ]]; then
+        echo "Error: Invalid short option '$name'"
+        exit 1
+      fi
+    else
+      __options_bash_check_commands=0
+    fi
     __options_bash_command_aliases["$name"]="${names[0]}"
   done
 }
@@ -74,7 +89,7 @@ parse_options() {
   
   if [[ $status -ne 0 ]]; then
     echo "Try '${__options_bash_program_name} --help' for more information."
-    exit 2
+    exit 1
   fi
 
   eval set -- "$parsed"
@@ -87,7 +102,7 @@ parse_options() {
     if [[ -z "$option" ]]; then
       echo "Error: Unknown option '$1'"
       echo "Try '${__options_bash_program_name} --help' for more information."
-      exit 2
+      exit 1
     fi
     shift
     if [[ "${__options_bash_command_has_arg[$option]}" == "arg" ]]; then
@@ -97,6 +112,24 @@ parse_options() {
       __options_bash["$option"]=""
     fi
   done
+
+  if [[ ${__options_bash_check_commands} -eq 0 ]]; then
+    local unknown_command=0
+    for command in "${!__options_bash_command_aliases[@]}"; do
+      if [[ "$command" == "-"* ]]; then continue; fi
+      if [[ "$command" == "$1" ]]; then
+        unknown_command=1
+        break
+      fi
+    done
+    if [[ $unknown_command -eq 0 ]]; then
+      echo "Error: Unknown command '$1'"
+      echo "Try '${__options_bash_program_name} --help' for more information."
+      exit 1
+    else
+      __options_bash_command="${__options_bash_command_aliases[$1]}"
+    fi
+  fi
 
   __options_bash_args="$@"
 }

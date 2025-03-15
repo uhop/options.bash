@@ -14,20 +14,24 @@ define_command "-h, --help" "Show help"
 define_command "--option" "Sample long option" arg
 define_command "-o" "Sample short option" arg
 
+# define_command "--args, -, -args" "Bad short option"
+# define_command "--, -z" "Bad long option"
+
 # show_help
 
 # echo ""
 # show_version
 
 parse_options "$@"
+eval set -- "${__options_bash_args}"
 
+echo "Current arguments: $@"
+echo "Current command: ${__options_bash_command}"
+
+echo "Current options:"
 for option in "${!__options_bash[@]}"; do
-  echo "$option: ${__options_bash[$option]}"
+  echo "  $option: ${__options_bash[$option]}"
 done
 
-echo ""
-echo "__options_bash_args: ${__options_bash_args}"
-
 declare -n opt=__options_bash
-echo ""
 echo "--options: ${opt["--option"]}"
