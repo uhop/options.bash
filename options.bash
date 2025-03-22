@@ -2,6 +2,14 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
+if [[ "$BASH_VERSION" < "4.0" ]]; then
+  echo "This script requires bash version 4.0 or higher."
+  if [[ "$(uname -s)" == "Darwin"* ]]; then
+    echo "You can install it with Homebrew: brew install bash"
+  fi
+  exit 1
+fi
+
 if [[ -z "$(command -v getopt)" ]]; then
   echo "getopt is not installed. Please install it and try again."
   exit 1
@@ -86,7 +94,7 @@ parse_options() {
   local parsed
   local status=0
   parsed=$(getopt -o "$short_options" -l "$long_options" -n "${__options_bash_program_name}" -- "$@") || status=$?
-  
+
   if [[ $status -ne 0 ]]; then
     echo "Try '${__options_bash_program_name} --help' for more information."
     exit 1
@@ -114,6 +122,11 @@ parse_options() {
   done
 
   if [[ ${__options_bash_check_commands} -eq 0 ]]; then
+    if [ "$#" -eq 0 ]; then
+      echo "Error: No command specified"
+      echo "Try '${__options_bash_program_name} --help' for more information."
+      exit 1
+    fi
     local unknown_command=0
     for command in "${!__options_bash_command_aliases[@]}"; do
       if [[ "$command" == "-"* ]]; then continue; fi
