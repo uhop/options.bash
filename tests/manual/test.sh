@@ -34,4 +34,6 @@ for option in "${!__options_bash[@]}"; do
 done
 
 declare -n opt=__options_bash
-echo "--options: ${opt["--option"]}"
+if [[ -v opt["--option"] ]]; then
+  echo "--option: ${opt["--option"]}"
+fi
