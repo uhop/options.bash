@@ -2,6 +2,11 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
+if [[ -z "$BASH_VERSION" ]]; then
+  echo "This script requires bash."
+  exit 1
+fi
+
 if [[ "$BASH_VERSION" < "4.0" ]]; then
   echo "This script requires bash version 4.0 or higher."
   if [[ "$(uname -s)" == "Darwin"* ]]; then
