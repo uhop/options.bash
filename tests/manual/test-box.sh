@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "../../box.sh"
+source "$(dirname "$(realpath "$0")")/../../box.sh"
 
 # lines=$'a\nbc\ndef'
 lines=$(box::make_lines "a" "bc" "def")

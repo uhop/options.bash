@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "../../box.sh"
+source "$(dirname "$(realpath "$0")")/../../box.sh"
 
 lines1=$'a\nbc\ndef'
 lines2=$'1zx\n2'

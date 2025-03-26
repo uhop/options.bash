@@ -2,7 +2,7 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-source ../../options.sh
+source "$(dirname "$(realpath "$0")")/../../options.sh"
 
 define_program "test" "1.0" "Test program"
 
