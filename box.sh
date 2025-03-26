@@ -2,7 +2,7 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-err() {
+box::err() {
   local msg="$1"
   echo "$msg" >&2
   return 1
@@ -25,7 +25,7 @@ box::string::make_pad() {
 
   local pad_clean=$(box::string::clean "$pad")
   if [[ "${#pad_clean}" -ne 1 ]]; then
-    err "Error: Invalid pad character '$1'"
+    box::err "Error: Invalid pad character '$1'"
     return 1
   fi
 
@@ -117,7 +117,7 @@ box::exec() {
         pad="$1"
         local pad_clean=$(box::string::clean "$pad")
         if [[ "${#pad_clean}" -ne 1 ]]; then
-          err "Error: Invalid pad character '$1'"
+          box::err "Error: Invalid pad character '$1'"
           return 1
         fi
         ;;
@@ -136,7 +136,7 @@ box::exec() {
             align="c"
             ;;
           *)
-            err "Error: Invalid alignment '$1'"
+            box::err "Error: Invalid alignment '$1'"
             return 1
             ;;
         esac
@@ -199,7 +199,6 @@ box::exec() {
           temp_lines+=("$pad_string")
         done
 
-        lines=()
         lines=(${temp_lines[@]})
         ;;
 
@@ -220,7 +219,7 @@ box::exec() {
             align="c"
             ;;
           *)
-            err "Error: Invalid alignment '$1'"
+            box::err "Error: Invalid alignment '$1'"
             return 1
             ;;
         esac
@@ -261,14 +260,14 @@ box::exec() {
             align="c"
             ;;
           *)
-            err "Error: Invalid alignment '$1'"
+            box::err "Error: Invalid alignment '$1'"
             return 1
             ;;
         esac
 
         local top=0
         local bottom=0
-        local diff=$((length - ${#lines[0]}))
+        local diff=$((length - ${#lines[@]}))
         if [[ "$align" == "t" ]]; then
           bottom="$diff"
         elif [[ "$align" == "b" ]]; then
@@ -293,7 +292,6 @@ box::exec() {
           temp_lines+=("$pad_string")
         done
 
-        lines=()
         lines=(${temp_lines[@]})
         ;;
 
@@ -313,7 +311,7 @@ box::exec() {
         ;;
 
       *)
-        err "Error: Invalid option '$1'"
+        box::err "Error: Invalid option '$1'"
         return 1
         ;;
     esac
@@ -322,6 +320,68 @@ box::exec() {
 
   # from lines to string
   for line in "${lines[@]}"; do
+    echo -e "$line"
+  done
+  return 0
+}
+
+box::stack_lr() {
+  local string1="$1"
+  local string2="$2"
+
+  # from string to lines
+  local lines1=()
+  set +e
+  IFS=$'\n' read -rd '' -a lines1 <<< "$string1"
+  set -e
+
+  local lines2=()
+  set +e
+  IFS=$'\n' read -rd '' -a lines2 <<< "$string2"
+  set -e
+
+  if [ "${#lines1[@]}" -ne "${#lines2[@]}" ]; then
+    box::err "Error: Strings have different number of lines"
+    return 1
+  fi
+
+  # add left
+  for i in "${!lines1[@]}"; do
+    lines1[i]=$(printf "%s%s" "${lines1[i]}" "${lines2[i]}")
+  done
+
+  # from lines to string
+  for line in "${lines1[@]}"; do
+    echo -e "$line"
+  done
+  return 0
+}
+
+box::stack_tb() {
+  local string1="$1"
+  local string2="$2"
+
+  # from string to lines
+  local lines1=()
+  set +e
+  IFS=$'\n' read -rd '' -a lines1 <<< "$string1"
+  set -e
+
+  local lines2=()
+  set +e
+  IFS=$'\n' read -rd '' -a lines2 <<< "$string2"
+  set -e
+
+  if [ "${#lines1[0]}" -ne "${#lines2[0]}" ]; then
+    box::err "Error: Strings have different width"
+    return 1
+  fi
+
+  # add bottom
+  lines1+=("${lines2[@]}")
+
+  # from lines to string
+  for line in "${lines1[@]}"; do
     echo -e "$line"
   done
   return 0
@@ -342,5 +402,3 @@ box::echo() {
   done
   return 0
 }
-
-unset -f err
