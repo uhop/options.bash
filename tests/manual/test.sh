@@ -2,7 +2,7 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-. ./options.bash
+source ../../options.sh
 
 define_program "test" "1.0" "Test program"
 
