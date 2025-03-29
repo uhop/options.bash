@@ -16,7 +16,7 @@ if [[ "$BASH_VERSION" < "4.0" ]]; then
 fi
 
 ansi::sgr() {
-  local string='\033['
+  local string='\e['
   for arg in "$@"; do
     string+="$arg;"
   done
@@ -136,46 +136,46 @@ ansi::__define_constants() {
 
   declare -g -A ansi_sequences=(
     # cursor movement
-    [cursor_up1]='\033[A'
-    [cursor_down1]='\033[B'
-    [cursor_right1]='\033[C'
-    [cursor_left1]='\033[D'
-    [cursor_next_line1]='\033[E'
-    [cursor_prev_line1]='\033[F'
-    [cursor_column1]='\033[G'
-    [cursor_home]='\033[H'
-    [cursor_forward1]='\033[C'
-    [cursor_backward1]='\033[D'
+    [cursor_up1]='\e[A'
+    [cursor_down1]='\e[B'
+    [cursor_right1]='\e[C'
+    [cursor_left1]='\e[D'
+    [cursor_next_line1]='\e[E'
+    [cursor_prev_line1]='\e[F'
+    [cursor_column1]='\e[G'
+    [cursor_home]='\e[H'
+    [cursor_forward1]='\e[C'
+    [cursor_backward1]='\e[D'
     # cursor management
-    [cursor_save]='\033[s'
-    [cursor_restore]='\033[u'
-    [cursor_get_position]='\033[6n'
-    [cursor_normal]='\033[?25h'
-    [cursor_hidden]='\033[?25l'
+    [cursor_save]='\e[s'
+    [cursor_restore]='\e[u'
+    [cursor_get_position]='\e[6n'
+    [cursor_normal]='\e[?25h'
+    [cursor_hidden]='\e[?25l'
     # clear screen
-    [clear_eos]='\033[J'
-    [clear_bos]='\033[1J'
-    [clear_screen]='\033[2J'
-    [clear_screen_all]='\033[3J'
-    [clear_eol]='\033[K'
-    [clear_bol]='\033[1K'
-    [clear_line]='\033[2K'
+    [clear_eos]='\e[J'
+    [clear_bos]='\e[1J'
+    [clear_screen]='\e[2J'
+    [clear_screen_all]='\e[3J'
+    [clear_eol]='\e[K'
+    [clear_bol]='\e[1K'
+    [clear_line]='\e[2K'
     # screen management
-    [screen_scroll_up1]='\033[S'
-    [screen_scroll_down1]='\033[T'
-    [screen_save]='\033[?47h'
-    [screen_restore]='\033[?47l'
-    [screen_alt_on]='\033[?1049h'
-    [screen_alt_off]='\033[?1049l'
-    [screen_report_focus_on]='\033[?1004h'
-    [screen_report_focus_off]='\033[?1004l'
+    [screen_scroll_up1]='\e[S'
+    [screen_scroll_down1]='\e[T'
+    [screen_save]='\e[?47h'
+    [screen_restore]='\e[?47l'
+    [screen_alt_on]='\e[?1049h'
+    [screen_alt_off]='\e[?1049l'
+    [screen_report_focus_on]='\e[?1004h'
+    [screen_report_focus_off]='\e[?1004l'
     # csi miscellaneous
-    [wrapping_on]='\033[=7h'
-    [wrapping_off]='\033[=7l'
-    [bracketed_paste_on]='\033[=2004h'
-    [bracketed_paste_off]='\033[=2004l'
+    [wrapping_on]='\e[=7h'
+    [wrapping_off]='\e[=7l'
+    [bracketed_paste_on]='\e[=2004h'
+    [bracketed_paste_off]='\e[=2004l'
     # miscellaneous
-    [esc]='\033'
+    [esc]='\e'
     [cursor_delete]='\177'
     [cursor_go_up1]='\033M'
     [cursor_save]='\0337'
@@ -192,7 +192,7 @@ ansi::__define_constants() {
 
     for command in "${!ansi_sgr_commands[@]}"; do
       if [ -v ansi_sgr_extended_commands["$command"] ]; then continue; fi
-      echo "${prefix}${command^^}='\033[${ansi_sgr_commands[$command]}m'"
+      echo "${prefix}${command^^}='\e[${ansi_sgr_commands[$command]}m'"
     done
 
     for sequence in "${!ansi_sequences[@]}"; do
@@ -201,14 +201,14 @@ ansi::__define_constants() {
   }
 
   ansi::make_sgr() {
-    local string="\033["
+    local string="\e["
     for arg in "$@"; do
       if [ -v ansi_sgr_commands["$arg"] ]; then
         string+="${ansi_sgr_commands["$arg"]};"
       elif [[ "$arg" =~ ^[0-9] ]]; then
         string+="$arg;"
       else
-        local regex='^(\\033|\033)\[([0-9\;:]+)m$'
+        local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
         if [[ "$arg" =~ $regex ]]; then
           string+="${BASH_REMATCH[2]%;};"
         else
@@ -253,10 +253,10 @@ ansi::__define_constants() {
     echo "5;${1}"
   }
   ansi::fg_c256() {
-    echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
   }
   ansi::bg_c256() {
-    echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_c256 "$@")m"
   }
 
   ansi::raw_true() {
@@ -267,17 +267,17 @@ ansi::__define_constants() {
     echo "2;${r};${g};${b}"
   }
   ansi::fg_true() {
-    echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
   }
   ansi::bg_true() {
-    echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
   }
 
   ansi::decoration_c256() {
-    echo "\033[${ansi_sgr_commands["decoration_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_sgr_commands["decoration_color"]};$(ansi::raw_c256 "$@")m"
   }
   ansi::decoration_true() {
-    echo "\033[${ansi_sgr_commands["decoration_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_sgr_commands["decoration_color"]};$(ansi::raw_true "$@")m"
   }
 }
 ansi::__define_constants
@@ -315,61 +315,61 @@ ansi::c256::raw_grey() {
 }
 
 ansi::c256::fg() {
-  echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
 }
 
 ansi::c256::fg_std() {
-  echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
 }
 
 ansi::c256::fg_std_bright() {
-  echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
+  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
 }
 
 ansi::c256::fg_true() {
-  echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_true "$@")m"
+  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_true "$@")m"
 }
 
 ansi::c256::fg_grey() {
-  echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
+  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
 }
 
 ansi::c256::bg() {
-  echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
+  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
 }
 
 ansi::c256::bg_std() {
-  echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
+  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
 }
 
 ansi::c256::bg_std_bright() {
-  echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
+  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
 }
 
 ansi::c256::bg_true() {
-  echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_true "$@")m"
+  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_true "$@")m"
 }
 
 ansi::c256::bg_grey() {
-  echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
+  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
 }
 
 ansi::true::fg() {
-  echo "\033[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
+  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
 }
 
 ansi::true::bg() {
-  echo "\033[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
+  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
 }
 
 ansi::strip() {
   local string="$1"
-  sed 's/\x1B\[[0-9;:]*[a-zA-Z]//g' <<< "$string"
+  sed 's/\(\x1B\|\\e\|\\x1B\|\\033\)\[[0-9;:]*[a-z]//gi' <<< "$string"
 }
 
 ansi::extract_sgr_commands() {
   local command="$1"
-  local regex='^\\033\[([0-9\;:]+)m$'
+  local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
   if [[ "$command" =~ $regex ]]; then
     echo "${BASH_REMATCH[1]%;}"
     return 0
@@ -393,43 +393,43 @@ ansi::out() {
 }
 
 ansi::cursor::up() {
-  echo "\033[${1:-1}A"
+  echo "\e[${1:-1}A"
 }
 ansi::cursor::down() {
-  echo "\033[${1:-1}B"
+  echo "\e[${1:-1}B"
 }
 ansi::cursor::right() {
-  echo "\033[${1:-1}C"
+  echo "\e[${1:-1}C"
 }
 ansi::cursor::left() {
-  echo "\033[${1:-1}D"
+  echo "\e[${1:-1}D"
 }
 ansi::cursor::next_line() {
-  echo "\033[${1:-1}E"
+  echo "\e[${1:-1}E"
 }
 ansi::cursor::prev_line() {
-  echo "\033[${1:-1}F"
+  echo "\e[${1:-1}F"
 }
 ansi::cursor::column() {
-  echo "\033[${1:-1}G"
+  echo "\e[${1:-1}G"
 }
 ansi::cursor::forward() {
-  echo "\033[${1:-1}C"
+  echo "\e[${1:-1}C"
 }
 ansi::cursor::backward() {
-  echo "\033[${1:-1}D"
+  echo "\e[${1:-1}D"
 }
 ansi::cursor::set_position() {
-  echo "\033[${1:-};${2:-}H"
+  echo "\e[${1:-};${2:-}H"
 }
 ansi::cursor::set_position_alt() {
   # HVP
-  echo "\033[${1:-};${2:-}f"
+  echo "\e[${1:-};${2:-}f"
 }
 
 ansi::screen::scroll_up() {
-  echo "\033[${1:-1}S"
+  echo "\e[${1:-1}S"
 }
 ansi::screen::scroll_down() {
-  echo "\033[${1:-1}T"
+  echo "\e[${1:-1}T"
 }
