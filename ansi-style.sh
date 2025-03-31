@@ -15,7 +15,7 @@ if [[ "$BASH_VERSION" < "4.0" ]]; then
   exit 1
 fi
 
-ansi::sgr() {
+ansi::style::sgr() {
   local string='\e['
   for arg in "$@"; do
     string+="$arg;"
@@ -24,8 +24,8 @@ ansi::sgr() {
   echo "$string"
 }
 
-ansi::__define_constants() {
-  declare -g -A ansi_sgr_commands=(
+ansi::style::__define_constants() {
+  declare -g -A ansi_style_sgr_commands=(
     # commands
     [reset_all]=0
     [bold]=1
@@ -127,84 +127,28 @@ ansi::__define_constants() {
     [bg_bright_default]=109
   )
 
-  declare -g -A ansi_sgr_extended_commands=(
+  declare -g -A ansi_style_sgr_extended_commands=(
     [extended_color]=1
     [fg_extended_color]=1
     [bg_extended_color]=1
     [decoration_color]=1
   )
 
-  declare -g -A ansi_sequences=(
-    # cursor movement
-    [cursor_up1]='\e[A'
-    [cursor_down1]='\e[B'
-    [cursor_right1]='\e[C'
-    [cursor_left1]='\e[D'
-    [cursor_next_line1]='\e[E'
-    [cursor_prev_line1]='\e[F'
-    [cursor_column1]='\e[G'
-    [cursor_home]='\e[H'
-    [cursor_forward1]='\e[C'
-    [cursor_backward1]='\e[D'
-    # cursor management
-    [cursor_save]='\e[s'
-    [cursor_restore]='\e[u'
-    [cursor_get_position]='\e[6n'
-    [cursor_normal]='\e[?25h'
-    [cursor_hidden]='\e[?25l'
-    # clear screen
-    [clear_eos]='\e[J'
-    [clear_bos]='\e[1J'
-    [clear_screen]='\e[2J'
-    [clear_screen_all]='\e[3J'
-    [clear_eol]='\e[K'
-    [clear_bol]='\e[1K'
-    [clear_line]='\e[2K'
-    # screen management
-    [screen_scroll_up1]='\e[S'
-    [screen_scroll_down1]='\e[T'
-    [screen_save]='\e[?47h'
-    [screen_restore]='\e[?47l'
-    [screen_alt_on]='\e[?1049h'
-    [screen_alt_off]='\e[?1049l'
-    [screen_report_focus_on]='\e[?1004h'
-    [screen_report_focus_off]='\e[?1004l'
-    # csi miscellaneous
-    [wrapping_on]='\e[=7h'
-    [wrapping_off]='\e[=7l'
-    [bracketed_paste_on]='\e[=2004h'
-    [bracketed_paste_off]='\e[=2004l'
-    # miscellaneous
-    [esc]='\e'
-    [cursor_delete]='\177'
-    [cursor_go_up1]='\033M'
-    [cursor_save]='\0337'
-    [cursor_restore]='\0338'
-  )
-
-  # color bases
-  # local decor_color=0
-  # local decor_bright=100
-
-  ansi::define_commands() {
+  ansi::style::define_commands() {
     local prefix="${1:-}"
     prefix="${prefix^^}"
 
-    for command in "${!ansi_sgr_commands[@]}"; do
-      if [ -v ansi_sgr_extended_commands["$command"] ]; then continue; fi
-      echo "${prefix}${command^^}='\e[${ansi_sgr_commands[$command]}m'"
-    done
-
-    for sequence in "${!ansi_sequences[@]}"; do
-      echo "${prefix}${sequence^^}='${ansi_sequences[$sequence]}'"
+    for command in "${!ansi_style_sgr_commands[@]}"; do
+      if [ -v ansi_style_sgr_extended_commands["$command"] ]; then continue; fi
+      echo "${prefix}${command^^}='\e[${ansi_style_sgr_commands[$command]}m'"
     done
   }
 
-  ansi::make_sgr() {
+  ansi::style::make_sgr() {
     local string="\e["
     for arg in "$@"; do
-      if [ -v ansi_sgr_commands["$arg"] ]; then
-        string+="${ansi_sgr_commands["$arg"]};"
+      if [ -v ansi_style_sgr_commands["$arg"] ]; then
+        string+="${ansi_style_sgr_commands["$arg"]};"
       elif [[ "$arg" =~ ^[0-9] ]]; then
         string+="$arg;"
       else
@@ -253,10 +197,10 @@ ansi::__define_constants() {
     echo "5;${1}"
   }
   ansi::fg_c256() {
-    echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
   }
   ansi::bg_c256() {
-    echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_c256 "$@")m"
   }
 
   ansi::raw_true() {
@@ -267,23 +211,23 @@ ansi::__define_constants() {
     echo "2;${r};${g};${b}"
   }
   ansi::fg_true() {
-    echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
   }
   ansi::bg_true() {
-    echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
   }
 
   ansi::decoration_c256() {
-    echo "\e[${ansi_sgr_commands["decoration_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_style_sgr_commands["decoration_color"]};$(ansi::raw_c256 "$@")m"
   }
   ansi::decoration_true() {
-    echo "\e[${ansi_sgr_commands["decoration_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_style_sgr_commands["decoration_color"]};$(ansi::raw_true "$@")m"
   }
 }
-ansi::__define_constants
-unset -f ansi::__define_constants
+ansi::style::__define_constants
+unset -f ansi::style::__define_constants
 
-if [[ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ]]; then eval "$(ansi::define_commands)"; fi
+if [ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ] && [ -z "${ANSI_NO_DEFAULT_STYLE_COMMANDS:-}" ]; then eval "$(ansi::style::define_commands)"; fi
 
 ansi::color::rgb() {
   local r="$1"
@@ -315,51 +259,51 @@ ansi::c256::raw_grey() {
 }
 
 ansi::c256::fg() {
-  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
 }
 
 ansi::c256::fg_std() {
-  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
 }
 
 ansi::c256::fg_std_bright() {
-  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
+  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
 }
 
 ansi::c256::fg_true() {
-  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_true "$@")m"
 }
 
 ansi::c256::fg_grey() {
-  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
+  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
 }
 
 ansi::c256::bg() {
-  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
+  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
 }
 
 ansi::c256::bg_std() {
-  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
+  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
 }
 
 ansi::c256::bg_std_bright() {
-  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
+  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
 }
 
 ansi::c256::bg_true() {
-  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_true "$@")m"
 }
 
 ansi::c256::bg_grey() {
-  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
+  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
 }
 
 ansi::true::fg() {
-  echo "\e[${ansi_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
 }
 
 ansi::true::bg() {
-  echo "\e[${ansi_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
 }
 
 ansi::strip() {
@@ -386,50 +330,8 @@ ansi::out() {
 
   local args=()
   for arg in "$@"; do
-    args+=("$(ansi::strip "$arg")")
+    args+=("$(ansi::style::strip "$arg")")
   done
   echo "${args[@]}"
   return 0
-}
-
-ansi::cursor::up() {
-  echo "\e[${1:-1}A"
-}
-ansi::cursor::down() {
-  echo "\e[${1:-1}B"
-}
-ansi::cursor::right() {
-  echo "\e[${1:-1}C"
-}
-ansi::cursor::left() {
-  echo "\e[${1:-1}D"
-}
-ansi::cursor::next_line() {
-  echo "\e[${1:-1}E"
-}
-ansi::cursor::prev_line() {
-  echo "\e[${1:-1}F"
-}
-ansi::cursor::column() {
-  echo "\e[${1:-1}G"
-}
-ansi::cursor::forward() {
-  echo "\e[${1:-1}C"
-}
-ansi::cursor::backward() {
-  echo "\e[${1:-1}D"
-}
-ansi::cursor::set_position() {
-  echo "\e[${1:-};${2:-}H"
-}
-ansi::cursor::set_position_alt() {
-  # HVP
-  echo "\e[${1:-};${2:-}f"
-}
-
-ansi::screen::scroll_up() {
-  echo "\e[${1:-1}S"
-}
-ansi::screen::scroll_down() {
-  echo "\e[${1:-1}T"
 }
