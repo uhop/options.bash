@@ -2,70 +2,7 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-box::err() {
-  local msg="$1"
-  echo "$msg" >&2
-  return 1
-}
-
-box::string::clean() {
-  local string="$1"
-  sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' <<< "$string"
-}
-
-box::string::length() {
-  local string="$1"
-  local string_clean=$(box::string::clean "$string")
-  echo "${#string_clean}"
-}
-
-box::string::make_pad() {
-  local length="$1"
-  local pad="${2:- }"
-
-  local pad_clean=$(box::string::clean "$pad")
-  if [[ "${#pad_clean}" -ne 1 ]]; then
-    box::err "Error: Invalid pad character '$1'"
-    return 1
-  fi
-
-  if [[ "$pad" == ' ' ]]; then
-    printf "%${length}s" ''
-  else
-    printf "%${length}s" '' | tr ' ' "$pad_clean"
-  fi
-}
-
-box::string::pad() {
-  local string="$1"
-  local length="$2"
-  local align="${3:-l}"
-  local pad="${4:- }"
-
-  local string_clean=$(box::string::clean "$string")
-  local diff=$((length - ${#string_clean}))
-
-  local pad_left=0
-  local pad_right=0
-
-  case "$align" in
-    l | left)
-      pad_right="$diff"
-      ;;
-    r | right)
-      pad_left="$diff"
-      ;;
-    c | center)
-      pad_left=$((diff / 2))
-      pad_right=$((diff - pad_left))
-      ;;
-  esac
-
-  local pad_left_str=$(box::string::make_pad "$pad_left" "$pad")
-  local pad_right_str=$(box::string::make_pad "$pad_right" "$pad")
-
-  printf "%s%s%s" "$pad_left_str" "$string_clean" "$pad_right_str"
-}
+source "${0%/*}/string.sh"
 
 box::make_lines() {
   for line in "$@"; do
@@ -82,7 +19,7 @@ box::get_width() {
   IFS=$'\n' read -rd '' -a lines <<< "$string"
   set -e
 
-  echo "$(box::string::length "${lines[0]}")"
+  echo "$(string::length "${lines[0]}")"
   return 0
 }
 
@@ -115,9 +52,9 @@ box::exec() {
       set_pad | sp)
         shift
         pad="$1"
-        local pad_clean=$(box::string::clean "$pad")
+        local pad_clean=$(string::clean "$pad")
         if [[ "${#pad_clean}" -ne 1 ]]; then
-          box::err "Error: Invalid pad character '$1'"
+          string::err "Error: Invalid pad character '$1'"
           return 1
         fi
         ;;
@@ -136,14 +73,14 @@ box::exec() {
             align="c"
             ;;
           *)
-            box::err "Error: Invalid alignment '$1'"
+            string::err "Error: Invalid alignment '$1'"
             return 1
             ;;
         esac
 
         local max_length=0
         for line in "${lines[@]}"; do
-          local line_length=$(box::string::length "$line")
+          local line_length=$(string::length "$line")
           if [[ "$line_length" -gt "$max_length" ]]; then
             max_length="$line_length"
           fi
@@ -161,7 +98,7 @@ box::exec() {
             pad_left=$((diff / 2))
             pad_right=$((diff - pad_left))
           fi
-          lines[i]=$(box::string::pad "${lines[i]}" "$max_length" "$align" "$pad")
+          lines[i]=$(string::pad "${lines[i]}" "$max_length" "$align" "$pad")
         done
         ;;
 
@@ -171,8 +108,8 @@ box::exec() {
         shift
         local right="$1"
 
-        local pad_left=$(box::string::make_pad "$left" "$pad")
-        local pad_right=$(box::string::make_pad "$right" "$pad")
+        local pad_left=$(string::make_pad "$left" "$pad")
+        local pad_right=$(string::make_pad "$right" "$pad")
         for i in "${!lines[@]}"; do
           lines[i]=$(printf "%s%s%s" "$pad_left" "${lines[i]}" "$pad_right")
         done
@@ -184,7 +121,7 @@ box::exec() {
         shift
         local bottom="$1"
 
-        local pad_string=$(box::string::make_pad "$(box::string::length "${lines[0]}")" "$pad")
+        local pad_string=$(string::make_pad "$(string::length "${lines[0]}")" "$pad")
 
         local temp_lines=()
         for i in $(seq 1 "$top"); do
@@ -219,7 +156,7 @@ box::exec() {
             align="c"
             ;;
           *)
-            box::err "Error: Invalid alignment '$1'"
+            string::err "Error: Invalid alignment '$1'"
             return 1
             ;;
         esac
@@ -236,8 +173,8 @@ box::exec() {
           right=$((diff - left))
         fi
 
-        local pad_left=$(box::string::make_pad "$left" "$pad")
-        local pad_right=$(box::string::make_pad "$right" "$pad")
+        local pad_left=$(string::make_pad "$left" "$pad")
+        local pad_right=$(string::make_pad "$right" "$pad")
         for i in "${!lines[@]}"; do
           lines[i]=$(printf "%s%s%s" "$pad_left" "${lines[i]}" "$pad_right")
         done
@@ -260,7 +197,7 @@ box::exec() {
             align="c"
             ;;
           *)
-            box::err "Error: Invalid alignment '$1'"
+            string::err "Error: Invalid alignment '$1'"
             return 1
             ;;
         esac
@@ -277,7 +214,7 @@ box::exec() {
           bottom=$((diff - top))
         fi
 
-        local pad_string=$(box::string::make_pad "$(box::string::length "${lines[0]}")" "$pad")
+        local pad_string=$(string::make_pad "$(string::length "${lines[0]}")" "$pad")
 
         local temp_lines=()
         for i in $(seq 1 "$top"); do
@@ -297,7 +234,7 @@ box::exec() {
 
       clean | c)
         for i in "${!lines[@]}"; do
-          lines[i]=$(box::string::clean "${lines[i]}")
+          lines[i]=$(string::clean "${lines[i]}")
         done
         ;;
 
@@ -311,7 +248,7 @@ box::exec() {
         ;;
 
       *)
-        box::err "Error: Invalid option '$1'"
+        string::err "Error: Invalid option '$1'"
         return 1
         ;;
     esac
@@ -341,7 +278,7 @@ box::stack_lr() {
   set -e
 
   if [ "${#lines1[@]}" -ne "${#lines2[@]}" ]; then
-    box::err "Error: Strings have different number of lines"
+    string::err "Error: Strings have different number of lines"
     return 1
   fi
 
@@ -373,7 +310,7 @@ box::stack_tb() {
   set -e
 
   if [ "${#lines1[0]}" -ne "${#lines2[0]}" ]; then
-    box::err "Error: Strings have different width"
+    string::err "Error: Strings have different width"
     return 1
   fi
 
@@ -384,10 +321,9 @@ box::stack_tb() {
   for line in "${lines1[@]}"; do
     echo -e "$line"
   done
-  return 0
 }
 
-box::echo() {
+box::err() {
   local string="$1"
 
   # from string to lines
@@ -397,8 +333,36 @@ box::echo() {
   set -e
 
   # from lines to string
-  for line in "${lines[@]}"; do
-    echo -e "$line"
-  done
-  return 0
+  if [[ -t 2 ]]; then
+    for line in "${lines[@]}"; do
+      echo -e "$line" >&2
+    done
+  else
+    for line in "${lines[@]}"; do
+      echo -e "$(string::clean "$line")" >&2
+    done
+  fi
+
+  return 1
+}
+
+box::out() {
+  local string="$1"
+
+  # from string to lines
+  local lines=()
+  set +e
+  IFS=$'\n' read -rd '' -a lines <<< "$string"
+  set -e
+
+  # from lines to string
+  if [[ -t 1 ]]; then
+    for line in "${lines[@]}"; do
+      echo -e "$line"
+    done
+  else
+    for line in "${lines[@]}"; do
+      echo -e "$(string::clean "$line")"
+    done
+  fi
 }

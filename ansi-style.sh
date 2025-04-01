@@ -322,6 +322,20 @@ ansi::extract_sgr_commands() {
   return 1
 }
 
+ansi::err() {
+  if [[ -t 2 ]]; then
+    echo -e "$@" >&2
+    return 1
+  fi
+
+  local args=()
+  for arg in "$@"; do
+    args+=("$(ansi::strip "$arg")")
+  done
+  echo -e "${args[@]}" >&2
+  return 1
+}
+
 ansi::out() {
   if [[ -t 1 ]]; then
     echo -e "$@"
@@ -330,8 +344,8 @@ ansi::out() {
 
   local args=()
   for arg in "$@"; do
-    args+=("$(ansi::style::strip "$arg")")
+    args+=("$(ansi::strip "$arg")")
   done
-  echo "${args[@]}"
+  echo -e "${args[@]}"
   return 0
 }

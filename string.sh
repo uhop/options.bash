@@ -2,15 +2,40 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
+string::clean() {
+  local string="$1"
+  if [ -v ansi::strip ]; then
+    ansi::strip "$string"
+  else
+    echo "$string"
+  fi
+}
+
 string::err() {
-  local msg="$1"
-  echo "$msg" >&2
+  if [[ -t 2 ]]; then
+    echo -e "$@" >&2
+    return 1
+  fi
+
+  local args=()
+  for arg in "$@"; do
+    args+=("$(string::clean "$arg")")
+  done
+  echo -e "${args[@]}" >&2
   return 1
 }
 
-string::clean() {
-  local string="$1"
-  sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' <<< "$string"
+string::out() {
+  if [[ -t 1 ]]; then
+    echo -e "$@"
+    return 0
+  fi
+
+  local args=()
+  for arg in "$@"; do
+    args+=("$(string::clean "$arg")")
+  done
+  echo -e "${args[@]}"
 }
 
 string::length() {
