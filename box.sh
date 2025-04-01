@@ -2,7 +2,10 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-source "${0%/*}/string.sh"
+script_dir=${BASH_SOURCE:-$0}
+source "$(dirname "$(realpath "$script_dir")")/string.sh"
+unset script_dir
+
 
 box::make_lines() {
   for line in "$@"; do
@@ -333,16 +336,16 @@ box::err() {
   set -e
 
   # from lines to string
-  if [[ -t 2 ]]; then
+  if [[ -t 2 || -z "$TERM" ]]; then
     for line in "${lines[@]}"; do
       echo -e "$line" >&2
     done
-  else
-    for line in "${lines[@]}"; do
-      echo -e "$(string::clean "$line")" >&2
-    done
+    return 1
   fi
 
+  for line in "${lines[@]}"; do
+    echo -e "$(string::clean "$line")" >&2
+  done
   return 1
 }
 
@@ -356,13 +359,15 @@ box::out() {
   set -e
 
   # from lines to string
-  if [[ -t 1 ]]; then
+  if [[ -t 1 || -z "$TERM" ]]; then
     for line in "${lines[@]}"; do
       echo -e "$line"
     done
-  else
-    for line in "${lines[@]}"; do
-      echo -e "$(string::clean "$line")"
-    done
+    return 0
   fi
+
+  for line in "${lines[@]}"; do
+    echo -e "$(string::clean "$line")"
+  done
+  return 0
 }

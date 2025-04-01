@@ -74,10 +74,10 @@ ansi::control::__define_constants() {
   }
 
 }
-ansi::__define_constants
-unset -f ansi::__define_constants
+ansi::control::__define_constants
+unset -f ansi::control::__define_constants
 
-if [ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ] && [ -z "${ANSI_NO_DEFAULT_CONTROL_COMMANDS:-}" ]; then eval "$(ansi::define_commands)"; fi
+if [ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ] && [ -z "${ANSI_NO_DEFAULT_CONTROL_COMMANDS:-}" ]; then eval "$(ansi::control::define_commands)"; fi
 
 ansi::cursor::up() {
   echo "\e[${1:-1}A"

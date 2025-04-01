@@ -144,7 +144,7 @@ ansi::style::__define_constants() {
     done
   }
 
-  ansi::style::make_sgr() {
+  ansi::style::make() {
     local string="\e["
     for arg in "$@"; do
       if [ -v ansi_style_sgr_commands["$arg"] ]; then
@@ -323,7 +323,7 @@ ansi::extract_sgr_commands() {
 }
 
 ansi::err() {
-  if [[ -t 2 ]]; then
+  if [[ -t 2 || -z "$TERM" ]]; then
     echo -e "$@" >&2
     return 1
   fi
@@ -337,7 +337,7 @@ ansi::err() {
 }
 
 ansi::out() {
-  if [[ -t 1 ]]; then
+  if [[ -t 1 || -z "$TERM" ]]; then
     echo -e "$@"
     return 0
   fi

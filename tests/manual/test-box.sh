@@ -12,4 +12,4 @@ lines=$(box::make_lines "a" "bc" "def")
 box=$(box::exec "$lines" set_pad '*' normalize center sp '.' ph 2 2 pv 1 1)
 # echo -e "$box"
 
-box::echo "$box"
+box::out "$box"

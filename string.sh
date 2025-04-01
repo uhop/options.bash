@@ -12,7 +12,7 @@ string::clean() {
 }
 
 string::err() {
-  if [[ -t 2 ]]; then
+  if [[ -t 2 || -z "$TERM" ]]; then
     echo -e "$@" >&2
     return 1
   fi
@@ -26,7 +26,7 @@ string::err() {
 }
 
 string::out() {
-  if [[ -t 1 ]]; then
+  if [[ -t 1 || -z "$TERM" ]]; then
     echo -e "$@"
     return 0
   fi
@@ -36,6 +36,7 @@ string::out() {
     args+=("$(string::clean "$arg")")
   done
   echo -e "${args[@]}"
+  return 0
 }
 
 string::length() {
