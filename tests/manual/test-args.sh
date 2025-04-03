@@ -2,7 +2,10 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-source "$(dirname "$(realpath "$0")")/../../args.sh"
+my_dir="$(dirname "$(realpath "$0")")"
+source "$my_dir/../../args.sh"
+# source "$my_dir/../../args-help.sh"
+# source "$my_dir/../../args-version.sh"
 
 args::program "test" "1.0" "Test program"
 

@@ -38,6 +38,7 @@ declare -A args_names
 declare -A args_descriptions
 declare -A args_option_has_arg
 declare -A args_aliases
+declare -a args_immediate_options=("-h" "--help" "-v" "--version")
 args_check_command=1
 
 declare -A args_options
@@ -78,6 +79,10 @@ args::option() {
     fi
     args_aliases["$name"]="${names[0]}"
   done
+}
+
+args::immediate() {
+  args_immediate_options+=("$@")
 }
 
 args::parse() {
@@ -125,6 +130,17 @@ args::parse() {
       args_options["$option"]=""
     fi
   done
+
+  if [[ "${#args_immediate_options[@]}" -gt 0 ]]; then
+    for option in "${args_immediate_options[@]}"; do
+      if [[ -v args_options["$option"] ]]; then
+        local name="${option##*-}"
+        if type -t "args::$name" &> /dev/null; then
+          "args::$name"
+        fi
+      fi
+    done
+  fi
 
   if [[ ${args_check_command} -eq 0 ]]; then
     if [ "$#" -eq 0 ]; then
