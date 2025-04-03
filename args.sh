@@ -135,8 +135,8 @@ args::parse() {
     for option in "${args_immediate_options[@]}"; do
       if [[ -v args_options["$option"] ]]; then
         local name="${option##*-}"
-        if type -t "args::$name" &> /dev/null; then
-          "args::$name"
+        if type -t "args::option::$name" &> /dev/null; then
+          "args::option::$name"
         fi
       fi
     done

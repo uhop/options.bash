@@ -2,11 +2,11 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-args::version() {
+args::option::version() {
   echo "got version"
   exit 0
 }
 
-args::v() {
-  args::version
+args::option::v() {
+  args::option::version
 }

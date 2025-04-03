@@ -2,11 +2,11 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-args::help() {
+args::option::help() {
   echo "got help"
   exit 0
 }
 
-args::h() {
-  args::help
+args::option::h() {
+  args::option::help
 }
