@@ -33,6 +33,8 @@ args_skip_version=1
 args_program_name=""
 args_program_version=""
 args_program_description=""
+args_program_url=""
+args_program_usage=""
 
 declare -A args_names
 declare -A args_descriptions
@@ -49,7 +51,12 @@ args::program() {
   # name version description
   args_program_name="$1"
   args_program_version="$2"
-  args_program_description="$3"
+  args_program_description="${3:-}"
+  args_program_url="${4:-}"
+}
+
+args::usage() {
+  args_program_usage="${1:-}"
 }
 
 args::option() {
@@ -66,12 +73,20 @@ args::option() {
   for name in "${names[@]}"; do
     if [[ "$name" == "--"* ]]; then
       if [[ "$name" == "--" ]]; then
-        echo "Error: Invalid long option '$name'"
+        if type -t "args::error::invalid_long_option" &> /dev/null; then
+          args::error::invalid_long_option "$name"
+        else
+          echo "Error: Invalid long option '$name'"
+        fi
         exit 1
       fi
     elif [[ "$name" == "-"* ]]; then
       if [[ ! "$name" =~ ^-[a-zA-Z0-9]$ ]]; then
-        echo "Error: Invalid short option '$name'"
+        if type -t "args::error::invalid_short_option" &> /dev/null; then
+          args::error::invalid_short_option "$name"
+        else
+          echo "Error: Invalid short option '$name'"
+        fi
         exit 1
       fi
     else
@@ -83,6 +98,14 @@ args::option() {
 
 args::immediate() {
   args_immediate_options+=("$@")
+}
+
+args::try_help() {
+  if [[ -v args_options["--help"] ]]; then
+    echo "Try '${args_program_name} --help' for more information."
+  elif [[ -v args_options["-h"] ]]; then
+    echo "Try '${args_program_name} -h' for more information."
+  fi
 }
 
 args::parse() {
@@ -106,7 +129,12 @@ args::parse() {
   parsed=$(getopt -o "$short_options" -l "$long_options" -n "${args_program_name}" -- "$@") || status=$?
 
   if [[ $status -ne 0 ]]; then
-    echo "Try '${args_program_name} --help' for more information."
+    if type -t "args::error::getops" &> /dev/null; then
+      args::error::getops
+    else
+      echo "Error: getopt cannot parse options"
+      args::try_help
+    fi
     exit 1
   fi
 
@@ -118,8 +146,12 @@ args::parse() {
     fi
     local option="${args_aliases["$1"]}"
     if [[ -z "$option" ]]; then
-      echo "Error: Unknown option '$1'"
-      echo "Try '${args_program_name} --help' for more information."
+      if type -t "args::error::unknown_option" &> /dev/null; then
+        args::error::unknown_option "$1"
+      else
+        echo "Error: Unknown option '$1'"
+        args::try_help
+      fi
       exit 1
     fi
     shift
@@ -130,6 +162,8 @@ args::parse() {
       args_options["$option"]=""
     fi
   done
+
+  args_cleaned="$@"
 
   if [[ "${#args_immediate_options[@]}" -gt 0 ]]; then
     for option in "${args_immediate_options[@]}"; do
@@ -145,12 +179,12 @@ args::parse() {
   if [[ ${args_check_command} -eq 0 ]]; then
     if [ "$#" -eq 0 ]; then
       if type -t "args::error::no_command" &> /dev/null; then
-        "args::error::no_command"
+        args::error::no_command
       else
         echo "Error: No command specified"
-        echo "Try '${args_program_name} --help' for more information."
-        exit 1
+        args::try_help
       fi
+      exit 1
     fi
     local unknown_command=0
     for command in "${!args_aliases[@]}"; do
@@ -162,16 +196,14 @@ args::parse() {
     done
     if [[ $unknown_command -eq 0 ]]; then
       if type -t "args::error::unknown_command" &> /dev/null; then
-        "args::error::unknown_command" "$1"
+        args::error::unknown_command "$1"
       else
         echo "Error: Unknown command '$1'"
-        echo "Try '${args_program_name} --help' for more information."
-        exit 1
+        args::try_help
       fi
+      exit 1
     else
       args_command="${args_aliases[$1]}"
     fi
   fi
-
-  args_cleaned="$@"
 }
