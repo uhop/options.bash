@@ -14,7 +14,12 @@ box::make_lines() {
 }
 
 box::get_width() {
-  local string="$1"
+  local string="${1:-}"
+
+  if [ -z "$string" ]; then
+    echo 0
+    return 0
+  fi
 
   # from string to lines
   local lines=()
@@ -27,7 +32,12 @@ box::get_width() {
 }
 
 box::get_height() {
-  local string="$1"
+  local string="${1:-}"
+
+  if [ -z "$string" ]; then
+    echo 0
+    return 0
+  fi
 
   # from string to lines
   local lines=()
