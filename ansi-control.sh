@@ -73,6 +73,12 @@ ansi::control::__define_constants() {
     done
   }
 
+  ansi::control::get() {
+    local name="$1"
+    if [ -v ansi_control_sequences["$name"] ]; then
+      echo "\e[${ansi_control_sequences["$name"]}m"
+    fi
+  }
 }
 ansi::control::__define_constants
 unset -f ansi::control::__define_constants

@@ -144,6 +144,13 @@ ansi::style::__define_constants() {
     done
   }
 
+  ansi::style::get() {
+    local name="$1"
+    if [ -v ansi_style_sgr_commands["$name"] ]; then
+      echo "\e[${ansi_style_sgr_commands["$name"]}m"
+    fi
+  }
+
   ansi::style::make() {
     local string="\e["
     for arg in "$@"; do
