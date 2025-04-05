@@ -2,12 +2,14 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-my_dir="$(dirname "$(realpath "$0")")"
-source "$my_dir/../../args.sh"
-# source "$my_dir/../../args-help.sh"
-# source "$my_dir/../../args-version.sh"
+script_dir="$(dirname "$(readlink -f "$0")")"
+script_name=$(basename "$0")
 
-args::program "test" "1.0" "Test program"
+source "$script_dir/../../args.sh"
+source "$script_dir/../../args-help.sh"
+source "$script_dir/../../args-version.sh"
+
+args::program "$script_name" "1.0" "Test program"
 
 args::option "test, t" "Test command"
 args::option "cmd" "Sample command"
