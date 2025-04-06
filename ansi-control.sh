@@ -126,3 +126,9 @@ ansi::screen::scroll_up() {
 ansi::screen::scroll_down() {
   echo "\e[${1:-1}T"
 }
+
+ansi::hyperlink() {
+  local url="$1"
+  local text="${2:-$1}"
+  echo "\e]8;;${url}\e\\${text}\e]8;;\e\\"
+}
