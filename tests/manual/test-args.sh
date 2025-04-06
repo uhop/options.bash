@@ -35,7 +35,7 @@ echo "Current command: ${args_command}"
 
 echo "Current options:"
 for option in "${!args_options[@]}"; do
-  echo "  $option: ${args_options[$option]}"
+  echo "  ${option}: ${args_options[$option]}"
 done
 
 declare -n opt=args_options
