@@ -9,7 +9,7 @@ unset script_dir
 
 box::make_lines() {
   for line in "$@"; do
-    echo -e "$line"
+    echo "$line"
   done
 }
 
@@ -270,7 +270,7 @@ box::exec() {
 
   # from lines to string
   for line in "${lines[@]}"; do
-    echo -e "$line"
+    echo "$line"
   done
   return 0
 }
@@ -302,7 +302,7 @@ box::stack_lr() {
 
   # from lines to string
   for line in "${lines1[@]}"; do
-    echo -e "$line"
+    echo "$line"
   done
   return 0
 }
@@ -332,7 +332,7 @@ box::stack_tb() {
 
   # from lines to string
   for line in "${lines1[@]}"; do
-    echo -e "$line"
+    echo "$line"
   done
 }
 
