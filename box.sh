@@ -144,7 +144,7 @@ box::exec() {
         local pad_string=$(string::make_pad "$(string::length "${lines[0]}")" "$pad")
 
         local temp_lines=()
-        for i in $(seq 1 "$top"); do
+        for ((i=0; i<"$top"; ++i)); do
           temp_lines+=("$pad_string")
         done
 
@@ -152,11 +152,11 @@ box::exec() {
           temp_lines+=("$line")
         done
 
-        for i in $(seq 1 "$bottom"); do
+        for ((i=0; i<"$bottom"; ++i)); do
           temp_lines+=("$pad_string")
         done
 
-        lines=(${temp_lines[@]})
+        lines=("${temp_lines[@]}")
         ;;
 
       align_lr | ah)
