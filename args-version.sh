@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+if type args::option::version > /dev/null 2>&1; then return; fi
+
 set -o errexit -o pipefail -o nounset -o noclobber
 
 args::option::version() {
