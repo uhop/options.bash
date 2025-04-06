@@ -37,6 +37,7 @@ args_program_url=""
 args_program_usage=""
 args_program_header=""
 args_program_footer=""
+args_program_required_command="yes"
 args_program_help_style="grid" # grid, list
 
 # Internal data structures
@@ -102,10 +103,12 @@ args::immediate() {
 }
 
 args::try_help() {
-  if [[ -v args_options["--help"] ]]; then
+  if [[ -v args_aliases["--help"] ]]; then
     echo "Try '${args_program_name} --help' for more information."
-  elif [[ -v args_options["-h"] ]]; then
+  elif [[ -v args_aliases["-h"] ]]; then
     echo "Try '${args_program_name} -h' for more information."
+  elif [ -n "$args_program_url" ]; then
+    ansi::out "Visit $(ansi::hyperlink "$args_program_url") for more information."
   fi
 }
 
@@ -177,7 +180,7 @@ args::parse() {
     done
   fi
 
-  if [[ ${args_check_command} -eq 0 ]]; then
+  if [[ ${args_check_command} -eq 0 ]] && [[ ${args_program_required_command} == "yes" ]]; then
     if [ "$#" -eq 0 ]; then
       if type -t "args::error::no_command" &> /dev/null; then
         args::error::no_command
