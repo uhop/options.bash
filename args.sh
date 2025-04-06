@@ -27,9 +27,6 @@ if [[ $? -ne 4 ]]; then
   exit 1
 fi
 
-args_skip_help=1
-args_skip_version=1
-
 args_program_name=""
 args_program_version=""
 args_program_description=""
