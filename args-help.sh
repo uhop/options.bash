@@ -77,6 +77,9 @@ args::option::help() {
   for command in "${!args_names[@]}"; do
     if [[ "$command" == "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_command}${args_names[$command]}${args_help_reset}"
+    if [ -n "${args_option_has_arg[$command]}" ]; then
+      text+=" ${args_help_arg}<${args_option_has_arg[$command]}>${args_help_reset}"
+    fi
     left+=("$text")
     local desc="${args_descriptions[$command]}"
     if [ -z "$desc" ]; then

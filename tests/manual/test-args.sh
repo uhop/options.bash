@@ -11,7 +11,7 @@ source "$script_dir/../../args-version.sh"
 
 args::program "$script_name" "1.0" "Test program"
 
-args::option "test, t" "Test command"
+args::option "test, t" "Test command" "a, b"
 args::option "cmd" "Sample command"
 
 args::option "-v, --version" "Show version"
