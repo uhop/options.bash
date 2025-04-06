@@ -101,7 +101,11 @@ args::option::help() {
       text+=" ${args_help_option}[options]${args_help_reset}"
     fi
     if [[ "$command_length" -gt "$option_length" ]]; then
-      text+=" ${args_help_command}[command]${args_help_reset}"
+      if [[ "$args_program_required_command" == "yes" ]]; then
+        text+=" ${args_help_command}command${args_help_reset} ${args_help_command_arg}[command arguments]${args_help_reset}"
+      else
+        text+=" ${args_help_command}[command]${args_help_reset} ${args_help_command_arg}[command arguments]${args_help_reset}"
+      fi
     else
       text+=" ${args_help_command_arg}[script arguments]${args_help_reset}"
     fi

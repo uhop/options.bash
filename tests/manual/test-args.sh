@@ -15,6 +15,7 @@ args::program "$script_name" "1.0" "Test program"
 # args_program_header="Some fancyful\ndescription"
 # args_program_footer="Some footer"
 # args_program_help_style="list"
+# args_program_required_command="no"
 
 args::option "test, t" "Test command" "a, b"
 args::option "cmd" "Sample command
