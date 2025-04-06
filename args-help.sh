@@ -28,8 +28,9 @@ args_help_section="${args_help_bold}$(ansi::style::get green)"
 args_help_program="${args_help_bold}${CYAN}"
 args_help_version="${CYAN}"
 args_help_command="$(ansi::style::get magenta)"
+args_help_command_arg="${args_help_italic}${args_help_command}"
 args_help_option="${CYAN}"
-args_help_arg="${args_help_italic}${CYAN}"
+args_help_option_arg="${args_help_italic}${args_help_option}"
 
 unset CYAN
 
@@ -43,17 +44,6 @@ args::option::help() {
     ansi::out "${args_program_header}"
   fi
 
-  echo
-  ansi::out "${args_help_section}Usage:${args_help_reset}"
-  if [ -z "$args_program_usage" ]; then
-    ansi::out "  ${args_help_program}${args_program_name}${args_help_reset}" \
-      "${args_help_option}[options]${args_help_reset}" \
-      "${args_help_command}[command]${args_help_reset}" \
-      "${args_help_arg}[command arguments]${args_help_reset}"
-  else
-    ansi::out "$(box::exec "${args_program_usage}" pad_lr 2 0)"
-  fi
-
   local -a left=()
   local -a right=()
 
@@ -62,7 +52,7 @@ args::option::help() {
     if [[ "$option" != "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$option]}" ]; then
-      text+=" ${args_help_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
+      text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
     fi
     left+=("$text")
     local desc="${args_descriptions[$option]}"
@@ -75,7 +65,7 @@ args::option::help() {
     if [[ "$option" != "--"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$option]}" ]; then
-      text+=" ${args_help_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
+      text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
     fi
     left+=("$text")
     local desc="${args_descriptions[$option]}"
@@ -91,7 +81,7 @@ args::option::help() {
     if [[ "$command" == "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_command}${args_names[$command]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$command]}" ]; then
-      text+=" ${args_help_arg}<${args_option_has_arg[$command]}>${args_help_reset}"
+      text+=" ${args_help_command_arg}<${args_option_has_arg[$command]}>${args_help_reset}"
     fi
     left+=("$text")
     local desc="${args_descriptions[$command]}"
@@ -102,6 +92,23 @@ args::option::help() {
   done
 
   local command_length="${#left[@]}"
+
+  echo
+  ansi::out "${args_help_section}Usage:${args_help_reset}"
+  if [ -z "$args_program_usage" ]; then
+    local text="  ${args_help_program}${args_program_name}${args_help_reset}"
+    if [[ "$option_length" -gt 0 ]]; then
+      text+=" ${args_help_option}[options]${args_help_reset}"
+    fi
+    if [[ "$command_length" -gt "$option_length" ]]; then
+      text+=" ${args_help_command}[command]${args_help_reset}"
+    else
+      text+=" ${args_help_command_arg}[script arguments]${args_help_reset}"
+    fi
+    ansi::out "$text"
+  else
+    ansi::out "$(box::exec "${args_program_usage}" pad_lr 2 0)"
+  fi
 
   local left_length=0
   for ((i=0; i<command_length; ++i)); do
