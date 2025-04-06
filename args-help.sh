@@ -4,7 +4,10 @@ set -o errexit -o pipefail -o nounset -o noclobber
 
 _load_dependencies() {
   local script_dir=${BASH_SOURCE:-$0}
+  local previous_ANSI_NO_DEFAULT_COMMANDS="${ANSI_NO_DEFAULT_COMMANDS:-}"
+  ANSI_NO_DEFAULT_COMMANDS=1
   source "$(dirname "$(realpath "$script_dir")")/ansi-style.sh"
+  ANSI_NO_DEFAULT_COMMANDS="$previous_ANSI_NO_DEFAULT_COMMANDS"
 }
 _load_dependencies
 unset _load_dependencies
