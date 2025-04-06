@@ -8,8 +8,12 @@ script_name=$(basename "$0")
 source "$script_dir/../../args.sh"
 source "$script_dir/../../args-help.sh"
 source "$script_dir/../../args-version.sh"
+source "$script_dir/../../box.sh"
 
 args::program "$script_name" "1.0" "Test program"
+# args_program_usage="$(box::make "usage example 1" "usage example 2" "usage example 3")"
+# args_program_header="Some fancyful\ndescription"
+# args_program_footer="Some footer"
 
 args::option "test, t" "Test command" "a, b"
 args::option "cmd" "Sample command"

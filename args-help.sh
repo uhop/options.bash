@@ -8,7 +8,9 @@ _load_dependencies() {
   local previous_ANSI_NO_DEFAULT_COMMANDS="${ANSI_NO_DEFAULT_COMMANDS:-}"
   ANSI_NO_DEFAULT_COMMANDS=1
   source "${script_dir}/ansi-style.sh"
+  source "${script_dir}/ansi-control.sh"
   source "${script_dir}/string.sh"
+  source "${script_dir}/box.sh"
   ANSI_NO_DEFAULT_COMMANDS="$previous_ANSI_NO_DEFAULT_COMMANDS"
 }
 _load_dependencies
@@ -34,12 +36,21 @@ args::option::help() {
     "${args_help_version}${args_program_version}${args_help_reset} " \
     "${args_program_description}"
 
+  if [ -n "$args_program_header" ]; then
+    echo
+    ansi::out "${args_program_header}"
+  fi
+
   echo
   ansi::out "${args_help_section}Usage:${args_help_reset}"
-  ansi::out "  ${args_help_program}${args_program_name}${args_help_reset}" \
-    "${args_help_option}[options]${args_help_reset}" \
-    "${args_help_command}[command]${args_help_reset}" \
-    "${args_help_arg}[command arguments]${args_help_reset}"
+  if [ -z "$args_program_usage" ]; then
+    ansi::out "  ${args_help_program}${args_program_name}${args_help_reset}" \
+      "${args_help_option}[options]${args_help_reset}" \
+      "${args_help_command}[command]${args_help_reset}" \
+      "${args_help_arg}[command arguments]${args_help_reset}"
+  else
+    ansi::out "$(box::exec "${args_program_usage}" pad_lr 2 0)"
+  fi
 
   local -a left=()
   local -a right=()
@@ -119,6 +130,14 @@ args::option::help() {
       local command_desc="${right[$i]}"
       ansi::out "${command_text}    ${command_desc}"
     done
+  fi
+
+  if [ -n "$args_program_footer" ]; then
+    echo
+    ansi::out "${args_program_footer}"
+  elif [ -n "$args_program_url" ]; then
+    echo
+    ansi::out "For more information visit: $(ansi::hyperlink "$args_program_url")"
   fi
 
   exit 0
