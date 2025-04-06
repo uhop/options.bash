@@ -2,10 +2,15 @@
 
 set -o errexit -o pipefail -o nounset -o noclobber
 
-script_dir=${BASH_SOURCE:-$0}
-source "$(dirname "$(realpath "$script_dir")")/string.sh"
-unset script_dir
-
+_load_dependencies() {
+  local script_dir=${BASH_SOURCE:-$0}
+  script_dir="$(dirname "$(realpath "$script_dir")")"
+  source "${script_dir}/string.sh"
+}
+if ! type string::err >/dev/null 2>&1; then
+  _load_dependencies
+fi
+unset _load_dependencies
 
 box::make_lines() {
   for line in "$@"; do
@@ -273,6 +278,10 @@ box::exec() {
     echo "$line"
   done
   return 0
+}
+
+box::make() {
+  box::exec "$(box::make_lines "$@")" normalize left
 }
 
 box::stack_lr() {
