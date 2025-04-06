@@ -318,6 +318,12 @@ ansi::strip() {
   sed 's/\(\x1B\|\\e\|\\x1B\|\\033\)\[[0-9;:]*[a-z]//gi' <<< "$string"
 }
 
+ansi::length() {
+  local string="$1"
+  local string_clean=$(ansi::strip "$string")
+  echo "${#string_clean}"
+}
+
 ansi::extract_sgr_commands() {
   local command="$1"
   local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
