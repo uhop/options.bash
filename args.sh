@@ -32,6 +32,8 @@ args_program_version=""
 args_program_description=""
 args_program_url=""
 args_program_usage=""
+args_program_header=""
+args_program_footer=""
 
 declare -A args_names
 declare -A args_descriptions
@@ -50,10 +52,6 @@ args::program() {
   args_program_version="$2"
   args_program_description="${3:-}"
   args_program_url="${4:-}"
-}
-
-args::usage() {
-  args_program_usage="${1:-}"
 }
 
 args::option() {
