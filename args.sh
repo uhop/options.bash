@@ -29,6 +29,7 @@ if [[ $? -ne 4 ]]; then
   exit 1
 fi
 
+# Help section
 args_program_name=""
 args_program_version=""
 args_program_description=""
@@ -36,7 +37,9 @@ args_program_url=""
 args_program_usage=""
 args_program_header=""
 args_program_footer=""
+args_program_help_style="grid" # grid, list
 
+# Internal data structures
 declare -A args_names
 declare -A args_descriptions
 declare -A args_option_has_arg
@@ -44,6 +47,7 @@ declare -A args_aliases
 declare -a args_immediate_options=("-h" "--help" "-v" "--version")
 args_check_command=1
 
+# External data structures
 declare -A args_options
 args_cleaned=""
 args_command=""

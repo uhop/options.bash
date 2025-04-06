@@ -14,11 +14,13 @@ args::program "$script_name" "1.0" "Test program"
 # args_program_usage="$(box::make "usage example 1" "usage example 2" "usage example 3")"
 # args_program_header="Some fancyful\ndescription"
 # args_program_footer="Some footer"
+# args_program_help_style="list"
 
 args::option "test, t" "Test command" "a, b"
-args::option "cmd" "Sample command"
+args::option "cmd" "Sample command
+Sample description"
 
-args::option "-v, --version" "Show version"
+args::option "-v, --version" "$(box::make_lines "Show version," "in a fancy way")"
 args::option "-h, --help" "Show help"
 args::option "--option" "Sample long option" arg
 args::option "-o" "Sample short option" arg

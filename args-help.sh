@@ -127,7 +127,19 @@ args::option::help() {
     for ((i=0; i<option_length; ++i)); do
       local option_text="${left[$i]}"
       local option_desc="${right[$i]}"
-      ansi::out "${option_text}    ${option_desc}"
+      if [[ "$args_program_help_style" == "list" ]]; then
+        ansi::out "${option_text}"
+        ansi::out "$(box::exec "${option_desc}" pad_lr 4 0)"
+      else
+        local height="$(box::get_height "${option_desc}")"
+        if [[ "$height" -gt 1 ]]; then
+          option_text="$(box::exec "${option_text}" pad_lr 0 4 pad_tb 0 $((height - 1)))"
+          local text="$(box::stack_lr "${option_text}" "${option_desc}")"
+          ansi::out "$text"
+        else
+          ansi::out "${option_text}    ${option_desc}"
+        fi
+      fi
     done
   fi
 
@@ -137,7 +149,19 @@ args::option::help() {
     for ((i=option_length; i<command_length; ++i)); do
       local command_text="${left[$i]}"
       local command_desc="${right[$i]}"
-      ansi::out "${command_text}    ${command_desc}"
+      if [[ "$args_program_help_style" == "list" ]]; then
+        ansi::out "${command_text}"
+        ansi::out "$(box::exec "${command_desc}" pad_lr 4 0)"
+      else
+        local height="$(box::get_height "${command_desc}")"
+        if [[ "$height" -gt 1 ]]; then
+          command_text="$(box::exec "${command_text}" pad_lr 0 4 pad_tb 0 $((height - 1)))"
+          local text="$(box::stack_lr "${command_text}" "${command_desc}")"
+          ansi::out "$text"
+        else
+          ansi::out "${command_text}    ${command_desc}"
+        fi
+      fi
     done
   fi
 
