@@ -130,6 +130,7 @@ ansi::screen::scroll_down() {
 }
 
 ansi::hyperlink() {
+  # OSC 8: https://github.com/Alhadis/OSC8-Adoption
   local url="$1"
   local text="${2:-$1}"
   echo "\e]8;;${url}\e\\${text}\e]8;;\e\\"
