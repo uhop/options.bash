@@ -22,11 +22,6 @@ args::option "-o" "Sample short option" arg
 # args::option "--args, -, -args" "Bad short option"
 # args::option "--, -z" "Bad long option"
 
-# show_help
-
-# echo ""
-# show_version
-
 args::parse "$@"
 eval set -- "${args_cleaned}"
 
