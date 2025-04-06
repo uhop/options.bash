@@ -23,7 +23,7 @@ Sample description"
 
 args::option "-v, --version" "$(box::make_lines "Show version," "in a fancy way")"
 args::option "-h, --help" "Show help"
-args::option "--option" "Sample long option" arg
+args::option "--option" "Sample long option\nwith two lines" arg
 args::option "-o" "Sample short option" arg
 
 # args::option "--args, -, -args" "Bad short option"

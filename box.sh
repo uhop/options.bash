@@ -16,7 +16,7 @@ unset _load_dependencies
 
 box::make_lines() {
   for line in "$@"; do
-    echo "$line"
+    sed 's/\(\r\n|\n|\\r\\n|\\n\)/\n/g' <<< "$line"
   done
 }
 
@@ -30,8 +30,9 @@ box::get_width() {
 
   # from string to lines
   local lines=()
+  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$string"
+  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
   set -e
 
   echo "$(string::length "${lines[0]}")"
@@ -48,8 +49,9 @@ box::get_height() {
 
   # from string to lines
   local lines=()
+  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$string"
+  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
   set -e
 
   echo "${#lines[@]}"
@@ -62,8 +64,9 @@ box::exec() {
 
   # from string to lines
   local lines=()
+  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$string"
+  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
   set -e
 
   shift
@@ -292,13 +295,15 @@ box::stack_lr() {
 
   # from string to lines
   local lines1=()
+  local normalized_string1=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string1")
   set +e
-  IFS=$'\n' read -rd '' -a lines1 <<< "$string1"
+  IFS=$'\n' read -rd '' -a lines1 <<< "$normalized_string1"
   set -e
 
   local lines2=()
+  local normalized_string2=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string2")
   set +e
-  IFS=$'\n' read -rd '' -a lines2 <<< "$string2"
+  IFS=$'\n' read -rd '' -a lines2 <<< "$normalized_string2"
   set -e
 
   if [ "${#lines1[@]}" -ne "${#lines2[@]}" ]; then
@@ -324,13 +329,15 @@ box::stack_tb() {
 
   # from string to lines
   local lines1=()
+  local normalized_string1=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string1")
   set +e
-  IFS=$'\n' read -rd '' -a lines1 <<< "$string1"
+  IFS=$'\n' read -rd '' -a lines1 <<< "$normalized_string1"
   set -e
 
   local lines2=()
+  local normalized_string2=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string2")
   set +e
-  IFS=$'\n' read -rd '' -a lines2 <<< "$string2"
+  IFS=$'\n' read -rd '' -a lines2 <<< "$normalized_string2"
   set -e
 
   if [ "${#lines1[0]}" -ne "${#lines2[0]}" ]; then
@@ -352,8 +359,9 @@ box::err() {
 
   # from string to lines
   local lines=()
+  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$string"
+  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
   set -e
 
   # from lines to string
@@ -375,8 +383,9 @@ box::out() {
 
   # from string to lines
   local lines=()
+  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$string"
+  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
   set -e
 
   # from lines to string
