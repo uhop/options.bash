@@ -143,29 +143,31 @@ args::parse() {
   fi
 
   eval set -- "$parsed"
-  while true; do
-    if [[ "$1" == "--" ]]; then
-      shift
-      break
-    fi
-    local option="${args_aliases["$1"]}"
-    if [[ -z "$option" ]]; then
-      if type -t "args::error::unknown_option" &> /dev/null; then
-        args::error::unknown_option "$1"
-      else
-        echo "Error: Unknown option '$1'"
-        args::try_help
+  if [[ $# -gt 0 ]]; then
+    while true; do
+      if [[ "$1" == "--" ]]; then
+        shift
+        break
       fi
-      exit 1
-    fi
-    shift
-    if [[ -n "${args_option_has_arg[$option]}" ]]; then
-      args_options["$option"]="$1"
+      local option="${args_aliases["$1"]}"
+      if [[ -z "$option" ]]; then
+        if type -t "args::error::unknown_option" &> /dev/null; then
+          args::error::unknown_option "$1"
+        else
+          echo "Error: Unknown option '$1'"
+          args::try_help
+        fi
+        exit 1
+      fi
       shift
-    else
-      args_options["$option"]=""
-    fi
-  done
+      if [[ -n "${args_option_has_arg[$option]}" ]]; then
+        args_options["$option"]="$1"
+        shift
+      else
+        args_options["$option"]=""
+      fi
+    done
+  fi
 
   args_cleaned="$@"
 
@@ -180,8 +182,8 @@ args::parse() {
     done
   fi
 
-  if [[ ${args_check_command} -eq 0 ]] && [[ ${args_program_required_command} == "yes" ]]; then
-    if [ "$#" -eq 0 ]; then
+  if [[ ${args_check_command} -eq 0 ]]; then
+    if [ "$#" -eq 0 ] && [[ ${args_program_required_command} == "yes" ]]; then
       if type -t "args::error::no_command" &> /dev/null; then
         args::error::no_command
       else
@@ -191,23 +193,26 @@ args::parse() {
       exit 1
     fi
     local unknown_command=0
+    local current_command="${1:-}"
     for command in "${!args_aliases[@]}"; do
       if [[ "$command" == "-"* ]]; then continue; fi
-      if [[ "$command" == "$1" ]]; then
+      if [[ "$command" == "$current_command" ]]; then
         unknown_command=1
         break
       fi
     done
     if [[ $unknown_command -eq 0 ]]; then
-      if type -t "args::error::unknown_command" &> /dev/null; then
-        args::error::unknown_command "$1"
-      else
-        echo "Error: Unknown command '$1'"
-        args::try_help
+      if  [[ ${args_program_required_command} == "yes" ]]; then
+        if type -t "args::error::unknown_command" &> /dev/null; then
+          args::error::unknown_command "$current_command"
+        else
+          echo "Error: Unknown command '$current_command'"
+          args::try_help
+        fi
+        exit 1
       fi
-      exit 1
     else
-      args_command="${args_aliases[$1]}"
+      args_command="${args_aliases[$current_command]}"
     fi
   fi
 }
