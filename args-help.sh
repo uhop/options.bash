@@ -22,17 +22,17 @@ args_help_bold="$(ansi::style::get bold)"
 args_help_italic="$(ansi::style::get italic)"
 args_help_reset="$(ansi::style::get reset_all)"
 
-CYAN="$(ansi::style::get cyan)"
+TEMP_CYAN="$(ansi::style::get cyan)"
 
 args_help_section="${args_help_bold}$(ansi::style::get green)"
-args_help_program="${args_help_bold}${CYAN}"
-args_help_version="${CYAN}"
+args_help_program="${args_help_bold}${TEMP_CYAN}"
+args_help_version="${TEMP_CYAN}"
 args_help_command="$(ansi::style::get magenta)"
 args_help_command_arg="${args_help_italic}${args_help_command}"
-args_help_option="${CYAN}"
+args_help_option="${TEMP_CYAN}"
 args_help_option_arg="${args_help_italic}${args_help_option}"
 
-unset CYAN
+unset TEMP_CYAN
 
 args::option::help() {
   ansi::out "${args_help_program}${args_program_name}${args_help_reset} " \
