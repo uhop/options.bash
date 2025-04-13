@@ -364,3 +364,17 @@ ansi::out() {
   echo -e "${args[@]}"
   return 0
 }
+
+ansi::prompt() {
+  if [[ -t 1 || -z "$TERM" ]]; then
+    echo -en "$@"
+    return 0
+  fi
+
+  local args=()
+  for arg in "$@"; do
+    args+=("$(ansi::strip "$arg")")
+  done
+  echo -en "${args[@]}"
+  return 0
+}
