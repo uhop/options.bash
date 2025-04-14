@@ -88,15 +88,15 @@ color_code_grey() {
   echo "$((232 + intensity * 24 / 256))"
 }
 
-fg_rgb() { echo "$(fg_color "$(color_code_rgb "$@")")"; }
-fg_bright_rgb() { echo "$(fg_color "$(color_code_bright "$(color_code_rgb "$@")")")"; }
-fg_true() { echo "$(fg_color "$(color_code_true "$@")")"; }
-fg_grey() { echo "$(fg_color "$(color_code_grey "$@")")"; }
+fg_rgb() { fg_color "$(color_code_rgb "$@")"; }
+fg_bright_rgb() { fg_color "$(color_code_bright "$(color_code_rgb "$@")")"; }
+fg_true() { fg_color "$(color_code_true "$@")"; }
+fg_grey() { fg_color "$(color_code_grey "$@")"; }
 
-bg_rgb() { echo "$(bg_color "$(color_code_rgb "$@")")"; }
-bg_bright_rgb() { echo "$(bg_color "$(color_code_bright "$(color_code_rgb "$@")")")"; }
-bg_true() { echo "$(bg_color "$(color_code_true "$@")")"; }
-bg_grey() { echo "$(bg_color "$(color_code_grey "$@")")"; }
+bg_rgb() { bg_color "$(color_code_rgb "$@")"; }
+bg_bright_rgb() { bg_color "$(color_code_bright "$(color_code_rgb "$@")")"; }
+bg_true() { bg_color "$(color_code_true "$@")"; }
+bg_grey() { bg_color "$(color_code_grey "$@")"; }
 
 BOLD="$(tput bold)"
 DIM="$(tput dim)"
@@ -111,7 +111,8 @@ ITALIC="$(tput sitm)"
 RESET_ITALIC="$(tput ritm)"
 STRIKE="$(tput smxx)"
 RESET_STRIKE="$(tput rmxx)"
-RESET_ALL="$(tput sgr0)"
+RESET="$(tput sgr0)"
+RESET_ALL="${FG_BG_RESET}${RESET}"
 
 # params (bool): standout, underline, reverse, blink, dim, bold, invis, protect, altcharset
 sgr() { tput sgr "$@"; }
