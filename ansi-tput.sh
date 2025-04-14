@@ -65,13 +65,13 @@ UNDERLINE=$(tput smul)
 RESET_UNDERLINE=$(tput rmul)
 REVERSE=$(tput rev)
 BLINK=$(tput blink)
-# INVISIBLE=$(tput invis)
+INVISIBLE=$(tput invis)
 STANDOUT=$(tput smso)
 RESET_STANDOUT=$(tput rmso)
 ITALIC=$(tput sitm)
 RESET_ITALIC=$(tput ritm)
-# STRIKE=$(tput smxx)
-# RESET_STRIKE=$(tput rmxx)
+STRIKE=$(tput smxx)
+RESET_STRIKE=$(tput rmxx)
 RESET_ALL=$(tput sgr0)
 
 # params (bool): standout, underline, reverse, blink, dim, bold, invis, protect, altcharset
@@ -88,8 +88,8 @@ TEXT_STANDOUT=$STANDOUT
 TEXT_RESET_STANDOUT=$RESET_STANDOUT
 TEXT_ITALIC=$ITALIC
 TEXT_RESET_ITALIC=$RESET_ITALIC
-# TEXT_STRIKE=$STRIKE
-# TEXT_RESET_STRIKE=$RESET_STRIKE
+TEXT_STRIKE=$STRIKE
+TEXT_RESET_STRIKE=$RESET_STRIKE
 TEXT_RESET_ALL=$RESET_ALL
 
 text_sgr=$sgr
@@ -104,7 +104,7 @@ CURSOR_RIGHT1=$(tput cuf1)
 CURSOR_INVISIBLE=$(tput civis)
 CURSOR_HIGHLIGHT=$(tput cvvis)
 CURSOR_NORMAL=$(tput cnorm)
-# CURSOR_LAST=$(tput ll)
+CURSOR_LAST=$(tput ll)
 
 cursor_pos    () { tput cup "$1" "$2"; }
 cursor_left   () { tput cub "$1"; }
