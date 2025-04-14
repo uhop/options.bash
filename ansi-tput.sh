@@ -61,36 +61,36 @@ color_bg () { tput setab "$1"; }
 
 BOLD=$(tput bold)
 DIM=$(tput dim)
-UNDERLINE_ON=$(tput smul)
-UNDERLINE_OFF=$(tput rmul)
+UNDERLINE=$(tput smul)
+RESET_UNDERLINE=$(tput rmul)
 REVERSE=$(tput rev)
 BLINK=$(tput blink)
 # INVISIBLE=$(tput invis)
-STANDOUT_ON=$(tput smso)
-STANDOUT_OFF=$(tput rmso)
-ITALIC_ON=$(tput sitm)
-ITALIC_OFF=$(tput ritm)
-# STRIKE_ON=$(tput smxx)
-# STRIKE_OFF=$(tput rmxx)
-RESET=$(tput sgr0)
+STANDOUT=$(tput smso)
+RESET_STANDOUT=$(tput rmso)
+ITALIC=$(tput sitm)
+RESET_ITALIC=$(tput ritm)
+# STRIKE=$(tput smxx)
+# RESET_STRIKE=$(tput rmxx)
+RESET_ALL=$(tput sgr0)
 
 # params (bool): standout, underline, reverse, blink, dim, bold, invis, protect, altcharset
 sgr () { tput sgr $@; }
 
 TEXT_BOLD=$BOLD
 TEXT_DIM=$DIM
-TEXT_UNDERLINE_ON=$UNDERLINE_ON
-TEXT_UNDERLINE_OFF=$UNDERLINE_OFF
+TEXT_UNDERLINE=$UNDERLINE
+TEXT_RESET_UNDERLINE=$RESET_UNDERLINE
 TEXT_REVERSE=$REVERSE
 TEXT_BLINK=$BLINK
 TEXT_INVISIBLE=$INVISIBLE
-TEXT_STANDOUT_ON=$STANDOUT_ON
-TEXT_STANDOUT_OFF=$STANDOUT_OFF
-TEXT_ITALIC_ON=$ITALIC_ON
-TEXT_ITALIC_OFF=$ITALIC_OFF
-# TEXT_STRIKE_ON=STRIKE_ON
-# TEXT_STRIKE_OFF=STRIKE_OFF
-TEXT_RESET=$RESET
+TEXT_STANDOUT=$STANDOUT
+TEXT_RESET_STANDOUT=$RESET_STANDOUT
+TEXT_ITALIC=$ITALIC
+TEXT_RESET_ITALIC=$RESET_ITALIC
+# TEXT_STRIKE=$STRIKE
+# TEXT_RESET_STRIKE=$RESET_STRIKE
+TEXT_RESET_ALL=$RESET_ALL
 
 text_sgr=$sgr
 
