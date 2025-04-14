@@ -41,6 +41,7 @@ args_program_required_command="yes"
 args_program_help_style="grid" # grid, list
 
 # Internal data structures
+declare -a args_list
 declare -A args_names
 declare -A args_descriptions
 declare -A args_option_has_arg
@@ -69,6 +70,7 @@ args::option() {
   local names
   IFS=', ' read -ra names <<< "$1"
   args_names["${names[0]}"]="$1"
+  args_list+=("${names[0]}")
   args_descriptions["${names[0]}"]="${2:-}"
   args_option_has_arg["${names[0]}"]="${3:-}"
 

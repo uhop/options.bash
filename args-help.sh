@@ -47,7 +47,7 @@ args::option::help() {
   local -a left=()
   local -a right=()
 
-  for option in "${!args_names[@]}"; do
+  for option in "${args_list[@]}"; do
     if [[ "$option" == "--"* ]]; then continue; fi
     if [[ "$option" != "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
@@ -61,7 +61,7 @@ args::option::help() {
     fi
     right+=("$desc")
   done
-  for option in "${!args_names[@]}"; do
+  for option in "${args_list[@]}"; do
     if [[ "$option" != "--"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$option]}" ]; then
@@ -77,7 +77,7 @@ args::option::help() {
 
   local option_length="${#left[@]}"
 
-  for command in "${!args_names[@]}"; do
+  for command in "${args_list[@]}"; do
     if [[ "$command" == "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_command}${args_names[$command]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$command]}" ]; then

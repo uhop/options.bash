@@ -17,14 +17,16 @@ args::program "$script_name" "1.0" "Test program"
 # args_program_help_style="list"
 # args_program_required_command="no"
 
-args::option "test, t" "Test command" "a b"
 args::option "cmd" "Sample command
 Sample description"
+args::option "test, t" "Test command" "a b"
 
-args::option "-v, --version" "$(box::make_lines "Show version," "in a fancy way")"
-args::option "-h, --help" "Show help"
 args::option "--option" "Sample long option\nwith two lines" arg
 args::option "-o" "Sample short option" arg
+args::option "-v, --version" "$(box::make_lines "Show version," "in a fancy way")"
+args::option "-h, --help" "Show help"
+args::option "--long" "Some long option"
+args::option "-s, --short" "Sample short option"
 
 # args::option "--args, -, -args" "Bad short option"
 # args::option "--, -z" "Bad long option"
