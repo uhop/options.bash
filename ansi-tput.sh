@@ -1,5 +1,60 @@
 #!/usr/bin/env bash
 
+# if type ansi::style::get > /dev/null 2>&1; then return; fi
+
+set -o errexit -o pipefail -o nounset -o noclobber
+
+if [[ -z "$BASH_VERSION" ]]; then
+  echo "This script requires bash."
+  exit 1
+fi
+
+if [[ "$BASH_VERSION" < "4.0" ]]; then
+  echo "This script requires bash version 4.0 or higher."
+  if [[ "$(uname -s)" == "Darwin"* ]]; then
+    echo "You can install it with Homebrew: brew install bash"
+  fi
+  exit 1
+fi
+
+ansi::tput::__define_constants() {
+  define -g -A ansi_tput_colors=(
+    [black]=0
+    [red]=1
+    [green]=2
+    [yellow]=3
+    [blue]=4
+    [magenta]=5
+    [cyan]=6
+    [white]=7
+  )
+  define -g -A ansi_tput_styles=(
+    [bold]="bold"
+    [dim]="dim"
+    [italic]="sitm"
+    [underline]="smul"
+    [blink]="blink"
+    [reverse]="rev"
+    [hidden]="invis"
+    [strike]="smxx"
+    [standout]="smso"
+  )
+
+  # params (bool): standout, underline, reverse, blink, dim, bold, invis, protect, altcharset
+
+  define -g -A ansi_tput_reverse_styles=(
+    [bold]="sgr 0 0 0 0 0 1 0 0 0"
+    [dim]="sgr 0 0 0 0 1 0 0 0 0"
+    [italic]="ritm"
+    [underline]="rmul"
+    [blink]="sgr 0 0 0 1 0 0 0 0 0"
+    [reverse]="sgr 0 0 1 0 0 0 0 0 0"
+    [hidden]="sgr 0 0 0 0 0 0 1 0 0"
+    [strike]="rmxx"
+    [standout]="rmso"
+  )
+}
+
 BLACK="$(tput setaf 0)"
 RED="$(tput setaf 1)"
 GREEN="$(tput setaf 2)"
