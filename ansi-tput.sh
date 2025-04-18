@@ -18,7 +18,7 @@ if [[ "$BASH_VERSION" < "4.0" ]]; then
 fi
 
 ansi::tput::__define_constants() {
-  define -g -A ansi_tput_colors=(
+  declare -g -A ansi_tput_colors=(
     [black]=0
     [red]=1
     [green]=2
@@ -28,91 +28,102 @@ ansi::tput::__define_constants() {
     [cyan]=6
     [white]=7
   )
-  define -g -A ansi_tput_styles=(
-    [bold]="bold"
-    [dim]="dim"
-    [italic]="sitm"
-    [underline]="smul"
-    [blink]="blink"
-    [reverse]="rev"
-    [hidden]="invis"
-    [strike]="smxx"
-    [standout]="smso"
+  declare -g -A ansi_tput_styles=(
+    [bold]='bold'
+    [dim]='dim'
+    [italic]='sitm'
+    [underline]='smul'
+    [blink]='blink'
+    [reverse]='rev'
+    [hidden]='invis'
+    [strike]='smxx'
+    [standout]='smso'
+  )
+  declare -g -A ansi_tput_reset_styles=(
+    [bold]='sgr 0 0 0 0 0 1 0 0 0'
+    [dim]='sgr 0 0 0 0 1 0 0 0 0'
+    [italic]='ritm'
+    [underline]='rmul'
+    [blink]='sgr 0 0 0 1 0 0 0 0 0'
+    [reverse]='sgr 0 0 1 0 0 0 0 0 0'
+    [hidden]='sgr 0 0 0 0 0 0 1 0 0'
+    [strike]='rmxx'
+    [standout]='rmso'
   )
 
-  # params (bool): standout, underline, reverse, blink, dim, bold, invis, protect, altcharset
+  ansi::tput::define_colors() {
+    local prefix="${1:-}"
+    prefix="${prefix^^}"
 
-  define -g -A ansi_tput_reverse_styles=(
-    [bold]="sgr 0 0 0 0 0 1 0 0 0"
-    [dim]="sgr 0 0 0 0 1 0 0 0 0"
-    [italic]="ritm"
-    [underline]="rmul"
-    [blink]="sgr 0 0 0 1 0 0 0 0 0"
-    [reverse]="sgr 0 0 1 0 0 0 0 0 0"
-    [hidden]="sgr 0 0 0 0 0 0 1 0 0"
-    [strike]="rmxx"
-    [standout]="rmso"
-  )
+    for color in "${!ansi_tput_colors[@]}"; do
+      local code=$(tput setaf ${ansi_tput_colors[$color]} || true)
+      if [[ -n "$code" ]]; then echo "${prefix}FG_${color^^}=${code@Q}"; fi
+      local code=$(tput setaf $((${ansi_tput_colors[$color]} + 8)) || true)
+      if [[ -n "$code" ]]; then echo "${prefix}FG_BRIGHT_${color^^}=${code@Q}"; fi
+      local code=$(tput setab ${ansi_tput_colors[$color]} || true)
+      if [[ -n "$code" ]]; then echo "${prefix}BG_${color^^}=${code@Q}"; fi
+      local code=$(tput setab $((${ansi_tput_colors[$color]} + 8)) || true)
+      if [[ -n "$code" ]]; then echo "${prefix}BG_BRIGHT_${color^^}=${code@Q}"; fi
+    done
+
+    local code=$(tput op || true)
+    echo "${prefix}FG_BG_RESET=${code@Q}"
+  }
+
+  ansi::tput::alias_simple_color_names() {
+    local prefix="${1:-}"
+    prefix="${prefix^^}"
+
+    for color in "${!ansi_tput_colors[@]}"; do
+      echo "${prefix}${color^^}=\"\${${prefix}FG_${color^^}:-}\""
+      echo "${prefix}BRIGHT_${color^^}=\"\${${prefix}FG_BRIGHT_${color^^}:-}\""
+    done
+  }
+
+  ansi::tput::define_styles() {
+    local prefix="${1:-}"
+    prefix="${prefix^^}"
+
+    for style in "${!ansi_tput_styles[@]}"; do
+      local code=$(tput ${ansi_tput_styles[$style]} || true)
+      if [[ -n "$code" ]]; then echo "${prefix}TEXT_${style^^}=${code@Q}"; fi
+      local code=$(tput ${ansi_tput_reset_styles[$style]} || true)
+      if [[ -n "$code" ]]; then echo "${prefix}TEXT_RESET_${style^^}=${code@Q}"; fi
+    done
+
+    local code=$(tput sgr0 || true)
+    echo "${prefix}TEXT_RESET=${code@Q}"
+    echo "${prefix}TEXT_RESET_ALL=\"\${${prefix}FG_BG_RESET}\${${prefix}TEXT_RESET}\""
+  }
+
+  ansi::tput::alias_simple_style_names() {
+    local prefix="${1:-}"
+    prefix="${prefix^^}"
+
+    for style in "${!ansi_tput_styles[@]}"; do
+      echo "${prefix}${style^^}=\"\${${prefix}TEXT_${style^^}:-}\""
+      echo "${prefix}RESET_${style^^}=\"\${${prefix}TEXT_RESET_${style^^}:-}\""
+    done
+
+    echo "${prefix}RESET=\"\${${prefix}RESET:-}\""
+    echo "${prefix}RESET_ALL=\"\${${prefix}TEXT_RESET_ALL:-}\""
+  }
 }
+ansi::tput::__define_constants
+unset -f ansi::tput::__define_constants
 
-BLACK="$(tput setaf 0)"
-RED="$(tput setaf 1)"
-GREEN="$(tput setaf 2)"
-YELLOW="$(tput setaf 3)"
-BLUE="$(tput setaf 4)"
-MAGENTA="$(tput setaf 5)"
-CYAN="$(tput setaf 6)"
-WHITE="$(tput setaf 7)"
+ansi_tput_simple_color_names=""
+ansi_tput_simple_style_names=""
+if [ -z "${ANSI_TPUT_NO_SIMPLE_NAMES:-}" ]; then
+  ansi_tput_simple_color_names="$(ansi::tput::alias_simple_color_names)"
+  ansi_tput_simple_style_names="$(ansi::tput::alias_simple_style_names)"
+fi
+eval "$(printf '%s\n%s\n%s\n%s\n' "$(ansi::tput::define_colors)" "${ansi_tput_simple_color_names}" "$(ansi::tput::define_styles)" "${ansi_tput_simple_style_names}")"
+unset ansi_tput_simple_color_names
+unset ansi_tput_simple_style_names
 
-BRIGHT_BLACK="$(tput setaf 8)"
-BRIGHT_RED="$(tput setaf 9)"
-BRIGHT_GREEN="$(tput setaf 10)"
-BRIGHT_YELLOW="$(tput setaf 11)"
-BRIGHT_BLUE="$(tput setaf 12)"
-BRIGHT_MAGENTA="$(tput setaf 13)"
-BRIGHT_CYAN="$(tput setaf 14)"
-BRIGHT_WHITE="$(tput setaf 15)"
-
-FG_BLACK="$BLACK"
-FG_RED="$RED"
-FG_GREEN="$GREEN"
-FG_YELLOW="$YELLOW"
-FG_BLUE="$BLUE"
-FG_MAGENTA="$MAGENTA"
-FG_CYAN="$CYAN"
-FG_WHITE="$WHITE"
-
-FG_BRIGHT_BLACK="$BRIGHT_BLACK"
-FG_BRIGHT_RED="$BRIGHT_RED"
-FG_BRIGHT_GREEN="$BRIGHT_GREEN"
-FG_BRIGHT_YELLOW="$BRIGHT_YELLOW"
-FG_BRIGHT_BLUE="$BRIGHT_BLUE"
-FG_BRIGHT_MAGENTA="$BRIGHT_MAGENTA"
-FG_BRIGHT_CYAN="$BRIGHT_CYAN"
-FG_BRIGHT_WHITE="$BRIGHT_WHITE"
-
-BG_BLACK="$(tput setab 0)"
-BG_RED="$(tput setab 1)"
-BG_GREEN="$(tput setab 2)"
-BG_YELLOW="$(tput setab 3)"
-BG_BLUE="$(tput setab 4)"
-BG_MAGENTA="$(tput setab 5)"
-BG_CYAN="$(tput setab 6)"
-BG_WHITE="$(tput setab 7)"
-
-BG_BRIGHT_BLACK="$(tput setab 8)"
-BG_BRIGHT_RED="$(tput setab 9)"
-BG_BRIGHT_GREEN="$(tput setab 10)"
-BG_BRIGHT_YELLOW="$(tput setab 11)"
-BG_BRIGHT_BLUE="$(tput setab 12)"
-BG_BRIGHT_MAGENTA="$(tput setab 13)"
-BG_BRIGHT_CYAN="$(tput setab 14)"
-BG_BRIGHT_WHITE="$(tput setab 15)"
-
-FG_BG_RESET="$(tput op)"
-
-fg_color() { tput setaf "$1"; }
-bg_color() { tput setab "$1"; }
+fg_color() { tput setaf "$1" || true; }
+bg_color() { tput setab "$1" || true; }
 
 color_code_rgb() {
   local r="$1"
@@ -153,71 +164,40 @@ bg_bright_rgb() { bg_color "$(color_code_bright "$(color_code_rgb "$@")")"; }
 bg_true() { bg_color "$(color_code_true "$@")"; }
 bg_grey() { bg_color "$(color_code_grey "$@")"; }
 
-BOLD="$(tput bold)"
-DIM="$(tput dim)"
-UNDERLINE="$(tput smul)"
-RESET_UNDERLINE="$(tput rmul)"
-REVERSE="$(tput rev)"
-BLINK="$(tput blink)"
-INVISIBLE="$(tput invis)"
-STANDOUT="$(tput smso)"
-RESET_STANDOUT="$(tput rmso)"
-ITALIC="$(tput sitm)"
-RESET_ITALIC="$(tput ritm)"
-STRIKE="$(tput smxx)"
-RESET_STRIKE="$(tput rmxx)"
-RESET="$(tput sgr0)"
-RESET_ALL="${FG_BG_RESET}${RESET}"
-
 # params (bool): standout, underline, reverse, blink, dim, bold, invis, protect, altcharset
-sgr() { tput sgr "$@"; }
+text_sgr() { tput sgr "$@" || true; }
 
-TEXT_BOLD="$BOLD"
-TEXT_DIM="$DIM"
-TEXT_UNDERLINE="$UNDERLINE"
-TEXT_RESET_UNDERLINE="$RESET_UNDERLINE"
-TEXT_REVERSE="$REVERSE"
-TEXT_BLINK="$BLINK"
-TEXT_INVISIBLE="$INVISIBLE"
-TEXT_STANDOUT="$STANDOUT"
-TEXT_RESET_STANDOUT="$RESET_STANDOUT"
-TEXT_ITALIC="$ITALIC"
-TEXT_RESET_ITALIC="$RESET_ITALIC"
-TEXT_STRIKE="$STRIKE"
-TEXT_RESET_STRIKE="$RESET_STRIKE"
-TEXT_RESET_ALL="$RESET_ALL"
+alias sgr=text_sgr
 
-text_sgr=$sgr
+CURSOR_SAVE="$(tput sc || true)"
+CURSOR_RESTORE="$(tput rc || true)"
+CURSOR_HOME="$(tput home || true)"
+CURSOR_DOWN1="$(tput cud1 || true)"
+CURSOR_UP1="$(tput cuu1 || true)"
+CURSOR_LEFT1="$(tput cub1 || true)"
+CURSOR_RIGHT1="$(tput cuf1 || true)"
+CURSOR_INVISIBLE="$(tput civis || true)"
+CURSOR_HIGHLIGHT="$(tput cvvis || true)"
+CURSOR_NORMAL="$(tput cnorm || true)"
+CURSOR_LAST="$(tput ll || true)"
 
-CURSOR_SAVE="$(tput sc)"
-CURSOR_RESTORE="$(tput rc)"
-CURSOR_HOME="$(tput home)"
-CURSOR_DOWN1="$(tput cud1)"
-CURSOR_UP1="$(tput cuu1)"
-CURSOR_LEFT1="$(tput cub1)"
-CURSOR_RIGHT1="$(tput cuf1)"
-CURSOR_INVISIBLE="$(tput civis)"
-CURSOR_HIGHLIGHT="$(tput cvvis)"
-CURSOR_NORMAL="$(tput cnorm)"
-CURSOR_LAST="$(tput ll)"
+cursor_pos() { tput cup "$1" "$2" || true; }
+cursor_left() { tput cub "$1" || true; }
+cursor_right() { tput cuf "$1" || true; }
+cursor_insert() { tput ich "$1" || true; }
+cursor_insert_lines() { tput il "$1" || true; }
 
-cursor_pos() { tput cup "$1" "$2"; }
-cursor_left() { tput cub "$1"; }
-cursor_right() { tput cuf "$1"; }
-cursor_insert() { tput ich "$1"; }
-cursor_insert_lines() { tput il "$1"; }
+SCREEN_SAVE="$(tput smcup || true)"
+SCREEN_RESTORE="$(tput rmcup || true)"
 
-SCREEN_SAVE="$(tput smcup)"
-SCREEN_RESTORE="$(tput rmcup)"
+screen_lines() { tput lines || true; }
+screen_cols() { tput cols || true; }
+screen_colors() { tput colors || true; }
 
-screen_lines() { tput lines; }
-screen_cols() { tput cols; }
-screen_colors() { tput colors; }
+CLEAR_BOL="$(tput el1 || true)"
+CLEAR_EOL="$(tput el || true)"
+CLEAR_EOS="$(tput ed || true)"
+CLEAR_SCREEN="$(tput clear || true)"
 
-CLEAR_BOL="$(tput el1)"
-CLEAR_EOL="$(tput el)"
-CLEAR_EOS="$(tput ed)"
-CLEAR_SCREEN="$(tput clear)"
-
-clear() { tput ech "$1"; }
-terminal_name() { tput longname; }
+clear() { tput ech "$1" || true; }
+terminal_name() { tput longname || true; }
