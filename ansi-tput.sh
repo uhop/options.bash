@@ -9,8 +9,8 @@ if [[ -z "$BASH_VERSION" ]]; then
   exit 1
 fi
 
-if [[ "$BASH_VERSION" < "4.0" ]]; then
-  echo "This script requires bash version 4.0 or higher."
+if [[ "$BASH_VERSION" < "4.3" ]]; then
+  echo "This script requires bash version 4.3 or higher."
   if [[ "$(uname -s)" == "Darwin"* ]]; then
     echo "You can install it with Homebrew: brew install bash"
   fi
@@ -28,32 +28,112 @@ ansi::tput::__define_constants() {
     [cyan]=6
     [white]=7
   )
-  declare -g -A ansi_tput_styles=(
-    [bold]='bold'
-    [dim]='dim'
-    [italic]='sitm'
-    [underline]='smul'
-    [blink]='blink'
-    [reverse]='rev'
-    [hidden]='invis'
-    [strike]='smxx'
-    [standout]='smso'
+  declare -g -a ansi_tput_text_styles=(
+    bold dim italic underline blink reverse hidden strike standout
+    reset_bold reset_dim reset_italic reset_underline reset_blink
+    reset_reverse reset_hidden reset_strike reset_standout
+    reset
   )
-  declare -g -A ansi_tput_reset_styles=(
-    [bold]='sgr 0 0 0 0 0 1 0 0 0'
-    [dim]='sgr 0 0 0 0 1 0 0 0 0'
-    [italic]='ritm'
-    [underline]='rmul'
-    [blink]='sgr 0 0 0 1 0 0 0 0 0'
-    [reverse]='sgr 0 0 1 0 0 0 0 0 0'
-    [hidden]='sgr 0 0 0 0 0 0 1 0 0'
-    [strike]='rmxx'
-    [standout]='rmso'
+  declare -g -A ansi_tput_controls=(
+    # turn on_styles
+    [text_bold]='bold'
+    [text_dim]='dim'
+    [text_italic]='sitm'
+    [text_underline]='smul'
+    [text_blink]='blink'
+    [text_reverse]='rev'
+    [text_hidden]='invis'
+    [text_strike]='smxx'
+    [text_standout]='smso'
+
+    # turn off_styles
+    [text_reset_bold]='sgr 0 0 0 0 0 1 0 0 0'
+    [text_reset_dim]='sgr 0 0 0 0 1 0 0 0 0'
+    [text_reset_italic]='ritm'
+    [text_reset_underline]='rmul'
+    [text_reset_blink]='sgr 0 0 0 1 0 0 0 0 0'
+    [text_reset_reverse]='sgr 0 0 1 0 0 0 0 0 0'
+    [text_reset_hidden]='sgr 0 0 0 0 0 0 1 0 0'
+    [text_reset_strike]='rmxx'
+    [text_reset_standout]='rmso'
+
+    [text_reset]='sgr0'
+
+    # cursor operations
+    [cursor_up1]='cuu1'
+    [cursor_down1]='cud1'
+    [cursor_left1]='cub1'
+    [cursor_right1]='cuf1'
+    [cursor_home]='home'
+    [cursor_save]='sc'
+    [cursor_restore]='rc'
+    [cursor_hide]='civis'
+    [cursor_show]='cnorm'
+    # [cursor_last]='ll'
+
+    # screen operations
+    [screen_save]='smcup'
+    [screen_restore]='rmcup'
+
+    # clear operations
+    [clear_bol]='el1'
+    [clear_eol]='el'
+    [clear_eos]='ed'
+    [clear_screen]='clear'
   )
+  declare -g -A ansi_tput_color_codes=()
+
+  for color in "${!ansi_tput_colors[@]}"; do
+    ansi_tput_color_codes["fg_${color}"]="setaf ${ansi_tput_colors[$color]}"
+    ansi_tput_color_codes["bg_${color}"]="setab ${ansi_tput_colors[$color]}"
+    local bright_color=$((${ansi_tput_colors[$color]} + 8))
+    ansi_tput_color_codes["fg_bright_${color}"]="setaf $bright_color"
+    ansi_tput_color_codes["bg_bright_${color}"]="setab $bright_color"
+  done
+  ansi_tput_color_codes["fg_bg_reset"]="op"
+
+  ansi_tput_longname="$(tput longname)"
+
+  ansi::tput::collect_codes() {
+    local -n assoc="$1"
+    local prefix="${2:-}"
+    prefix="${prefix^^}"
+
+    local names=()
+    local string=""
+    for name in "${!assoc[@]}"; do
+      names+=("$name")
+      string+="${assoc[$name]}\nlongname\n"
+    done
+
+    local result="$(tput -S <<< "$(echo -e "$string")" || true)"
+    if [[ -z "$result" ]]; then return 1; fi
+
+    local delimiter="${ansi_tput_longname}"
+    local replacement=$'\x01'
+    local escaped_result="${result//'\\'/'\\\\'}"
+    local modified_result="${escaped_result//$delimiter/$replacement}"
+    local -a values
+    set +e
+    IFS="$replacement" read -rd '' -a values <<< "$modified_result" # Split into an array
+    set -e
+
+    if [[ ${#values[@]} -ne $((${#names[@]} + 1)) ]]; then return 1; fi
+
+    for i in "${!names[@]}"; do
+      echo "${prefix}${names[$i]^^}=${values[$i]@Q}"
+    done
+  }
 
   ansi::tput::define_colors() {
     local prefix="${1:-}"
     prefix="${prefix^^}"
+
+    local fast_result="$(ansi::tput::collect_codes ansi_tput_color_codes)"
+    if [[ -n "$fast_result" ]]; then
+      echo "$fast_result"
+      return
+    fi
 
     for color in "${!ansi_tput_colors[@]}"; do
       local code=$(tput setaf ${ansi_tput_colors[$color]} || true)
@@ -80,19 +160,22 @@ ansi::tput::__define_constants() {
     done
   }
 
-  ansi::tput::define_styles() {
+  ansi::tput::define_controls() {
     local prefix="${1:-}"
     prefix="${prefix^^}"
 
-    for style in "${!ansi_tput_styles[@]}"; do
-      local code=$(tput ${ansi_tput_styles[$style]} || true)
-      if [[ -n "$code" ]]; then echo "${prefix}TEXT_${style^^}=${code@Q}"; fi
-      local code=$(tput ${ansi_tput_reset_styles[$style]} || true)
-      if [[ -n "$code" ]]; then echo "${prefix}TEXT_RESET_${style^^}=${code@Q}"; fi
+    local fast_result="$(ansi::tput::collect_codes ansi_tput_controls)"
+    if [[ -n "$fast_result" ]]; then
+      echo "$fast_result"
+      echo "${prefix}TEXT_RESET_ALL=\"\${${prefix}FG_BG_RESET}\${${prefix}TEXT_RESET}\""
+      return
+    fi
+
+    for style in "${!ansi_tput_controls[@]}"; do
+      local code=$(tput ${ansi_tput_controls[$style]} || true)
+      if [[ -n "$code" ]]; then echo "${prefix}${style^^}=${code@Q}"; fi
     done
 
-    local code=$(tput sgr0 || true)
-    echo "${prefix}TEXT_RESET=${code@Q}"
     echo "${prefix}TEXT_RESET_ALL=\"\${${prefix}FG_BG_RESET}\${${prefix}TEXT_RESET}\""
   }
 
@@ -100,12 +183,10 @@ ansi::tput::__define_constants() {
     local prefix="${1:-}"
     prefix="${prefix^^}"
 
-    for style in "${!ansi_tput_styles[@]}"; do
-      echo "${prefix}${style^^}=\"\${${prefix}TEXT_${style^^}:-}\""
-      echo "${prefix}RESET_${style^^}=\"\${${prefix}TEXT_RESET_${style^^}:-}\""
+    for name in "${ansi_tput_text_styles[@]}"; do
+      echo "${prefix}${name^^}=\"\${${prefix}TEXT_${name^^}:-}\""
     done
 
-    echo "${prefix}RESET=\"\${${prefix}RESET:-}\""
     echo "${prefix}RESET_ALL=\"\${${prefix}TEXT_RESET_ALL:-}\""
   }
 }
@@ -118,7 +199,11 @@ if [ -z "${ANSI_TPUT_NO_SIMPLE_NAMES:-}" ]; then
   ansi_tput_simple_color_names="$(ansi::tput::alias_simple_color_names)"
   ansi_tput_simple_style_names="$(ansi::tput::alias_simple_style_names)"
 fi
-eval "$(printf '%s\n%s\n%s\n%s\n' "$(ansi::tput::define_colors)" "${ansi_tput_simple_color_names}" "$(ansi::tput::define_styles)" "${ansi_tput_simple_style_names}")"
+eval "$(printf '%s\n%s\n%s\n%s\n%s\n' \
+  "$(ansi::tput::define_colors)" \
+  "${ansi_tput_simple_color_names}" \
+  "$(ansi::tput::define_controls)" \
+  "${ansi_tput_simple_style_names}")"
 unset ansi_tput_simple_color_names
 unset ansi_tput_simple_style_names
 
@@ -169,35 +254,15 @@ text_sgr() { tput sgr "$@" || true; }
 
 alias sgr=text_sgr
 
-CURSOR_SAVE="$(tput sc || true)"
-CURSOR_RESTORE="$(tput rc || true)"
-CURSOR_HOME="$(tput home || true)"
-CURSOR_DOWN1="$(tput cud1 || true)"
-CURSOR_UP1="$(tput cuu1 || true)"
-CURSOR_LEFT1="$(tput cub1 || true)"
-CURSOR_RIGHT1="$(tput cuf1 || true)"
-CURSOR_INVISIBLE="$(tput civis || true)"
-CURSOR_HIGHLIGHT="$(tput cvvis || true)"
-CURSOR_NORMAL="$(tput cnorm || true)"
-CURSOR_LAST="$(tput ll || true)"
-
 cursor_pos() { tput cup "$1" "$2" || true; }
 cursor_left() { tput cub "$1" || true; }
 cursor_right() { tput cuf "$1" || true; }
 cursor_insert() { tput ich "$1" || true; }
 cursor_insert_lines() { tput il "$1" || true; }
 
-SCREEN_SAVE="$(tput smcup || true)"
-SCREEN_RESTORE="$(tput rmcup || true)"
-
 screen_lines() { tput lines || true; }
 screen_cols() { tput cols || true; }
 screen_colors() { tput colors || true; }
-
-CLEAR_BOL="$(tput el1 || true)"
-CLEAR_EOL="$(tput el || true)"
-CLEAR_EOS="$(tput ed || true)"
-CLEAR_SCREEN="$(tput clear || true)"
 
 clear() { tput ech "$1" || true; }
 terminal_name() { tput longname || true; }
