@@ -27,113 +27,69 @@ ansi::style::sgr() {
 }
 
 ansi::style::__define_constants() {
+  declare -g -A ansi_style_colors=(
+    [black]=0
+    [red]=1
+    [green]=2
+    [yellow]=3
+    [blue]=4
+    [magenta]=5
+    [cyan]=6
+    [white]=7
+  )
   declare -g -A ansi_style_sgr_commands=(
     # commands
-    [reset_all]=0
-    [bold]=1
-    [dim]=2
-    [italic]=3
-    [underline]=4
-    [blink]=5
-    [rapid_blink]=6
-    [reverse]=7
-    [hidden]=8
-    [strike_through]=9
-    [default_font]=10
-    [reset_bold]=22
-    [reset_dim]=22
-    [reset_italic]=23
-    [reset_underline]=24
-    [reset_blink]=25
-    [reset_rapid_blink]=25
-    [reset_reverse]=27
-    [reset_hidden]=28
-    [reset_strike_through]=29
-    [curly_underline]='4:3'
-    [reset_curly_underline]=24
-    [double_underline]=21
-    [reset_double_underline]=24
-    [extended_color]=38
+    [text_reset_all]=0
+    [text_bold]=1
+    [text_dim]=2
+    [text_italic]=3
+    [text_underline]=4
+    [text_blink]=5
+    [text_rapid_blink]=6
+    [text_reverse]=7
+    [text_hidden]=8
+    [text_strike_through]=9
+    [text_default_font]=10
+    [text_reset_bold]=22
+    [text_reset_dim]=22
+    [text_reset_italic]=23
+    [text_reset_underline]=24
+    [text_reset_blink]=25
+    [text_reset_rapid_blink]=25
+    [text_reset_reverse]=27
+    [text_reset_hidden]=28
+    [text_reset_strike_through]=29
+    [text_curly_underline]='4:3'
+    [text_reset_curly_underline]=24
+    [text_double_underline]=21
+    [text_reset_double_underline]=24
+    [text_extended_color]=38
     [fg_extended_color]=38
     [bg_extended_color]=48
-    [default_color]=39
-    [fg_default_color]=39
-    [bg_default_color]=49
-    [reset_color]=39
-    [reset_fg_color]=39
-    [reset_bg_color]=49
-    [overline]=53
-    [reset_overline]=55
-    [decoration_color]=58
-    [decoration_default_color]=59
-    [reset_decoration_color]=59
-    # colors
-    [black]=30
-    [red]=31
-    [green]=32
-    [yellow]=33
-    [blue]=34
-    [magenta]=35
-    [cyan]=36
-    [white]=37
-    [default]=39
-    # foreground colors
-    [fg_black]=30
-    [fg_red]=31
-    [fg_green]=32
-    [fg_yellow]=33
-    [fg_blue]=34
-    [fg_magenta]=35
-    [fg_cyan]=36
-    [fg_white]=37
     [fg_default]=39
-    # background colors
-    [bg_black]=40
-    [bg_red]=41
-    [bg_green]=42
-    [bg_yellow]=43
-    [bg_blue]=44
-    [bg_magenta]=45
-    [bg_cyan]=46
-    [bg_white]=47
     [bg_default]=49
-    # bright colors
-    [bright_black]=90
-    [bright_red]=91
-    [bright_green]=92
-    [bright_yellow]=93
-    [bright_blue]=94
-    [bright_magenta]=95
-    [bright_cyan]=96
-    [bright_white]=97
-    [bright_default]=99
-    # bright foreground colors
-    [fg_bright_black]=90
-    [fg_bright_red]=91
-    [fg_bright_green]=92
-    [fg_bright_yellow]=93
-    [fg_bright_blue]=94
-    [fg_bright_magenta]=95
-    [fg_bright_cyan]=96
-    [fg_bright_white]=97
-    [fg_bright_default]=99
-    # bright background colors
-    [bg_bright_black]=100
-    [bg_bright_red]=101
-    [bg_bright_green]=102
-    [bg_bright_yellow]=103
-    [bg_bright_blue]=104
-    [bg_bright_magenta]=105
-    [bg_bright_cyan]=106
-    [bg_bright_white]=107
-    [bg_bright_default]=109
+    [text_reset_color]=39
+    [text_reset_fg_color]=39
+    [text_reset_bg_color]=49
+    [text_overline]=53
+    [text_reset_overline]=55
+    [text_decoration_color]=58
+    [text_decoration_default_color]=59
+    [text_reset_decoration_color]=59
   )
 
+  for color in "${!ansi_style_colors[@]}"; do
+    ansi_style_sgr_commands["fg_${color}"]=$(("${ansi_style_colors[$color]}" + 30))
+    ansi_style_sgr_commands["bg_${color}"]=$(("${ansi_style_colors[$color]}" + 40))
+    ansi_style_sgr_commands["fg_bright_${color}"]=$(("${ansi_style_colors[$color]}" + 90))
+    ansi_style_sgr_commands["bg_bright_${color}"]=$(("${ansi_style_colors[$color]}" + 100))
+  done
+
   declare -g -A ansi_style_sgr_extended_commands=(
-    [extended_color]=1
+    [text_extended_color]=1
     [fg_extended_color]=1
     [bg_extended_color]=1
-    [decoration_color]=1
+    [text_decoration_color]=1
   )
 
   ansi::style::define_commands() {
@@ -143,6 +99,22 @@ ansi::style::__define_constants() {
     for command in "${!ansi_style_sgr_commands[@]}"; do
       if [ -v ansi_style_sgr_extended_commands["$command"] ]; then continue; fi
       echo "${prefix}${command^^}='\e[${ansi_style_sgr_commands[$command]}m'"
+    done
+  }
+
+  ansi::style::alias_simple_command_names() {
+    local prefix="${1:-}"
+    prefix="${prefix^^}"
+
+    for color in "${!ansi_style_colors[@]}"; do
+      echo "${prefix}${color^^}=\"\${${prefix}FG_${color^^}:-}\""
+      echo "${prefix}BRIGHT_${color^^}=\"\${${prefix}FG_BRIGHT_${color^^}:-}\""
+    done
+
+    for name in "${!ansi_style_sgr_commands[@]}"; do
+      if ! [[ "$name" =~ ^text_ ]]; then continue; fi
+      local short_name="${name#text_}"
+      echo "${prefix}${short_name^^}=\"\${${prefix}${name^^}:-}\""
     done
   }
 
@@ -158,6 +130,8 @@ ansi::style::__define_constants() {
     for arg in "$@"; do
       if [ -v ansi_style_sgr_commands["$arg"] ]; then
         string+="${ansi_style_sgr_commands["$arg"]};"
+      elif [[ -v ansi_style_sgr_commands["text_${arg}"] ]]; then
+        string+="${ansi_style_sgr_commands["text_${arg}"]};"
       elif [[ "$arg" =~ ^[0-9] ]]; then
         string+="$arg;"
       else
@@ -165,17 +139,7 @@ ansi::style::__define_constants() {
         if [[ "$arg" =~ $regex ]]; then
           string+="${BASH_REMATCH[2]%;};"
         else
-          local result=""
-          for (( i=0; i<${#arg}; ++i )); do
-            local char="${arg:$i:1}"
-            local code="$(printf '%02x ' "$char")"
-            if [[ $code -lt 32 ]]; then
-              result+="\\x${code}"
-            else
-              result+="$char"
-            fi
-          done
-          echo "Error: Invalid command (${#arg} characters): '$result'"
+          echo "Error: Invalid command (${#arg} characters): ${arg@Q}"
           exit 1
         fi
       fi
@@ -236,7 +200,18 @@ ansi::style::__define_constants() {
 ansi::style::__define_constants
 unset -f ansi::style::__define_constants
 
-if [ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ] && [ -z "${ANSI_NO_DEFAULT_STYLE_COMMANDS:-}" ]; then eval "$(ansi::style::define_commands)"; fi
+# if [ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ] && [ -z "${ANSI_NO_DEFAULT_STYLE_COMMANDS:-}" ]; then
+#   eval "$(ansi::style::define_commands)"
+# fi
+
+ansi_style_simple_command_names=""
+if [ -z "${ANSI_STYLE_NO_SIMPLE_NAMES:-}" ]; then
+  ansi_style_simple_command_names="$(ansi::style::alias_simple_command_names)"
+fi
+eval "$(printf '%s\n%s\n' \
+  "$(ansi::style::define_commands)" \
+  "${ansi_style_simple_command_names}")"
+unset ansi_style_simple_command_names
 
 ansi::color::rgb() {
   local r="$1"
