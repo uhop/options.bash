@@ -35,6 +35,10 @@ ansi::tput::__define_constants() {
     reset
   )
   declare -g -A ansi_tput_controls=(
+    # default colors
+    [fg_default]='setaf 9'
+    [bg_default]='setab 9'
+
     # turn on_styles
     [text_bold]='bold'
     [text_dim]='dim'
@@ -199,7 +203,7 @@ if [ -z "${ANSI_TPUT_NO_SIMPLE_NAMES:-}" ]; then
   ansi_tput_simple_color_names="$(ansi::tput::alias_simple_color_names)"
   ansi_tput_simple_style_names="$(ansi::tput::alias_simple_style_names)"
 fi
-eval "$(printf '%s\n%s\n%s\n%s\n%s\n' \
+eval "$(printf '%s\n%s\n%s\n%s\n' \
   "$(ansi::tput::define_colors)" \
   "${ansi_tput_simple_color_names}" \
   "$(ansi::tput::define_controls)" \
