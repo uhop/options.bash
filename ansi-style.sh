@@ -39,39 +39,39 @@ ansi::style::__define_constants() {
   )
   declare -g -A ansi_style_sgr_commands=(
     # commands
-    [text_reset_all]='\e[0m'
-    [text_bold]='\e[1m'
-    [text_dim]='\e[2m'
-    [text_italic]='\e[3m'
-    [text_underline]='\e[4m'
-    [text_blink]='\e[5m'
-    [text_rapid_blink]='\e[6m'
-    [text_reverse]='\e[7m'
-    [text_hidden]='\e[8m'
-    [text_strike_through]='\e[9m'
-    [text_default_font]='\e[10m'
-    [text_reset_bold]='\e[22m'
-    [text_reset_dim]='\e[22m'
-    [text_reset_italic]='\e[23m'
-    [text_reset_underline]='\e[24m'
-    [text_reset_blink]='\e[25m'
-    [text_reset_rapid_blink]='\e[25m'
-    [text_reset_reverse]='\e[27m'
-    [text_reset_hidden]='\e[28m'
-    [text_reset_strike_through]='\e[29m'
-    [text_curly_underline]='\e[4:3m'
-    [text_reset_curly_underline]='\e[24m'
-    [text_double_underline]='\e[21m'
-    [text_reset_double_underline]='\e[24m'
-    [fg_default]='\e[39m'
-    [bg_default]='\e[49m'
-    [text_reset_color]='\e[39m'
-    [text_reset_fg_color]='\e[39m'
-    [text_reset_bg_color]='\e[49m'
-    [text_overline]='\e[53m'
-    [text_reset_overline]='\e[55m'
-    [text_decoration_default]='\e[59m'
-    [text_reset_decoration_color]='\e[59m'
+    [text_reset_all]=$'\e[0m'
+    [text_bold]=$'\e[1m'
+    [text_dim]=$'\e[2m'
+    [text_italic]=$'\e[3m'
+    [text_underline]=$'\e[4m'
+    [text_blink]=$'\e[5m'
+    [text_rapid_blink]=$'\e[6m'
+    [text_reverse]=$'\e[7m'
+    [text_hidden]=$'\e[8m'
+    [text_strike_through]=$'\e[9m'
+    [text_default_font]=$'\e[10m'
+    [text_reset_bold]=$'\e[22m'
+    [text_reset_dim]=$'\e[22m'
+    [text_reset_italic]=$'\e[23m'
+    [text_reset_underline]=$'\e[24m'
+    [text_reset_blink]=$'\e[25m'
+    [text_reset_rapid_blink]=$'\e[25m'
+    [text_reset_reverse]=$'\e[27m'
+    [text_reset_hidden]=$'\e[28m'
+    [text_reset_strike_through]=$'\e[29m'
+    [text_curly_underline]=$'\e[4:3m'
+    [text_reset_curly_underline]=$'\e[24m'
+    [text_double_underline]=$'\e[21m'
+    [text_reset_double_underline]=$'\e[24m'
+    [fg_default]=$'\e[39m'
+    [bg_default]=$'\e[49m'
+    [text_reset_color]=$'\e[39m'
+    [text_reset_fg_color]=$'\e[39m'
+    [text_reset_bg_color]=$'\e[49m'
+    [text_overline]=$'\e[53m'
+    [text_reset_overline]=$'\e[55m'
+    [text_decoration_default]=$'\e[59m'
+    [text_reset_decoration_color]=$'\e[59m'
   )
 
   for color in "${!ansi_style_colors[@]}"; do
@@ -121,12 +121,11 @@ ansi::style::__define_constants() {
 
   ansi::extract_sgr_commands() {
     local command="$1"
-    local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
-    if [[ "$command" =~ $regex ]]; then
+    if [[ "$command" =~ ^($'\e'|\e|\\e|\\033|\\x1B|\\x1b)\[([^m]+)m$ ]]; then
       echo "${BASH_REMATCH[2]%;}"
       return 0
     fi
-    echo "Error: Invalid command (${#command} characters): '$command'"
+    echo "Error: Invalid command: ${command@Q}" >&2
     return 1
   }
 
