@@ -39,57 +39,52 @@ ansi::style::__define_constants() {
   )
   declare -g -A ansi_style_sgr_commands=(
     # commands
-    [text_reset_all]=0
-    [text_bold]=1
-    [text_dim]=2
-    [text_italic]=3
-    [text_underline]=4
-    [text_blink]=5
-    [text_rapid_blink]=6
-    [text_reverse]=7
-    [text_hidden]=8
-    [text_strike_through]=9
-    [text_default_font]=10
-    [text_reset_bold]=22
-    [text_reset_dim]=22
-    [text_reset_italic]=23
-    [text_reset_underline]=24
-    [text_reset_blink]=25
-    [text_reset_rapid_blink]=25
-    [text_reset_reverse]=27
-    [text_reset_hidden]=28
-    [text_reset_strike_through]=29
-    [text_curly_underline]='4:3'
-    [text_reset_curly_underline]=24
-    [text_double_underline]=21
-    [text_reset_double_underline]=24
-    [text_extended_color]=38
-    [fg_extended_color]=38
-    [bg_extended_color]=48
-    [fg_default]=39
-    [bg_default]=49
-    [text_reset_color]=39
-    [text_reset_fg_color]=39
-    [text_reset_bg_color]=49
-    [text_overline]=53
-    [text_reset_overline]=55
-    [text_decoration_color]=58
-    [text_decoration_default_color]=59
-    [text_reset_decoration_color]=59
+    [text_reset_all]='\e[0m'
+    [text_bold]='\e[1m'
+    [text_dim]='\e[2m'
+    [text_italic]='\e[3m'
+    [text_underline]='\e[4m'
+    [text_blink]='\e[5m'
+    [text_rapid_blink]='\e[6m'
+    [text_reverse]='\e[7m'
+    [text_hidden]='\e[8m'
+    [text_strike_through]='\e[9m'
+    [text_default_font]='\e[10m'
+    [text_reset_bold]='\e[22m'
+    [text_reset_dim]='\e[22m'
+    [text_reset_italic]='\e[23m'
+    [text_reset_underline]='\e[24m'
+    [text_reset_blink]='\e[25m'
+    [text_reset_rapid_blink]='\e[25m'
+    [text_reset_reverse]='\e[27m'
+    [text_reset_hidden]='\e[28m'
+    [text_reset_strike_through]='\e[29m'
+    [text_curly_underline]='\e[4:3m'
+    [text_reset_curly_underline]='\e[24m'
+    [text_double_underline]='\e[21m'
+    [text_reset_double_underline]='\e[24m'
+    [fg_default]='\e[39m'
+    [bg_default]='\e[49m'
+    [text_reset_color]='\e[39m'
+    [text_reset_fg_color]='\e[39m'
+    [text_reset_bg_color]='\e[49m'
+    [text_overline]='\e[53m'
+    [text_reset_overline]='\e[55m'
+    [text_decoration_default]='\e[59m'
+    [text_reset_decoration_color]='\e[59m'
   )
 
   for color in "${!ansi_style_colors[@]}"; do
-    ansi_style_sgr_commands["fg_${color}"]=$(("${ansi_style_colors[$color]}" + 30))
-    ansi_style_sgr_commands["bg_${color}"]=$(("${ansi_style_colors[$color]}" + 40))
-    ansi_style_sgr_commands["fg_bright_${color}"]=$(("${ansi_style_colors[$color]}" + 90))
-    ansi_style_sgr_commands["bg_bright_${color}"]=$(("${ansi_style_colors[$color]}" + 100))
+    ansi_style_sgr_commands["fg_${color}"]="\e[$((${ansi_style_colors[$color]} + 30))m"
+    ansi_style_sgr_commands["bg_${color}"]="\e[$((${ansi_style_colors[$color]} + 40))m"
+    ansi_style_sgr_commands["fg_bright_${color}"]="\e[$((${ansi_style_colors[$color]} + 90))m"
+    ansi_style_sgr_commands["bg_bright_${color}"]="\e[$((${ansi_style_colors[$color]} + 100))m"
   done
 
-  declare -g -A ansi_style_sgr_extended_commands=(
-    [text_extended_color]=1
-    [fg_extended_color]=1
-    [bg_extended_color]=1
-    [text_decoration_color]=1
+  declare -g -A ansi_style_sgr_extended_colors=(
+    [fg]=38
+    [bg]=48
+    [decoration]=58
   )
 
   ansi::style::define_commands() {
@@ -97,8 +92,7 @@ ansi::style::__define_constants() {
     prefix="${prefix^^}"
 
     for command in "${!ansi_style_sgr_commands[@]}"; do
-      if [ -v ansi_style_sgr_extended_commands["$command"] ]; then continue; fi
-      echo "${prefix}${command^^}='\e[${ansi_style_sgr_commands[$command]}m'"
+      echo "${prefix}${command^^}='${ansi_style_sgr_commands[$command]}'"
     done
   }
 
@@ -121,30 +115,35 @@ ansi::style::__define_constants() {
   ansi::style::get() {
     local name="$1"
     if [ -v ansi_style_sgr_commands["$name"] ]; then
-      echo "\e[${ansi_style_sgr_commands["$name"]}m"
+      echo "${ansi_style_sgr_commands["$name"]}"
     fi
   }
 
+  ansi::extract_sgr_commands() {
+    local command="$1"
+    local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
+    if [[ "$command" =~ $regex ]]; then
+      echo "${BASH_REMATCH[2]%;}"
+      return 0
+    fi
+    echo "Error: Invalid command (${#command} characters): '$command'"
+    return 1
+  }
+
   ansi::style::make() {
-    local string="\e["
+    local string=""
     for arg in "$@"; do
       if [ -v ansi_style_sgr_commands["$arg"] ]; then
-        string+="${ansi_style_sgr_commands["$arg"]};"
+        string+="$(ansi::extract_sgr_commands ${ansi_style_sgr_commands["$arg"]});"
       elif [[ -v ansi_style_sgr_commands["text_${arg}"] ]]; then
-        string+="${ansi_style_sgr_commands["text_${arg}"]};"
+        string+="$(ansi::extract_sgr_commands ${ansi_style_sgr_commands["text_$arg"]});"
       elif [[ "$arg" =~ ^[0-9] ]]; then
         string+="$arg;"
       else
-        local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
-        if [[ "$arg" =~ $regex ]]; then
-          string+="${BASH_REMATCH[2]%;};"
-        else
-          echo "Error: Invalid command (${#arg} characters): ${arg@Q}"
-          exit 1
-        fi
+        string+="$(ansi::extract_sgr_commands "$arg");"
       fi
     done
-    echo "${string%;}m"
+    echo "\e[${string%;}m"
   }
 
   ansi::fg_color() {
@@ -170,10 +169,10 @@ ansi::style::__define_constants() {
     echo "5;${1}"
   }
   ansi::fg_c256() {
-    echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::raw_c256 "$@")m"
   }
   ansi::bg_c256() {
-    echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::raw_c256 "$@")m"
   }
 
   ansi::raw_true() {
@@ -184,28 +183,24 @@ ansi::style::__define_constants() {
     echo "2;${r};${g};${b}"
   }
   ansi::fg_true() {
-    echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::raw_true "$@")m"
   }
   ansi::bg_true() {
-    echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::raw_true "$@")m"
   }
 
   ansi::decoration_c256() {
-    echo "\e[${ansi_style_sgr_commands["decoration_color"]};$(ansi::raw_c256 "$@")m"
+    echo "\e[${ansi_style_sgr_extended_colors["decoration"]};$(ansi::raw_c256 "$@")m"
   }
   ansi::decoration_true() {
-    echo "\e[${ansi_style_sgr_commands["decoration_color"]};$(ansi::raw_true "$@")m"
+    echo "\e[${ansi_style_sgr_extended_colors["decoration"]};$(ansi::raw_true "$@")m"
   }
 }
 ansi::style::__define_constants
 unset -f ansi::style::__define_constants
 
-# if [ -z "${ANSI_NO_DEFAULT_COMMANDS:-}" ] && [ -z "${ANSI_NO_DEFAULT_STYLE_COMMANDS:-}" ]; then
-#   eval "$(ansi::style::define_commands)"
-# fi
-
 ansi_style_simple_command_names=""
-if [ -z "${ANSI_STYLE_NO_SIMPLE_NAMES:-}" ]; then
+if [ -z "${ANSI_NO_SIMPLE_COMMAND_NAMES:-}" ]; then
   ansi_style_simple_command_names="$(ansi::style::alias_simple_command_names)"
 fi
 eval "$(printf '%s\n%s\n' \
@@ -243,51 +238,51 @@ ansi::c256::raw_grey() {
 }
 
 ansi::c256::fg() {
-  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::raw_c256 "$@")m"
 }
 
 ansi::c256::fg_std() {
-  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_c256 "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::raw_c256 "$@")m"
 }
 
 ansi::c256::fg_std_bright() {
-  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::c256::raw_std_bright "$@")m"
 }
 
 ansi::c256::fg_true() {
-  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::c256::raw_true "$@")m"
 }
 
 ansi::c256::fg_grey() {
-  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::c256::raw_grey "$@")m"
 }
 
 ansi::c256::bg() {
-  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::raw_std "$@")m"
 }
 
 ansi::c256::bg_std() {
-  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_std "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::raw_std "$@")m"
 }
 
 ansi::c256::bg_std_bright() {
-  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_std_bright "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::c256::raw_std_bright "$@")m"
 }
 
 ansi::c256::bg_true() {
-  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::c256::raw_true "$@")m"
 }
 
 ansi::c256::bg_grey() {
-  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::c256::raw_grey "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::c256::raw_grey "$@")m"
 }
 
 ansi::true::fg() {
-  echo "\e[${ansi_style_sgr_commands["fg_extended_color"]};$(ansi::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["fg"]};$(ansi::raw_true "$@")m"
 }
 
 ansi::true::bg() {
-  echo "\e[${ansi_style_sgr_commands["bg_extended_color"]};$(ansi::raw_true "$@")m"
+  echo "\e[${ansi_style_sgr_extended_colors["bg"]};$(ansi::raw_true "$@")m"
 }
 
 ansi::strip() {
@@ -299,17 +294,6 @@ ansi::length() {
   local string="$1"
   local string_clean=$(ansi::strip "$string")
   echo "${#string_clean}"
-}
-
-ansi::extract_sgr_commands() {
-  local command="$1"
-  local regex='^(\e|\\e|\\033|\\x1B|\\x1b)\[([0-9\;:]+)m$'
-  if [[ "$command" =~ $regex ]]; then
-    echo "${BASH_REMATCH[1]%;}"
-    return 0
-  fi
-  echo "Error: Invalid command (${#command} characters): '$command'"
-  return 1
 }
 
 ansi::err() {
