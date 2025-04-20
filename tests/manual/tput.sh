@@ -8,7 +8,6 @@ while true; do
   if [[ $# -eq 0 ]]; then break; fi
   arg="$1"
   shift
-  echo "Arg: $arg"
   names+=("$arg")
   input+="${arg}\nlongname\n"
 done
