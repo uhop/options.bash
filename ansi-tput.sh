@@ -193,23 +193,24 @@ ansi::tput::__define_constants() {
 
     echo "${prefix}RESET_ALL=\"\${${prefix}TEXT_RESET_ALL:-}\""
   }
+
+  ansi::style::alias_simple_command_names() {
+    echo "$(ansi::tput::alias_simple_color_names)"
+    echo "$(ansi::tput::alias_simple_style_names)"
+  }
 }
 ansi::tput::__define_constants
 unset -f ansi::tput::__define_constants
 
-ansi_tput_simple_color_names=""
-ansi_tput_simple_style_names=""
-if [ -z "${ANSI_TPUT_NO_SIMPLE_NAMES:-}" ]; then
-  ansi_tput_simple_color_names="$(ansi::tput::alias_simple_color_names)"
-  ansi_tput_simple_style_names="$(ansi::tput::alias_simple_style_names)"
+ansi_tput_simple_names=""
+if [ -z "${ANSI_NO_SIMPLE_COMMAND_NAMES:-}" ]; then
+  ansi_tput_simple_names="$(ansi::style::alias_simple_command_names)"
 fi
-eval "$(printf '%s\n%s\n%s\n%s\n' \
+eval "$(printf '%s\n%s\n%s\n' \
   "$(ansi::tput::define_colors)" \
-  "${ansi_tput_simple_color_names}" \
   "$(ansi::tput::define_controls)" \
-  "${ansi_tput_simple_style_names}")"
-unset ansi_tput_simple_color_names
-unset ansi_tput_simple_style_names
+  "${ansi_tput_simple_names}")"
+unset ansi_tput_simple_names
 
 fg_color() { tput setaf "$1" || true; }
 bg_color() { tput setab "$1" || true; }

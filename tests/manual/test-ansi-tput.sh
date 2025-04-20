@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+# ANSI_NO_SIMPLE_COMMAND_NAMES=1
 source "$(dirname "$(realpath "$0")")/../../ansi-tput.sh"
+# eval "$(ansi::style::alias_simple_command_names)"
 
 name="$(terminal_name)"
 
