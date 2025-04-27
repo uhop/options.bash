@@ -18,16 +18,16 @@ _load_dependencies() {
 _load_dependencies
 unset _load_dependencies
 
-args_help_bold="$(ansi::style::get bold)"
-args_help_italic="$(ansi::style::get italic)"
-args_help_reset="$(ansi::style::get reset_all)"
+args_help_bold="$(ansi::get bold)"
+args_help_italic="$(ansi::get italic)"
+args_help_reset="$(ansi::get reset_all)"
 
-TEMP_CYAN="$(ansi::style::get cyan)"
+TEMP_CYAN="$(ansi::get cyan)"
 
-args_help_section="${args_help_bold}$(ansi::style::get green)"
+args_help_section="${args_help_bold}$(ansi::get green)"
 args_help_program="${args_help_bold}${TEMP_CYAN}"
 args_help_version="${TEMP_CYAN}"
-args_help_command="$(ansi::style::get magenta)"
+args_help_command="$(ansi::get magenta)"
 args_help_command_arg="${args_help_italic}${args_help_command}"
 args_help_option="${TEMP_CYAN}"
 args_help_option_arg="${args_help_italic}${args_help_option}"
