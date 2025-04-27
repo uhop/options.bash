@@ -212,6 +212,28 @@ ansi::alias_simple_command_names() {
   echo "$(ansi::tput::alias_simple_style_names "$@")"
 }
 
+ansi::get() {
+  local name="$1"
+
+  local var_name="${name^^}"
+  if [[ -v "${var_name}" ]]; then
+    echo "${!var_name}"
+    return 0
+  fi
+
+  var_name="TEXT_${name^^}"
+  if [[ -v "${var_name}" ]]; then
+    echo "${!var_name}"
+    return 0
+  fi
+
+  var_name="FG_${name^^}"
+  if [[ -v "${var_name}" ]]; then
+    echo "${!var_name}"
+    return 0
+  fi
+}
+
 ansi::fg() { tput setaf "$1" || true; }
 ansi::bg() { tput setab "$1" || true; }
 

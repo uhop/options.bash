@@ -53,6 +53,21 @@ ansi::extract_sgr_commands() {
   return 1
 }
 
+ansi::make() {
+  local string=""
+  for arg in "$@"; do
+    local code="$(ansi::get "$arg")"
+    if [ -n "$code" ]; then
+      string+="$code"
+    elif [[ "$arg" =~ ^[0-9] ]]; then
+      string+="\e[${arg%;}m"
+    else
+      string+="$arg"
+    fi
+  done
+  echo "${string}"
+}
+
 ansi::strip() {
   local string="$1"
   sed 's/\(\x1B\|\\e\|\\x1B\|\\033\)\[[0-9;:]*[a-z]//gi' <<< "$string"

@@ -10,3 +10,8 @@ echo "${RED}Red${FG_BG_RESET}"
 echo "${GREEN}Green${FG_BG_RESET}"
 echo "${BLUE}Blue${FG_BG_RESET}"
 echo "${BOLD}${ITALIC}$(ansi::fg::true 0 128 64)$(ansi::bg::true 255 255 128) ${name} ${RESET_ALL}"
+
+ansi::out "$(ansi::make \
+  bold italic \
+  "$(ansi::fg::true 0 128 64)" \
+  "$(ansi::bg::true 255 255 128)") Bold $(ansi::make reset_all)"

@@ -116,7 +116,7 @@ ansi::style::alias_simple_command_names() {
   done
 }
 
-ansi::style::get() {
+ansi::get() {
   local name="$1"
   if [ -v ansi_style_sgr_commands["$name"] ]; then
     echo "${ansi_style_sgr_commands["$name"]}"
@@ -130,7 +130,7 @@ ansi::style::get() {
 ansi::style::make() {
   local string=""
   for arg in "$@"; do
-    local code="$(ansi::style::get "$arg")"
+    local code="$(ansi::get "$arg")"
     if [ -n "$code" ]; then
       string+="$(ansi::extract_sgr_commands "$code");"
     elif [[ "$arg" =~ ^[0-9] ]]; then
