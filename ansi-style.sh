@@ -130,10 +130,9 @@ ansi::style::get() {
 ansi::style::make() {
   local string=""
   for arg in "$@"; do
-    if [ -v ansi_style_sgr_commands["$arg"] ]; then
-      string+="$(ansi::extract_sgr_commands ${ansi_style_sgr_commands["$arg"]});"
-    elif [[ -v ansi_style_sgr_commands["text_${arg}"] ]]; then
-      string+="$(ansi::extract_sgr_commands ${ansi_style_sgr_commands["text_$arg"]});"
+    local code="$(ansi::style::get "$arg")"
+    if [ -n "$code" ]; then
+      string+="$(ansi::extract_sgr_commands "$code");"
     elif [[ "$arg" =~ ^[0-9] ]]; then
       string+="$arg;"
     else
