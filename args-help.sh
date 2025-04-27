@@ -9,8 +9,7 @@ _load_dependencies() {
   script_dir="$(dirname "$(realpath "$script_dir")")"
   local previous_ANSI_NO_DEFAULT_COMMANDS="${ANSI_NO_DEFAULT_COMMANDS:-}"
   ANSI_NO_DEFAULT_COMMANDS=1
-  source "${script_dir}/ansi-style.sh"
-  source "${script_dir}/ansi-control.sh"
+  source "${script_dir}/ansi.sh"
   source "${script_dir}/string.sh"
   source "${script_dir}/box.sh"
   ANSI_NO_DEFAULT_COMMANDS="$previous_ANSI_NO_DEFAULT_COMMANDS"

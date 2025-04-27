@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if type ansi::alias_simple_command_names > /dev/null 2>&1; then return; fi
+if type ansi::out > /dev/null 2>&1; then return; fi
 
 set -o errexit -o pipefail -o nounset -o noclobber
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 # ANSI_NO_SIMPLE_COMMAND_NAMES=1
-source "$(dirname "$(realpath "$0")")/../../ansi-style.sh"
-source "$(dirname "$(realpath "$0")")/../../ansi-control.sh"
-# eval "$(ansi::style::alias_simple_command_names)"
+source "$(dirname "$(realpath "$0")")/../../ansi.sh"
+# eval "$(ansi::alias_simple_command_names)"
 
 ansi::out "${RED}Red${RESET_ALL}"
 ansi::out "${GREEN}Green${RESET_ALL}"

@@ -38,7 +38,7 @@ declare -g -A ansi_style_colors=(
   [white]=7
 )
 declare -g -A ansi_style_sgr_commands=(
-  # commands
+  # text/style commands
   [text_reset_all]=$'\e[0m'
   [text_bold]=$'\e[1m'
   [text_dim]=$'\e[2m'
@@ -72,9 +72,60 @@ declare -g -A ansi_style_sgr_commands=(
   [text_reset_overline]=$'\e[55m'
   [text_decoration_default]=$'\e[59m'
   [text_reset_decoration_color]=$'\e[59m'
+
+  # cursor movement
+  [cursor_up1]='\e[A'
+  [cursor_down1]='\e[B'
+  [cursor_right1]='\e[C'
+  [cursor_left1]='\e[D'
+  [cursor_next_line1]='\e[E'
+  [cursor_prev_line1]='\e[F'
+  [cursor_column1]='\e[G'
+  [cursor_home]='\e[H'
+  [cursor_forward1]='\e[C'
+  [cursor_backward1]='\e[D'
+
+  # cursor management
+  [cursor_save]='\e[s'
+  [cursor_restore]='\e[u'
+  [cursor_get_pos]='\e[6n'
+  [cursor_show]='\e[?25h'
+  [cursor_hide]='\e[?25l'
+
+  # clear screen
+  [clear_eos]='\e[J'
+  [clear_bos]='\e[1J'
+  [clear_screen]='\e[2J'
+  [clear_screen_all]='\e[3J'
+  [clear_eol]='\e[K'
+  [clear_bol]='\e[1K'
+  [clear_line]='\e[2K'
+
+  # screen management
+  [screen_scroll_up1]='\e[S'
+  [screen_scroll_down1]='\e[T'
+  [screen_save]='\e[?47h'
+  [screen_restore]='\e[?47l'
+  [screen_alt_on]='\e[?1049h'
+  [screen_alt_off]='\e[?1049l'
+  [screen_report_focus_on]='\e[?1004h'
+  [screen_report_focus_off]='\e[?1004l'
+
+  # csi miscellaneous
+  [wrapping_on]='\e[=7h'
+  [wrapping_off]='\e[=7l'
+  [bracketed_paste_on]='\e[=2004h'
+  [bracketed_paste_off]='\e[=2004l'
+
+  # miscellaneous
+  [esc]='\e'
+  [cursor_delete]='\177'
+  [cursor_go_up1]='\033M'
+  [cursor_save]='\0337'
+  [cursor_restore]='\0338'
 )
 
-ansi::style::populate_colors() {
+ansi::sgr::populate_colors() {
   for color in "${!ansi_style_colors[@]}"; do
     ansi_style_sgr_commands["fg_${color}"]="\e[$((${ansi_style_colors[$color]} + 30))m"
     ansi_style_sgr_commands["bg_${color}"]="\e[$((${ansi_style_colors[$color]} + 40))m"
@@ -82,8 +133,8 @@ ansi::style::populate_colors() {
     ansi_style_sgr_commands["bg_bright_${color}"]="\e[$((${ansi_style_colors[$color]} + 100))m"
   done
 }
-ansi::style::populate_colors
-unset -f ansi::style::populate_colors
+ansi::sgr::populate_colors
+unset -f ansi::sgr::populate_colors
 
 declare -g -A ansi_style_sgr_extended_colors=(
   [fg]=38
@@ -91,7 +142,7 @@ declare -g -A ansi_style_sgr_extended_colors=(
   [decoration]=58
 )
 
-ansi::style::define_commands() {
+ansi::sgr::define_commands() {
   local prefix="${1:-}"
   prefix="${prefix^^}"
 
@@ -100,7 +151,7 @@ ansi::style::define_commands() {
   done
 }
 
-ansi::style::alias_simple_command_names() {
+ansi::alias_simple_command_names() {
   local prefix="${1:-}"
   prefix="${prefix^^}"
 
@@ -127,7 +178,7 @@ ansi::get() {
   fi
 }
 
-ansi::style::make() {
+ansi::sgr::make() {
   local string=""
   for arg in "$@"; do
     local code="$(ansi::get "$arg")"
@@ -193,11 +244,36 @@ ansi::decoration_true() {
   echo "\e[${ansi_style_sgr_extended_colors["decoration"]};2;${r};${g};${b}m"
 }
 
+ansi::cursor::pos() { echo "\e[${1:-};${2:-}H"; }
+ansi::cursor::left() { echo "\e[${1:-1}D"; }
+ansi::cursor::right() { echo "\e[${1:-1}C"; }
+ansi::cursor::up() { echo "\e[${1:-1}A"; }
+ansi::cursor::down() { echo "\e[${1:-1}B"; }
+ansi::cursor::next_line() { echo "\e[${1:-1}E"; }
+ansi::cursor::prev_line() { echo "\e[${1:-1}F"; }
+ansi::cursor::column() { echo "\e[${1:-1}G"; }
+ansi::cursor::forward() { echo "\e[${1:-1}C"; }
+ansi::cursor::backward() { echo "\e[${1:-1}D"; }
+ansi::screen::scroll_up() { echo "\e[${1:-1}S"; }
+ansi::screen::scroll_down() { echo "\e[${1:-1}T"; }
+
+ansi::cursor::pos_alt() {
+  # HVP
+  echo "\e[${1:-};${2:-}f"
+}
+
+ansi::hyperlink() {
+  # OSC 8: https://github.com/Alhadis/OSC8-Adoption
+  local url="$1"
+  local text="${2:-$1}"
+  echo "\e]8;;${url}\e\\${text}\e]8;;\e\\"
+}
+
 ansi_style_simple_command_names=""
 if [ -z "${ANSI_NO_SIMPLE_COMMAND_NAMES:-}" ]; then
-  ansi_style_simple_command_names="$(ansi::style::alias_simple_command_names)"
+  ansi_style_simple_command_names="$(ansi::alias_simple_command_names)"
 fi
 eval "$(printf '%s\n%s\n' \
-  "$(ansi::style::define_commands)" \
+  "$(ansi::sgr::define_commands)" \
   "${ansi_style_simple_command_names}")"
 unset ansi_style_simple_command_names
