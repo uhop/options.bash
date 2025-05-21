@@ -2,7 +2,7 @@
 
 if type ansi::out > /dev/null 2>&1; then return; fi
 
-set -o errexit -o pipefail -o nounset -o noclobber
+set -euo pipefail
 
 ansi::color::rgb() {
   local r="$1"

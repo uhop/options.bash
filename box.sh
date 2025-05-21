@@ -2,7 +2,7 @@
 
 if type box::make > /dev/null 2>&1; then return; fi
 
-set -o errexit -o pipefail -o nounset -o noclobber
+set -euo pipefail
 
 _load_dependencies() {
   local script_dir=${BASH_SOURCE:-$0}

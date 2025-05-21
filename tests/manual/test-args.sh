@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit -o pipefail -o nounset -o noclobber
+set -euo pipefail
 
 script_dir="$(dirname "$(readlink -f "$0")")"
 script_name=$(basename "$0")

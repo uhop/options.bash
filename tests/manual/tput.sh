@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit -o pipefail -o nounset -o noclobber
+set -euo pipefail
 
 names=()
 input=''
