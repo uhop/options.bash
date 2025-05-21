@@ -135,8 +135,8 @@ args::parse() {
   parsed=$(getopt -o "$short_options" -l "$long_options" -n "${args_program_name}" -- "$@") || status=$?
 
   if [[ $status -ne 0 ]]; then
-    if type -t "args::error::getops" &> /dev/null; then
-      args::error::getops
+    if type -t "args::error::getopt" &> /dev/null; then
+      args::error::getopt
     else
       echo "Error: getopt cannot parse options"
       args::try_help
