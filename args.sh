@@ -132,16 +132,16 @@ args::parse() {
 
   local escaped_args=()
   for arg in "$@"; do
-    if [[ "$arg" == -* ]]; then
-      escaped_args+=("$arg")
+    if [[ "${arg}" == -* ]]; then
+      escaped_args+=("${arg}")
     else
-      escaped_args+=($(printf '%q' "${arg}"))
+      escaped_args+=("$(printf '%q' "${arg}")")
     fi
   done
 
   local parsed
   local status=0
-  parsed=$(getopt -o "$short_options" -l "$long_options" -n "${args_program_name}" -- "${escaped_args[@]}") || status=$?
+  parsed=$(getopt -o "${short_options}" -l "${long_options}" -n "${args_program_name}" -- "${escaped_args[@]}") || status=$?
 
   if [[ $status -ne 0 ]]; then
     if type -t "args::error::getopt" &> /dev/null; then
@@ -154,31 +154,29 @@ args::parse() {
   fi
 
   eval set -- "$parsed"
-  if [[ $# -gt 0 ]]; then
-    while true; do
-      if [[ "$1" == "--" ]]; then
-        shift
-        break
-      fi
-      local option="${args_aliases["$1"]}"
-      if [[ -z "$option" ]]; then
-        if type -t "args::error::unknown_option" &> /dev/null; then
-          args::error::unknown_option "$1"
-        else
-          echo "Error: Unknown option '$1'"
-          args::try_help
-        fi
-        exit 1
-      fi
+  while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "--" ]]; then
       shift
-      if [[ -n "${args_option_has_arg[$option]}" ]]; then
-        args_options["$option"]="$1"
-        shift
+      break
+    fi
+    local option="${args_aliases["$1"]}"
+    if [[ -z "$option" ]]; then
+      if type -t "args::error::unknown_option" &> /dev/null; then
+        args::error::unknown_option "$1"
       else
-        args_options["$option"]=""
+        echo "Error: Unknown option '$1'"
+        args::try_help
       fi
-    done
-  fi
+      exit 1
+    fi
+    shift
+    if [[ -n "${args_option_has_arg[$option]}" ]]; then
+      args_options["$option"]="$1"
+      shift
+    else
+      args_options["$option"]=""
+    fi
+  done
 
   args_cleaned="$@"
 

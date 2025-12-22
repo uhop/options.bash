@@ -31,17 +31,17 @@ args::option "-s, --short" "Sample short option"
 # args::option "--args, -, -args" "Bad short option"
 # args::option "--, -z" "Bad long option"
 
-echo "Original arguments: $@ ($#)"
+echo "Original arguments ($#): $@"
 for arg in "$@"; do
-    echo "$arg"
+    echo "  ${arg}"
 done
 
 args::parse "$@"
 eval set -- "${args_cleaned}"
 
-echo "Current arguments: $@ ($#)"
+echo "Current arguments ($#): $@"
 for arg in "$@"; do
-    echo "$arg"
+    echo "  ${arg}"
 done
 echo "Current command: ${args_command}"
 
@@ -49,6 +49,7 @@ echo "Current options:"
 for option in "${!args_options[@]}"; do
   echo "  ${option}: ${args_options[$option]}"
 done
+echo "No more options"
 
 declare -n opt=args_options
 if [[ -v opt["--option"] ]]; then
