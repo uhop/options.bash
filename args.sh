@@ -130,9 +130,18 @@ args::parse() {
     fi
   done
 
+  local escaped_args=()
+  for arg in "$@"; do
+    if [[ "$arg" == -* ]]; then
+      escaped_args+=("$arg")
+    else
+      escaped_args+=($(printf '%q' "${arg}"))
+    fi
+  done
+
   local parsed
   local status=0
-  parsed=$(getopt -o "$short_options" -l "$long_options" -n "${args_program_name}" -- "$@") || status=$?
+  parsed=$(getopt -o "$short_options" -l "$long_options" -n "${args_program_name}" -- "${escaped_args[@]}") || status=$?
 
   if [[ $status -ne 0 ]]; then
     if type -t "args::error::getopt" &> /dev/null; then
