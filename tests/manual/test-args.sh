@@ -22,7 +22,8 @@ Sample description"
 args::option "test, t" "Test command" "a b"
 
 args::option "--option" "Sample long option\nwith two lines" arg
-args::option "-o" "Sample short option" arg
+args::option "-o" "Sample short option with optional argument" arg optional
+args::option "-x" "Sample short option with required argument" arg
 args::option "-v, --version" "$(box::make_lines "Show version," "in a fancy way")"
 args::option "-h, --help" "Show help"
 args::option "--long" "Some long option"

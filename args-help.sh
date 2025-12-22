@@ -51,7 +51,11 @@ args::option::help() {
     if [[ "$option" != "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$option]}" ]; then
-      text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
+      if [[ -z "${args_option_arg_optional[$option]}" ]]; then
+        text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
+      else
+        text+=" ${args_help_option_arg}[${args_option_has_arg[$option]}]${args_help_reset}"
+      fi
     fi
     left+=("$text")
     local desc="${args_descriptions[$option]}"
@@ -64,7 +68,11 @@ args::option::help() {
     if [[ "$option" != "--"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$option]}" ]; then
-      text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
+      if [[ -z "${args_option_arg_optional[$option]}" ]]; then
+        text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
+      else
+        text+=" ${args_help_option_arg}[${args_option_has_arg[$option]}]${args_help_reset}"
+      fi
     fi
     left+=("$text")
     local desc="${args_descriptions[$option]}"
@@ -80,7 +88,11 @@ args::option::help() {
     if [[ "$command" == "-"* ]]; then continue; fi
     local text="  ${args_help_bold}${args_help_command}${args_names[$command]}${args_help_reset}"
     if [ -n "${args_option_has_arg[$command]}" ]; then
-      text+=" ${args_help_command_arg}<${args_option_has_arg[$command]}>${args_help_reset}"
+      if [[ -z "${args_option_arg_optional[$command]}" ]]; then
+        text+=" ${args_help_command_arg}<${args_option_has_arg[$command]}>${args_help_reset}"
+      else
+        text+=" ${args_help_command_arg}[${args_option_has_arg[$command]}]${args_help_reset}"
+      fi
     fi
     left+=("$text")
     local desc="${args_descriptions[$command]}"

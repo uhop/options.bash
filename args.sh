@@ -45,6 +45,7 @@ declare -a args_list
 declare -A args_names
 declare -A args_descriptions
 declare -A args_option_has_arg
+declare -A args_option_arg_optional
 declare -A args_aliases
 declare -a args_immediate_options=("-h" "--help" "-v" "--version")
 args_check_command=1
@@ -63,9 +64,11 @@ args::program() {
 }
 
 args::option() {
-  # names description has_arg
+  # names description has_arg arg_optional
   # has_arg: "" - no argument
-  # has_arg: "arg" - required argument, where "arg" is the name of the argument
+  # has_arg: "arg" - argument, where "arg" is the name of the argument
+  # arg_optional: "" - required argument
+  # arg_optional: "opt" - optional argument, where "opt" is a non-empty string
 
   local names
   IFS=', ' read -ra names <<< "$1"
@@ -73,6 +76,7 @@ args::option() {
   args_list+=("${names[0]}")
   args_descriptions["${names[0]}"]="${2:-}"
   args_option_has_arg["${names[0]}"]="${3:-}"
+  args_option_arg_optional["${names[0]}"]="${4:-}"
 
   for name in "${names[@]}"; do
     if [[ "$name" == "--"* ]]; then
@@ -123,10 +127,22 @@ args::parse() {
     if [[ "$option" == "--"* ]]; then
       if [[ -n "$long_options" ]]; then long_options+=","; fi
       long_options+="${option#--}"
-      if [[ -n "${args_option_has_arg[$command]}" ]]; then long_options+=":"; fi
+      if [[ -n "${args_option_has_arg[$command]}" ]]; then
+        if [[ -z "${args_option_arg_optional[$command]}" ]]; then
+          long_options+=":"
+        else
+          long_options+="::"
+        fi
+      fi
     elif [[ "$option" == "-"* ]]; then
       short_options+="${option#-}"
-      if [[ -n "${args_option_has_arg[$command]}" ]]; then short_options+=":"; fi
+      if [[ -n "${args_option_has_arg[$command]}" ]]; then
+        if [[ -z "${args_option_arg_optional[$command]}" ]]; then
+          short_options+=":"
+        else
+          short_options+="::"
+        fi
+      fi
     fi
   done
 
@@ -170,11 +186,17 @@ args::parse() {
       exit 1
     fi
     shift
+    args_options["$option"]=""
     if [[ -n "${args_option_has_arg[$option]}" ]]; then
-      args_options["$option"]="$1"
-      shift
-    else
-      args_options["$option"]=""
+      if [[ -z "${args_option_arg_optional[$option]}" ]]; then
+        args_options["$option"]="$1"
+        shift
+      else
+        if [[ "$1" != "-"* ]]; then
+          args_options["$option"]="$1"
+          shift
+        fi
+      fi
     fi
   done
 
