@@ -33,6 +33,42 @@ args_help_option_arg="${args_help_italic}${args_help_option}"
 
 unset TEMP_CYAN
 
+args_help_format_option() {
+  local option="$1"
+  local has_arg="$2"
+  local arg_optional="$3"
+
+  if [[ -z "$has_arg" ]]; then
+    echo "${args_help_bold}${args_help_option}${option}${args_help_reset}"
+    return
+  fi
+
+  local names
+  IFS=', ' read -ra names <<< "$1"
+
+  local text=""
+
+  for name in "${names[@]}"; do
+    if [[ -n "$text" ]]; then text+="${args_help_bold}${args_help_option}, ${args_help_reset}"; fi
+    text+="${args_help_bold}${args_help_option}${name}${args_help_reset}"
+    if [[ "$name" == "--"* ]]; then
+      if [[ -z "${arg_optional}" ]]; then
+        text+="=${args_help_option_arg}<${has_arg}>${args_help_reset}"
+      else
+        text+="${args_help_option_arg}[=${has_arg}]${args_help_reset}"
+      fi
+    elif [[ "$name" == "-"* ]]; then
+      if [[ -z "${arg_optional}" ]]; then
+        text+="${args_help_option_arg}<${has_arg}>${args_help_reset}"
+      else
+        text+="${args_help_option_arg}[${has_arg}]${args_help_reset}"
+      fi
+    fi
+  done
+
+  echo "$text"
+}
+
 args::option::help() {
   ansi::out "${args_help_program}${args_program_name}${args_help_reset} " \
     "${args_help_version}${args_program_version}${args_help_reset} " \
@@ -47,33 +83,8 @@ args::option::help() {
   local -a right=()
 
   for option in "${args_list[@]}"; do
-    if [[ "$option" == "--"* ]]; then continue; fi
     if [[ "$option" != "-"* ]]; then continue; fi
-    local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
-    if [ -n "${args_option_has_arg[$option]}" ]; then
-      if [[ -z "${args_option_arg_optional[$option]}" ]]; then
-        text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
-      else
-        text+=" ${args_help_option_arg}[${args_option_has_arg[$option]}]${args_help_reset}"
-      fi
-    fi
-    left+=("$text")
-    local desc="${args_descriptions[$option]}"
-    if [ -z "$desc" ]; then
-      desc="${args_help_italic}no description available${args_help_reset}"
-    fi
-    right+=("$desc")
-  done
-  for option in "${args_list[@]}"; do
-    if [[ "$option" != "--"* ]]; then continue; fi
-    local text="  ${args_help_bold}${args_help_option}${args_names[$option]}${args_help_reset}"
-    if [ -n "${args_option_has_arg[$option]}" ]; then
-      if [[ -z "${args_option_arg_optional[$option]}" ]]; then
-        text+=" ${args_help_option_arg}<${args_option_has_arg[$option]}>${args_help_reset}"
-      else
-        text+=" ${args_help_option_arg}[${args_option_has_arg[$option]}]${args_help_reset}"
-      fi
-    fi
+    local text="  $(args_help_format_option "${args_names[$option]}" "${args_option_has_arg[$option]}" "${args_option_arg_optional[$option]}")"
     left+=("$text")
     local desc="${args_descriptions[$option]}"
     if [ -z "$desc" ]; then
