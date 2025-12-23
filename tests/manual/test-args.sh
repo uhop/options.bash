@@ -21,13 +21,15 @@ args::option "cmd" "Sample command
 Sample description"
 args::option "test, t" "Test command" "a b"
 
-args::option "--option" "Sample long option\nwith two lines" arg
+args::option "--optional" "Sample long option\nwith two lines" arg optional
+args::option "--required" "Sample long option\nwith two lines" arg
 args::option "-o" "Sample short option with optional argument" arg optional
 args::option "-x" "Sample short option with required argument" arg
 args::option "-v, --version" "$(box::make_lines "Show version," "in a fancy way")"
 args::option "-h, --help" "Show help"
 args::option "--long" "Some long option"
-args::option "-s, --short" "Sample short option"
+args::option "-s, --short" "Sample option"
+args::option "-z, --zoom" "Sample option with argument" arg optional
 
 # args::option "--args, -, -args" "Bad short option"
 # args::option "--, -z" "Bad long option"
@@ -53,6 +55,9 @@ done
 echo "No more options"
 
 declare -n opt=args_options
-if [[ -v opt["--option"] ]]; then
-  echo "--option: ${opt["--option"]}"
+if [[ -v opt["--optional"] ]]; then
+  echo "--optional: ${opt["--optional"]}"
+fi
+if [[ -v opt["--required"] ]]; then
+  echo "--required: ${opt["--required"]}"
 fi
