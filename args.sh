@@ -170,6 +170,7 @@ args::parse() {
   fi
 
   eval set -- "$parsed"
+
   while [[ $# -gt 0 ]]; do
     if [[ "$1" == "--" ]]; then
       shift
@@ -188,15 +189,8 @@ args::parse() {
     shift
     args_options["$option"]=""
     if [[ -n "${args_option_has_arg[$option]}" ]]; then
-      if [[ -z "${args_option_arg_optional[$option]}" ]]; then
-        args_options["$option"]="$1"
-        shift
-      else
-        if [[ "$1" != "-"* ]]; then
-          args_options["$option"]="$1"
-          shift
-        fi
-      fi
+      args_options["$option"]="$1"
+      shift
     fi
   done
 
