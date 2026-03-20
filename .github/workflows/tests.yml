@@ -1,0 +1,23 @@
+name: Tests
+
+on:
+  push:
+    branches: ['*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Tests on ubuntu-latest
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Show Bash version
+        run: bash --version
+      - name: Run automated tests
+        run: bash tests/run.sh

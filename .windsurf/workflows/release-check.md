@@ -14,23 +14,25 @@ Run through this checklist before tagging a new release.
 4. Check that `wiki/Home.md` links to all module wiki pages.
 5. Check that `llms.txt` is up to date with any API changes.
 6. Check that `README.md` reflects the current feature set and examples.
-7. Check that all wiki module pages match the current source code.
-8. Check that the copyright year in `LICENSE` includes the current year (e.g., update `2025` → `2025-2026` or `2005-2024` → `2005-2026`).
-9. Run all automated tests: `bash tests/run.sh`
-   // turbo
-10. Run all manual tests:
+7. Update version and date in `README.md` release history table.
+8. Update `wiki/Release‐history.md` with the new release details.
+9. Check that all wiki module pages match the current source code.
+10. Check that the copyright year in `LICENSE` includes the current year (e.g., update `2025` → `2025-2026` or `2005-2024` → `2005-2026`).
+11. Run all automated tests: `bash tests/run.sh`
     // turbo
-11. `bash tests/manual/test-ansi.sh`
+12. Run all manual tests:
     // turbo
-12. `bash tests/manual/test-ansi-tput.sh`
+13. `bash tests/manual/test-ansi.sh`
     // turbo
-13. `bash tests/manual/test-args.sh -h`
+14. `bash tests/manual/test-ansi-tput.sh`
     // turbo
-14. `bash tests/manual/test-args.sh --required=foo cmd`
+15. `bash tests/manual/test-args.sh -h`
     // turbo
-15. `bash tests/manual/test-box.sh`
+16. `bash tests/manual/test-args.sh --required=foo cmd`
     // turbo
-16. `bash tests/manual/test-box-stack.sh`
-17. Verify sparse worktree clone works:
+17. `bash tests/manual/test-box.sh`
+    // turbo
+18. `bash tests/manual/test-box-stack.sh`
+19. Verify sparse worktree clone works:
     `git clone --filter=blob:none --sparse <repo> test-clone && cd test-clone && git sparse-checkout set --no-cone '/*.sh' '/README.md'`
-18. Tag the release: `git tag -a v<VERSION> -m "Release v<VERSION>"`
+20. Tag the release: `git tag -a v<VERSION> -m "Release v<VERSION>"`

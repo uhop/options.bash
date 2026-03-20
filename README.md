@@ -278,6 +278,12 @@ On macOS, the system Bash is 3.x. Install a modern version:
 brew install bash
 ```
 
+## Release history
+
+| Version | Date | Description |
+|---------|------|-------------|
+| 1.0.0 | *upcoming* | Initial release. |
+
 ## License
 
 BSD 3-Clause. See [LICENSE](./LICENSE).
