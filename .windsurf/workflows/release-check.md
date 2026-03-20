@@ -15,19 +15,20 @@ Run through this checklist before tagging a new release.
 5. Check that `llms.txt` is up to date with any API changes.
 6. Check that `README.md` reflects the current feature set and examples.
 7. Check that all wiki module pages match the current source code.
-8. Run all manual tests:
+8. Check that the copyright year in `LICENSE` includes the current year (e.g., update `2025` → `2025-2026` or `2005-2024` → `2005-2026`).
+9. Run all manual tests:
    // turbo
-9. `bash tests/manual/test-ansi.sh`
-   // turbo
-10. `bash tests/manual/test-ansi-tput.sh`
+10. `bash tests/manual/test-ansi.sh`
     // turbo
-11. `bash tests/manual/test-args.sh -h`
+11. `bash tests/manual/test-ansi-tput.sh`
     // turbo
-12. `bash tests/manual/test-args.sh --required=foo cmd`
+12. `bash tests/manual/test-args.sh -h`
     // turbo
-13. `bash tests/manual/test-box.sh`
+13. `bash tests/manual/test-args.sh --required=foo cmd`
     // turbo
-14. `bash tests/manual/test-box-stack.sh`
-15. Verify sparse worktree clone works:
+14. `bash tests/manual/test-box.sh`
+    // turbo
+15. `bash tests/manual/test-box-stack.sh`
+16. Verify sparse worktree clone works:
     `git clone --filter=blob:none --sparse <repo> test-clone && cd test-clone && git sparse-checkout set --no-cone '/*.sh' '/README.md'`
-16. Tag the release: `git tag -a v<VERSION> -m "Release v<VERSION>"`
+17. Tag the release: `git tag -a v<VERSION> -m "Release v<VERSION>"`
