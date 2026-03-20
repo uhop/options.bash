@@ -157,11 +157,11 @@ options.bash/
 The full documentation is in the [wiki](https://github.com/uhop/options.bash/wiki):
 
 - [ansi.sh](https://github.com/uhop/options.bash/wiki/ansi.sh) — ANSI escape codes (primary module)
-- [ansi-tput.sh](https://github.com/uhop/options.bash/wiki/ansi-tput.sh) — tput-based alternative
-- [ansi-utils.sh](https://github.com/uhop/options.bash/wiki/ansi-utils.sh) — shared ANSI utilities
+- [ansi-tput.sh](https://github.com/uhop/options.bash/wiki/ansi‐tput.sh) — tput-based alternative
+- [ansi-utils.sh](https://github.com/uhop/options.bash/wiki/ansi‐utils.sh) — shared ANSI utilities
 - [args.sh](https://github.com/uhop/options.bash/wiki/args.sh) — option and command parsing
-- [args-help.sh](https://github.com/uhop/options.bash/wiki/args-help.sh) — auto-generated help screen
-- [args-version.sh](https://github.com/uhop/options.bash/wiki/args-version.sh) — version handler
+- [args-help.sh](https://github.com/uhop/options.bash/wiki/args‐help.sh) — auto-generated help screen
+- [args-version.sh](https://github.com/uhop/options.bash/wiki/args‐version.sh) — version handler
 - [box.sh](https://github.com/uhop/options.bash/wiki/box.sh) — text box layout engine
 - [string.sh](https://github.com/uhop/options.bash/wiki/string.sh) — string utilities
 
