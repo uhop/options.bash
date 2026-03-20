@@ -148,7 +148,9 @@ options.bash/
 ├── args-version.sh   # --version / -v handler
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
 ├── string.sh         # String utilities: pad, clean, length, output helpers
-├── tests/manual/     # Manual test scripts
+├── test.sh           # Built-in test harness: assertions, colored output, runner
+├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
+├── tests/manual/     # Manual test scripts (visual inspection)
 └── wiki/             # GitHub wiki documentation (submodule)
 ```
 
@@ -164,6 +166,7 @@ The full documentation is in the [wiki](https://github.com/uhop/options.bash/wik
 - [args-version.sh](https://github.com/uhop/options.bash/wiki/args‐version.sh) — version handler
 - [box.sh](https://github.com/uhop/options.bash/wiki/box.sh) — text box layout engine
 - [string.sh](https://github.com/uhop/options.bash/wiki/string.sh) — string utilities
+- [test.sh](https://github.com/uhop/options.bash/wiki/test.sh) — built-in test harness
 
 For AI assistants: see [llms.txt](https://github.com/uhop/options.bash/blob/main/llms.txt) for LLM-optimized documentation.
 

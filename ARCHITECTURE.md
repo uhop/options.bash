@@ -148,7 +148,23 @@ Scripts then source this bootstrap with `. ~/.local/libs/main.sh` and immediatel
 
 ## Testing
 
-Tests are manual (visual inspection) and live in `tests/manual/`:
+### Automated tests
+
+The project includes a built-in test harness (`test.sh`) and automated tests in `tests/`:
+
+```bash
+bash tests/run.sh                     # Run all automated tests
+bash tests/test-string.sh             # string.sh tests
+bash tests/test-ansi.sh               # ansi.sh + ansi-utils.sh tests
+bash tests/test-box.sh                # box.sh tests
+bash tests/test-args.sh               # args.sh tests
+```
+
+The test harness (`test.sh`) follows the same conventions as library modules: include guard, `set -euo pipefail`, `test::` namespace, auto-loads `ansi.sh` for colored output. It provides assertions: `test::equal`, `test::not_equal`, `test::match`, `test::contains`, `test::ok`, `test::fail_`. Each test file calls `test::done` at the end to print a summary and exit with 0 (pass) or 1 (fail).
+
+### Manual tests
+
+Visual inspection tests live in `tests/manual/`:
 
 ```bash
 bash tests/manual/test-ansi.sh        # ANSI colors and styles

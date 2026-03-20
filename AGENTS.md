@@ -73,7 +73,9 @@ options.bash/
 ├── args-version.sh   # --version / -v handler
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
 ├── string.sh         # String utilities: pad, clean, length, output helpers
-├── tests/manual/     # Manual test scripts
+├── test.sh           # Built-in test harness: assertions, colored output, runner
+├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
+├── tests/manual/     # Manual test scripts (visual inspection)
 ├── wiki/             # GitHub wiki documentation (submodule)
 ├── LICENSE           # BSD 3-Clause
 └── README.md
@@ -180,4 +182,5 @@ args::parse "$@"
 - Use `ansi::out` / `box::out` / `string::out` instead of raw `echo` for terminal-safe output.
 - Error output functions (`ansi::err`, `box::err`, `string::err`) write to stderr and return 1.
 - Wiki documentation lives in the `wiki/` submodule.
-- Tests are manual (visual inspection) and live in `tests/manual/`.
+- Automated tests live in `tests/` — run with `bash tests/run.sh`.
+- Manual tests (visual inspection) live in `tests/manual/`.

@@ -196,6 +196,25 @@ command -v doas &>/dev/null && [ -f /etc/doas.conf ] && alias sudo='doas' || tru
 
 Scripts then source it with `. ~/.local/libs/main.sh` and immediately have access to all library functions, color globals, and helper utilities.
 
+## Testing
+
+### test.sh
+
+Built-in test harness. Loads `ansi.sh` for colored output.
+
+- `test_lib_dir` — absolute path to the library root directory.
+- `test_pass`, `test_fail`, `test_total` — counters.
+- `test::name LABEL` — set a label for subsequent tests.
+- `test::equal ACTUAL EXPECTED [MSG]` — assert string equality.
+- `test::not_equal ACTUAL EXPECTED [MSG]` — assert string inequality.
+- `test::match ACTUAL PATTERN [MSG]` — assert regex match.
+- `test::contains HAYSTACK NEEDLE [MSG]` — assert substring present.
+- `test::ok [MSG]` — unconditional pass.
+- `test::fail_ [MSG]` — unconditional fail.
+- `test::done` — print summary and exit (0 if all pass, 1 if any fail).
+
+Run all automated tests: `bash tests/run.sh`
+
 ## Common patterns
 
 ### Full CLI with help and version

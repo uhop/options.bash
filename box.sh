@@ -252,7 +252,7 @@ box::exec() {
           temp_lines+=("$pad_string")
         done
 
-        lines=(${temp_lines[@]})
+        lines=("${temp_lines[@]}")
         ;;
 
       clean | c)

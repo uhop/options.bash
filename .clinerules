@@ -37,6 +37,7 @@ options.bash is a pure Bash library for building CLI utilities with rich termina
 
 ## Verification commands
 
+- `bash tests/run.sh` — run all automated tests
 - `bash tests/manual/test-ansi.sh` — ANSI colors and styles
 - `bash tests/manual/test-ansi-tput.sh` — tput-based colors and styles
 - `bash tests/manual/test-args.sh -h` — help screen
@@ -47,6 +48,8 @@ options.bash is a pure Bash library for building CLI utilities with rich termina
 ## File layout
 
 - Modules: `*.sh` (root directory)
+- Test harness: `test.sh`
+- Automated tests: `tests/test-*.sh`
 - Manual tests: `tests/manual/test-*.sh`
 - Wiki docs: `wiki/` (git submodule)
 
