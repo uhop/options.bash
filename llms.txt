@@ -1,0 +1,268 @@
+# options.bash
+
+> A Bash library for building CLI utilities with rich terminal output and option parsing. Pure Bash 4.0+, zero external dependencies beyond coreutils and getopt.
+
+## Quick start
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+LIB_DIR="/path/to/options.bash"
+
+source "${LIB_DIR}/args.sh"
+source "${LIB_DIR}/args-help.sh"
+source "${LIB_DIR}/args-version.sh"
+
+args::program "my-tool" "1.0.0" "Does useful things"
+args::option "-v, --version" "Show version"
+args::option "-h, --help" "Show help"
+args::option "--output, -o" "Output file" "file"
+args::option "build" "Build the project"
+
+args::parse "$@"
+
+# Check parsed results
+if [[ -v args_options["--output"] ]]; then
+  echo "Output: ${args_options["--output"]}"
+fi
+echo "Command: ${args_command}"
+```
+
+## Modules
+
+### string.sh
+
+String utilities. No dependencies.
+
+- `string::clean STRING` — strip ANSI codes (delegates to `ansi::strip` if loaded, otherwise passthrough).
+- `string::length STRING` — visible length (delegates to `ansi::length` if loaded).
+- `string::make_pad LENGTH [CHAR]` — create a padding string of given length.
+- `string::pad STRING LENGTH [ALIGN] [CHAR]` — pad string to length. ALIGN: `left`/`l`, `right`/`r`, `center`/`c`.
+- `string::out ARGS...` — terminal-aware echo (strips ANSI when piped).
+- `string::err ARGS...` — terminal-aware echo to stderr (returns 1).
+
+### ansi-utils.sh
+
+Shared ANSI utilities loaded by both `ansi.sh` and `ansi-tput.sh`.
+
+- `ansi::color::rgb R G B` — compute 3-bit color code from RGB flags (0 or non-0).
+- `ansi::color::make_bright CODE` — add 8 to get bright variant.
+- `ansi::color::true R G B` — compute 256-color code from RGB (0–255).
+- `ansi::color::grey INTENSITY` — compute 256-color greyscale (0–255).
+- `ansi::fg::rgb R G B` — set fg to 3-bit RGB color.
+- `ansi::fg::bright_rgb R G B` — set fg to bright 3-bit RGB color.
+- `ansi::fg::true R G B` — set fg to 256-color.
+- `ansi::fg::grey INTENSITY` — set fg to greyscale.
+- `ansi::bg::rgb`, `ansi::bg::bright_rgb`, `ansi::bg::true`, `ansi::bg::grey` — bg equivalents.
+- `ansi::extract_sgr_commands CODE` — extract numeric SGR parameters from an escape sequence.
+- `ansi::make STYLE...` — compose multiple named/numeric styles into one sequence.
+- `ansi::strip STRING` — remove all ANSI escape codes.
+- `ansi::length STRING` — visible string length (after stripping ANSI).
+- `ansi::out ARGS...` — terminal-aware echo (strips ANSI when piped).
+- `ansi::err ARGS...` — terminal-aware echo to stderr (returns 1).
+- `ansi::prompt ARGS...` — like `ansi::out` but no trailing newline.
+
+### ansi.sh
+
+ANSI terminal control via raw escape sequences. Bash 4.0+. Loads `ansi-utils.sh`.
+
+Global data:
+- `ansi_style_colors` — associative array mapping color names to numbers (black=0 .. white=7).
+- `ansi_style_sgr_commands` — associative array of all named SGR/cursor/screen escape sequences.
+
+Functions:
+- `ansi::fg N` — foreground color (0–7 standard, 8–15 bright, 16–255 extended).
+- `ansi::bg N` — background color.
+- `ansi::fg_true R G B` — 24-bit true color foreground.
+- `ansi::bg_true R G B` — 24-bit true color background.
+- `ansi::decoration N` — decoration color (256-color).
+- `ansi::decoration_true R G B` — 24-bit decoration color.
+- `ansi::get NAME` — look up escape sequence by name (tries `NAME`, `text_NAME`, `fg_NAME`).
+- `ansi::sgr::make STYLE...` — compose styles into a single SGR sequence.
+- `ansi::cursor::pos ROW COL`, `ansi::cursor::up N`, `ansi::cursor::down N`, etc. — cursor movement.
+- `ansi::screen::scroll_up N`, `ansi::screen::scroll_down N` — scrolling.
+- `ansi::hyperlink URL [TEXT]` — OSC 8 hyperlink.
+
+On source, defines uppercase globals: `RED`, `GREEN`, `BOLD`, `RESET_ALL`, `FG_RED`, `BG_GREEN`, `TEXT_BOLD`, etc.
+Suppress with `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing.
+
+### ansi-tput.sh
+
+Alternative ANSI implementation via `tput`. Bash 4.3+. Loads `ansi-utils.sh`.
+Same core API as `ansi.sh` (`ansi::fg`, `ansi::bg`, `ansi::get`, `ansi::make`).
+**Mutually exclusive with `ansi.sh`** — source only one.
+
+Additional functions:
+- `ansi::tput::sgr BOOL...` — raw tput sgr (standout, underline, reverse, blink, dim, bold, invis, protect, altcharset).
+- `ansi::cursor::insert N` — insert N characters.
+- `ansi::cursor::insert_lines N` — insert N lines.
+- `ansi::screen::lines`, `ansi::screen::cols`, `ansi::screen::colors` — terminal dimensions/capabilities.
+- `ansi::terminal::name` — terminal long name.
+
+### args.sh
+
+CLI option and command parsing via `getopt`. Bash 4.0+. No library dependencies.
+
+Setup functions:
+- `args::program NAME VERSION [DESCRIPTION] [URL]` — set program metadata.
+- `args::option "NAMES" "DESCRIPTION" [ARG_NAME] [OPTIONAL]` — register an option or command.
+  - NAMES: comma/space-separated (e.g., `"-v, --version"`, `"build"`).
+  - Options start with `-`; bare words are commands.
+  - ARG_NAME non-empty: option takes an argument. OPTIONAL non-empty: argument is optional.
+- `args::immediate OPTIONS...` — add to immediate-option list (default: `-h --help -v --version`).
+- `args::parse "$@"` — parse arguments.
+
+Result globals:
+- `args_options` — associative array of parsed options keyed by primary name.
+- `args_command` — matched command name (empty if none).
+- `args_cleaned` — remaining positional arguments (eval-safe).
+
+Configuration globals:
+- `args_program_required_command` — `"yes"` (default) or `"no"`.
+- `args_program_help_style` — `"grid"` (default) or `"list"`.
+- `args_program_usage` — custom usage text (overrides auto-generated).
+- `args_program_header` — text shown after program description.
+- `args_program_footer` — text shown at the end of help.
+
+Error hooks (define to customize error messages):
+- `args::error::getopt` — getopt parse failure.
+- `args::error::unknown_option OPTION` — unknown option.
+- `args::error::no_command` — missing required command.
+- `args::error::unknown_command COMMAND` — unknown command.
+- `args::error::invalid_short_option NAME` — malformed short option.
+- `args::error::invalid_long_option NAME` — malformed long option.
+
+### args-help.sh
+
+Auto-generated colored help screen. Loads `ansi.sh`, `string.sh`, `box.sh`.
+
+- `args::option::help` — print help and exit. Triggered by `-h`/`--help`.
+- `args::option::h` — alias for `args::option::help`.
+
+Style globals (override before sourcing or after):
+- `args_help_section`, `args_help_program`, `args_help_version`, `args_help_command`, `args_help_option`, etc.
+
+### args-version.sh
+
+Version display handler. No dependencies (uses `args_program_*` globals).
+
+- `args::option::version` — print "name version" and exit. Triggered by `-v`/`--version`.
+- `args::option::v` — alias for `args::option::version`.
+
+### box.sh
+
+Text box layout engine for multi-line strings. Loads `string.sh`.
+
+- `box::make_lines LINE...` — join arguments into a multi-line string.
+- `box::make LINE...` — make + normalize (left-aligned).
+- `box::get_width STRING` — width of first line (visible characters).
+- `box::get_height STRING` — number of lines.
+- `box::exec STRING CMD...` — process string through a command pipeline.
+  Commands: `normalize ALIGN`, `pad_lr LEFT RIGHT`, `pad_tb TOP BOTTOM`, `align_lr ALIGN WIDTH`, `align_tb ALIGN HEIGHT`, `set_pad CHAR`, `clean`, `extract FROM COUNT`.
+  Aliases: `n`, `ph`, `pv`, `ah`, `av`, `sp`, `c`, `e`.
+- `box::stack_lr STRING1 STRING2` — stack side-by-side (must have equal height).
+- `box::stack_tb STRING1 STRING2` — stack vertically (must have equal width).
+- `box::out STRING` — terminal-aware multi-line output.
+- `box::err STRING` — terminal-aware multi-line output to stderr (returns 1).
+
+## Bootstrap pattern
+
+A common pattern is a bootstrap file (e.g., `~/.local/libs/main.sh`) that auto-updates and sources the core modules:
+
+```bash
+# include options.bash
+command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/null || true
+
+. ~/.local/share/libs/scripts/ansi.sh
+. ~/.local/share/libs/scripts/args.sh
+. ~/.local/share/libs/scripts/args-version.sh
+. ~/.local/share/libs/scripts/args-help.sh
+
+# echo the first argument and run
+echoRun() {
+  echo -e "\033[36m$@\033[0m"
+  eval "$@"
+}
+
+echoRunBold() {
+  echo -e "\033[1;36m$@\033[0m"
+  eval "$@"
+}
+
+# set up doas
+command -v doas &>/dev/null && [ -f /etc/doas.conf ] && alias sudo='doas' || true
+```
+
+Scripts then source it with `. ~/.local/libs/main.sh` and immediately have access to all library functions, color globals, and helper utilities.
+
+## Common patterns
+
+### Full CLI with help and version
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+LIB_DIR="$(dirname "$(realpath "$0")")/../lib/options.bash"
+source "${LIB_DIR}/args.sh"
+source "${LIB_DIR}/args-help.sh"
+source "${LIB_DIR}/args-version.sh"
+
+args::program "deploy" "2.0.0" "Deploy application to servers" "https://example.com/deploy"
+args::option "-v, --version" "Show version"
+args::option "-h, --help" "Show help"
+args::option "-n, --dry-run" "Preview without executing"
+args::option "--env, -e" "Target environment" "name"
+args::option "start" "Start the deployment"
+args::option "status" "Check deployment status"
+
+args::parse "$@"
+
+case "$args_command" in
+  start)
+    echo "Deploying..."
+    if [[ -v args_options["--dry-run"] ]]; then
+      echo "(dry run)"
+    fi
+    ;;
+  status)
+    echo "Checking status..."
+    ;;
+esac
+```
+
+### Colored output
+
+```bash
+source "/path/to/options.bash/ansi.sh"
+
+ansi::out "${BOLD}${GREEN}Success:${RESET_ALL} Operation completed"
+ansi::err "${BOLD}${RED}Error:${RESET_ALL} Something went wrong"
+
+# Compose styles
+header="$(ansi::make bold underline cyan)"
+ansi::out "${header}My Header${RESET_ALL}"
+```
+
+### Box layout
+
+```bash
+source "/path/to/options.bash/box.sh"
+
+lines=$(box::make "Hello" "World" "!")
+box=$(box::exec "$lines" set_pad '.' pad_lr 2 2 pad_tb 1 1)
+box::out "$box"
+# Output:
+# ..........
+# ..Hello...
+# ..World...
+# ..!.......
+# ..........
+```
+
+## Links
+
+- GitHub: https://github.com/uhop/options.bash
+- Wiki: https://github.com/uhop/options.bash/wiki
+- License: BSD 3-Clause

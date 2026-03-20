@@ -1,0 +1,58 @@
+<!-- Canonical source: AGENTS.md — keep this file in sync -->
+# options.bash — AI Agent Rules
+
+## Project identity
+
+options.bash is a pure Bash library for building CLI utilities with rich terminal output and option parsing. Bash 4.0+, zero external dependencies beyond coreutils and `getopt`. Distributed via sparse worktree cloning. The JavaScript sibling project is [console-toolkit](https://github.com/uhop/console-toolkit) (mirrors ansi, box, and string concepts in ESM).
+
+## Critical rules
+
+- **Pure Bash.** No Python, no Node, no compiled binaries.
+- **Bash 4.0+** minimum for most modules; `ansi-tput.sh` requires **Bash 4.3+**.
+- **No external dependencies.** The library is intentionally self-contained.
+- **`set -euo pipefail`** at the top of every module.
+- **Do not modify or delete test scripts** without understanding what they verify.
+- **Do not add comments or remove comments** unless explicitly asked.
+- **`ansi.sh` and `ansi-tput.sh` are mutually exclusive** — source only one.
+
+## Code style
+
+- Functions use `module::submodule::name` naming (e.g., `ansi::fg`, `box::exec`, `string::pad`).
+- Global variables use `module_prefix` (e.g., `ansi_style_colors`, `args_program_name`).
+- Include guards: every module checks for a sentinel function at the top and returns early if already loaded.
+- Auto-dependency loading: modules resolve their own dependencies relative to `BASH_SOURCE`.
+- 2-space indentation (`.editorconfig`).
+
+## Architecture quick reference
+
+- `string.sh` — lowest level, no dependencies. String padding, cleaning, length, terminal-aware output.
+- `ansi-utils.sh` — shared ANSI utilities (color math, stripping, composing). Loaded by both ANSI modules.
+- `ansi.sh` — ANSI escape codes via raw sequences. Primary ANSI module.
+- `ansi-tput.sh` — alternative ANSI via `tput`. Same core API as `ansi.sh`.
+- `box.sh` — text box layout engine (normalize, pad, align, stack). Depends on `string.sh`.
+- `args.sh` — option/command parsing via `getopt`. Standalone.
+- `args-help.sh` — colored help screen generation. Loads `ansi.sh`, `string.sh`, `box.sh`.
+- `args-version.sh` — `--version` handler. Uses `args_program_*` globals.
+- Simple command names (`RED`, `BOLD`, `RESET_ALL`) are defined by default. Suppress with `ANSI_NO_SIMPLE_COMMAND_NAMES=1`.
+
+## Verification commands
+
+- `bash tests/manual/test-ansi.sh` — ANSI colors and styles
+- `bash tests/manual/test-ansi-tput.sh` — tput-based colors and styles
+- `bash tests/manual/test-args.sh -h` — help screen
+- `bash tests/manual/test-args.sh --required=foo cmd` — option parsing
+- `bash tests/manual/test-box.sh` — box layout
+- `bash tests/manual/test-box-stack.sh` — box stacking
+
+## File layout
+
+- Modules: `*.sh` (root directory)
+- Manual tests: `tests/manual/test-*.sh`
+- Wiki docs: `wiki/` (git submodule)
+
+## When reading the codebase
+
+- Start with `ARCHITECTURE.md` for the module map and dependency graph.
+- Each `.sh` file is self-contained — read the source directly for the full API.
+- Wiki markdown files in `wiki/` contain detailed usage docs per module.
+- `llms.txt` is a compact API reference for all modules.
