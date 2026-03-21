@@ -28,7 +28,7 @@ string::make_pad() {
 
   local pad_clean=$(string::clean "$pad")
   if [[ "${#pad_clean}" -ne 1 ]]; then
-    string::err "Error: Invalid pad character '$1'"
+    string::err "Error: Invalid pad character '$pad'"
     return 1
   fi
 

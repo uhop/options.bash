@@ -12,11 +12,15 @@ _load_dependencies() {
 if ! type string::err >/dev/null 2>&1; then
   _load_dependencies
 fi
-unset _load_dependencies
+unset -f _load_dependencies
+
+box::_normalize() {
+  sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$1"
+}
 
 box::make_lines() {
   for line in "$@"; do
-    sed 's/\(\r\n|\n|\\r\\n|\\n\)/\n/g' <<< "$line"
+    box::_normalize "$line"
   done
 }
 
@@ -30,9 +34,8 @@ box::get_width() {
 
   # from string to lines
   local lines=()
-  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
+  IFS=$'\n' read -rd '' -a lines <<< "$(box::_normalize "$string")"
   set -e
 
   echo "$(string::length "${lines[0]}")"
@@ -49,9 +52,8 @@ box::get_height() {
 
   # from string to lines
   local lines=()
-  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
+  IFS=$'\n' read -rd '' -a lines <<< "$(box::_normalize "$string")"
   set -e
 
   echo "${#lines[@]}"
@@ -64,9 +66,8 @@ box::exec() {
 
   # from string to lines
   local lines=()
-  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
+  IFS=$'\n' read -rd '' -a lines <<< "$(box::_normalize "$string")"
   set -e
 
   shift
@@ -110,17 +111,6 @@ box::exec() {
         done
 
         for i in "${!lines[@]}"; do
-          local pad_left=0
-          local pad_right=0
-          local diff=$((max_length - ${#lines[i]}))
-          if [[ "$align" == "l" ]]; then
-            pad_right="$diff"
-          elif [[ "$align" == "r" ]]; then
-            pad_left="$diff"
-          elif [[ "$align" == "c" ]]; then
-            pad_left=$((diff / 2))
-            pad_right=$((diff - pad_left))
-          fi
           lines[i]=$(string::pad "${lines[i]}" "$max_length" "$align" "$pad")
         done
         ;;
@@ -186,7 +176,7 @@ box::exec() {
 
         local left=0
         local right=0
-        local diff=$((length - ${#lines[0]}))
+        local diff=$((length - $(string::length "${lines[0]}")))
         if [[ "$align" == "l" ]]; then
           right="$diff"
         elif [[ "$align" == "r" ]]; then
@@ -295,15 +285,13 @@ box::stack_lr() {
 
   # from string to lines
   local lines1=()
-  local normalized_string1=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string1")
   set +e
-  IFS=$'\n' read -rd '' -a lines1 <<< "$normalized_string1"
+  IFS=$'\n' read -rd '' -a lines1 <<< "$(box::_normalize "$string1")"
   set -e
 
   local lines2=()
-  local normalized_string2=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string2")
   set +e
-  IFS=$'\n' read -rd '' -a lines2 <<< "$normalized_string2"
+  IFS=$'\n' read -rd '' -a lines2 <<< "$(box::_normalize "$string2")"
   set -e
 
   if [ "${#lines1[@]}" -ne "${#lines2[@]}" ]; then
@@ -329,18 +317,16 @@ box::stack_tb() {
 
   # from string to lines
   local lines1=()
-  local normalized_string1=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string1")
   set +e
-  IFS=$'\n' read -rd '' -a lines1 <<< "$normalized_string1"
+  IFS=$'\n' read -rd '' -a lines1 <<< "$(box::_normalize "$string1")"
   set -e
 
   local lines2=()
-  local normalized_string2=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string2")
   set +e
-  IFS=$'\n' read -rd '' -a lines2 <<< "$normalized_string2"
+  IFS=$'\n' read -rd '' -a lines2 <<< "$(box::_normalize "$string2")"
   set -e
 
-  if [ "${#lines1[0]}" -ne "${#lines2[0]}" ]; then
+  if [ "$(string::length "${lines1[0]}")" -ne "$(string::length "${lines2[0]}")" ]; then
     string::err "Error: Strings have different width"
     return 1
   fi
@@ -359,9 +345,8 @@ box::err() {
 
   # from string to lines
   local lines=()
-  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
+  IFS=$'\n' read -rd '' -a lines <<< "$(box::_normalize "$string")"
   set -e
 
   # from lines to string
@@ -383,9 +368,8 @@ box::out() {
 
   # from string to lines
   local lines=()
-  local normalized_string=$(sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$string")
   set +e
-  IFS=$'\n' read -rd '' -a lines <<< "$normalized_string"
+  IFS=$'\n' read -rd '' -a lines <<< "$(box::_normalize "$string")"
   set -e
 
   # from lines to string

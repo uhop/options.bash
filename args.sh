@@ -52,7 +52,7 @@ args_check_command=1
 
 # External data structures
 declare -A args_options
-args_cleaned=""
+args_cleaned=()
 args_command=""
 
 args::program() {
@@ -194,7 +194,7 @@ args::parse() {
     fi
   done
 
-  args_cleaned="$@"
+  args_cleaned=("$@")
 
   if [[ "${#args_immediate_options[@]}" -gt 0 ]]; then
     for option in "${args_immediate_options[@]}"; do
@@ -217,16 +217,16 @@ args::parse() {
       fi
       exit 1
     fi
-    local unknown_command=0
+    local command_found=0
     local current_command="${1:-}"
     for command in "${!args_aliases[@]}"; do
       if [[ "$command" == "-"* ]]; then continue; fi
       if [[ "$command" == "$current_command" ]]; then
-        unknown_command=1
+        command_found=1
         break
       fi
     done
-    if [[ $unknown_command -eq 0 ]]; then
+    if [[ $command_found -eq 0 ]]; then
       if  [[ ${args_program_required_command} == "yes" ]]; then
         if type -t "args::error::unknown_command" &> /dev/null; then
           args::error::unknown_command "$current_command"

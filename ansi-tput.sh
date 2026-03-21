@@ -22,7 +22,7 @@ _load_dependencies() {
   script_dir="$(dirname "$(realpath "$script_dir")")"
   source "${script_dir}/ansi-utils.sh"
 }
-if ! type string::err >/dev/null 2>&1; then
+if ! type ansi::out >/dev/null 2>&1; then
   _load_dependencies
 fi
 unset -f _load_dependencies

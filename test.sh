@@ -12,7 +12,7 @@ _load_dependencies() {
 if ! type ansi::out >/dev/null 2>&1; then
   _load_dependencies
 fi
-unset _load_dependencies
+unset -f _load_dependencies
 
 test_lib_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 

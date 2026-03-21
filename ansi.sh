@@ -22,7 +22,7 @@ _load_dependencies() {
   script_dir="$(dirname "$(realpath "$script_dir")")"
   source "${script_dir}/ansi-utils.sh"
 }
-if ! type string::err >/dev/null 2>&1; then
+if ! type ansi::out >/dev/null 2>&1; then
   _load_dependencies
 fi
 unset -f _load_dependencies
@@ -86,8 +86,8 @@ declare -g -A ansi_style_sgr_commands=(
   [cursor_backward1]='\e[D'
 
   # cursor management
-  [cursor_save]='\e[s'
-  [cursor_restore]='\e[u'
+  [cursor_save_pos]='\e[s'
+  [cursor_restore_pos]='\e[u'
   [cursor_get_pos]='\e[6n'
   [cursor_show]='\e[?25h'
   [cursor_hide]='\e[?25l'

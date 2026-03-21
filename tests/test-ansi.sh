@@ -59,10 +59,10 @@ test::match "$result" $'\e' "make: contains escape"
 # ansi::color::rgb
 
 test::equal "$(ansi::color::rgb 0 0 0)" "0" "color rgb: black"
-test::equal "$(ansi::color::rgb 1 0 0)" "01" "color rgb: red"
-test::equal "$(ansi::color::rgb 0 1 0)" "02" "color rgb: green"
-test::equal "$(ansi::color::rgb 0 0 1)" "04" "color rgb: blue"
-test::equal "$(ansi::color::rgb 1 1 1)" "0124" "color rgb: white"
+test::equal "$(ansi::color::rgb 1 0 0)" "1" "color rgb: red"
+test::equal "$(ansi::color::rgb 0 1 0)" "2" "color rgb: green"
+test::equal "$(ansi::color::rgb 0 0 1)" "4" "color rgb: blue"
+test::equal "$(ansi::color::rgb 1 1 1)" "7" "color rgb: white"
 
 # ansi::color::make_bright
 

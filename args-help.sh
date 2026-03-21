@@ -7,15 +7,12 @@ set -euo pipefail
 _load_dependencies() {
   local script_dir=${BASH_SOURCE:-$0}
   script_dir="$(dirname "$(realpath "$script_dir")")"
-  local previous_ANSI_NO_DEFAULT_COMMANDS="${ANSI_NO_DEFAULT_COMMANDS:-}"
-  ANSI_NO_DEFAULT_COMMANDS=1
   source "${script_dir}/ansi.sh"
   source "${script_dir}/string.sh"
   source "${script_dir}/box.sh"
-  ANSI_NO_DEFAULT_COMMANDS="$previous_ANSI_NO_DEFAULT_COMMANDS"
 }
 _load_dependencies
-unset _load_dependencies
+unset -f _load_dependencies
 
 args_help_bold="$(ansi::get bold)"
 args_help_italic="$(ansi::get italic)"

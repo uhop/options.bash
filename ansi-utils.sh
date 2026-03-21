@@ -9,7 +9,7 @@ ansi::color::rgb() {
   local g="$2"
   local b="$3"
 
-  local result=0
+  local -i result=0
   if [[ "$r" -ne 0 ]]; then result+=1; fi
   if [[ "$g" -ne 0 ]]; then result+=2; fi
   if [[ "$b" -ne 0 ]]; then result+=4; fi

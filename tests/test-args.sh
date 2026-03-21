@@ -47,7 +47,7 @@ test::equal "${args_aliases["t"]}" "test" "option: command alias t -> test"
 
 args_options=()
 args_command=""
-args_cleaned=""
+args_cleaned=()
 args::parse --flag build
 test::equal "${args_options["--flag"]}" "" "parse: flag present"
 test::equal "$args_command" "build" "parse: command detected"
@@ -56,7 +56,7 @@ test::equal "$args_command" "build" "parse: command detected"
 
 args_options=()
 args_command=""
-args_cleaned=""
+args_cleaned=()
 args::parse --output=myfile.txt build
 test::equal "${args_options["--output"]}" "myfile.txt" "parse: required arg value"
 test::equal "$args_command" "build" "parse: command after option"
@@ -65,7 +65,7 @@ test::equal "$args_command" "build" "parse: command after option"
 
 args_options=()
 args_command=""
-args_cleaned=""
+args_cleaned=()
 args::parse -o myfile.txt build
 test::equal "${args_options["--output"]}" "myfile.txt" "parse: short option -o"
 
@@ -73,7 +73,7 @@ test::equal "${args_options["--output"]}" "myfile.txt" "parse: short option -o"
 
 args_options=()
 args_command=""
-args_cleaned=""
+args_cleaned=()
 args::parse --flag -o out.txt test
 test::equal "${args_options["--flag"]}" "" "parse: multi flag"
 test::equal "${args_options["--output"]}" "out.txt" "parse: multi output"
@@ -83,7 +83,7 @@ test::equal "$args_command" "test" "parse: multi command"
 
 args_options=()
 args_command=""
-args_cleaned=""
+args_cleaned=()
 args::parse t
 test::equal "$args_command" "test" "parse: command alias t"
 
@@ -91,9 +91,9 @@ test::equal "$args_command" "test" "parse: command alias t"
 
 args_options=()
 args_command=""
-args_cleaned=""
+args_cleaned=()
 args::parse build foo bar
-test::contains "$args_cleaned" "foo" "parse: positional arg foo"
-test::contains "$args_cleaned" "bar" "parse: positional arg bar"
+test::contains "${args_cleaned[*]}" "foo" "parse: positional arg foo"
+test::contains "${args_cleaned[*]}" "bar" "parse: positional arg bar"
 
 test::done
