@@ -35,4 +35,4 @@ Run through this checklist before tagging a new release.
 18. `bash tests/manual/test-box-stack.sh`
 19. Verify sparse worktree clone works:
     `git clone --filter=blob:none --sparse <repo> test-clone && cd test-clone && git sparse-checkout set --no-cone '/*.sh' '/README.md'`
-20. Tag the release: `git tag -a v<VERSION> -m "Release v<VERSION>"`
+20. Tag the release: `git tag <VERSION>`
