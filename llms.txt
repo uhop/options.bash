@@ -116,7 +116,7 @@ Setup functions:
 Result globals:
 - `args_options` — associative array of parsed options keyed by primary name.
 - `args_command` — matched command name (empty if none).
-- `args_cleaned` — remaining positional arguments (eval-safe).
+- `args_cleaned` — array of remaining positional arguments.
 
 Configuration globals:
 - `args_program_required_command` — `"yes"` (default) or `"no"`.
@@ -181,17 +181,14 @@ command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/nu
 
 # echo the first argument and run
 echoRun() {
-  echo -e "\033[36m$@\033[0m"
+  ansi::out "${CYAN}$@${RESET_ALL}"
   eval "$@"
 }
 
 echoRunBold() {
-  echo -e "\033[1;36m$@\033[0m"
+  ansi::out "${BOLD}${CYAN}$@${RESET_ALL}"
   eval "$@"
 }
-
-# set up doas
-command -v doas &>/dev/null && [ -f /etc/doas.conf ] && alias sudo='doas' || true
 ```
 
 Scripts then source it with `. ~/.local/libs/main.sh` and immediately have access to all library functions, color globals, and helper utilities.

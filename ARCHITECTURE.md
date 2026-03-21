@@ -114,7 +114,7 @@ Set `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing to suppress these.
 3. `args::parse "$@"` — parse via `getopt`, populate:
    - `args_options` — associative array of parsed options.
    - `args_command` — the matched command (if any).
-   - `args_cleaned` — remaining positional arguments.
+   - `args_cleaned` — array of remaining positional arguments.
 4. Immediate options (`-h`, `-v` by default) trigger `args::option::help` / `args::option::version` and exit.
 
 ### Box layout engine

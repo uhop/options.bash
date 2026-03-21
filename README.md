@@ -97,12 +97,12 @@ command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/nu
 
 # echo the first argument and run
 echoRun() {
-  echo -e "\033[36m$@\033[0m"
+  ansi::out "${CYAN}$@${RESET_ALL}"
   eval "$@"
 }
 
 echoRunBold() {
-  echo -e "\033[1;36m$@\033[0m"
+  ansi::out "${BOLD}${CYAN}$@${RESET_ALL}"
   eval "$@"
 }
 ```
@@ -223,7 +223,7 @@ args::parse "$@"
 # Results:
 #   args_options   — associative array of parsed options
 #   args_command   — matched command name
-#   args_cleaned   — remaining positional arguments
+#   args_cleaned   — array of remaining positional arguments
 ```
 
 See [args.sh wiki](https://github.com/uhop/options.bash/wiki/args.sh) for the full API including error hooks and configuration globals.

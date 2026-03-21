@@ -46,17 +46,14 @@ command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/nu
 
 # echo the first argument and run
 echoRun() {
-  echo -e "\033[36m$@\033[0m"
+  ansi::out "${CYAN}$@${RESET_ALL}"
   eval "$@"
 }
 
 echoRunBold() {
-  echo -e "\033[1;36m$@\033[0m"
+  ansi::out "${BOLD}${CYAN}$@${RESET_ALL}"
   eval "$@"
 }
-
-# set up doas
-command -v doas &>/dev/null && [ -f /etc/doas.conf ] && alias sudo='doas' || true
 ```
 
 Scripts then source it with `. ~/.local/libs/main.sh` and immediately have access to all library functions, color globals, and helper utilities.
@@ -132,7 +129,7 @@ options.bash/
 2. Call `args::option` for each option/command with names, description, argument spec.
 3. Call `args::parse "$@"` to invoke `getopt` and populate `args_options` (associative array) and `args_command`.
 4. Immediate options (`-h`, `-v`) trigger handler functions (`args::option::help`, `args::option::version`) and exit.
-5. Remaining arguments are in `args_cleaned`.
+5. Remaining arguments are in `args_cleaned` (array).
 
 ### How ANSI output works
 
