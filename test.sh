@@ -77,7 +77,7 @@ test::contains() {
   local needle="$2"
   local msg="${3:-}"
   test_total=$((test_total + 1))
-  if echo "$haystack" | grep -qF "$needle"; then
+  if echo "$haystack" | grep -qF -- "$needle"; then
     test_pass=$((test_pass + 1))
     echo -e "  ${GREEN}ok${RESET_ALL} ${test_total} ${msg}"
   else

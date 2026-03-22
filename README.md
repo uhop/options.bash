@@ -9,6 +9,7 @@ The JavaScript sibling project is [console-toolkit](https://github.com/uhop/cons
 - **Rich terminal output** — colors, styles, cursor control, hyperlinks, true color.
 - **Option parsing** — wraps `getopt` with a clean API for options, commands, and arguments.
 - **Auto-generated help** — colored help screens built from your option definitions.
+- **Bash completion** — generate completion scripts from your option definitions, with fzf support.
 - **Box layout engine** — normalize, pad, align, and stack multi-line text blocks.
 - **Terminal-aware output** — ANSI codes are automatically stripped when output is piped.
 - **Zero dependencies** — pure Bash, no Python, no Node, no compiled binaries.
@@ -94,6 +95,7 @@ command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/nu
 . ~/.local/share/libs/scripts/args.sh
 . ~/.local/share/libs/scripts/args-version.sh
 . ~/.local/share/libs/scripts/args-help.sh
+. ~/.local/share/libs/scripts/args-completion.sh
 
 # echo the first argument and run
 echoRun() {
@@ -146,6 +148,7 @@ options.bash/
 ├── args.sh           # CLI option/command parsing (wraps getopt)
 ├── args-help.sh      # Auto-generated colored help screen from args definitions
 ├── args-version.sh   # --version / -v handler
+├── args-completion.sh # Bash completion script generation
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
@@ -164,6 +167,7 @@ The full documentation is in the [wiki](https://github.com/uhop/options.bash/wik
 - [args.sh](https://github.com/uhop/options.bash/wiki/args.sh) — option and command parsing
 - [args-help.sh](https://github.com/uhop/options.bash/wiki/args‐help.sh) — auto-generated help screen
 - [args-version.sh](https://github.com/uhop/options.bash/wiki/args‐version.sh) — version handler
+- [args-completion.sh](https://github.com/uhop/options.bash/wiki/args‐completion.sh) — bash completion generation
 - [box.sh](https://github.com/uhop/options.bash/wiki/box.sh) — text box layout engine
 - [string.sh](https://github.com/uhop/options.bash/wiki/string.sh) — string utilities
 - [test.sh](https://github.com/uhop/options.bash/wiki/test.sh) — built-in test harness
@@ -173,13 +177,13 @@ For AI assistants: see [llms.txt](https://github.com/uhop/options.bash/blob/main
 ## Module layers
 
 ```
-┌─────────────┐  ┌───────────────┐
-│  args-help  │  │ args-version  │    ← high-level: help/version handlers
-├─────────────┤  └───────┬───────┘
-│   args.sh   │          │            ← option/command parsing
+┌─────────────┐  ┌───────────────┐  ┌─────────────────┐
+│  args-help  │  │ args-version  │  │ args-completion │  ← high-level handlers
+├─────────────┤  └───────┬───────┘  └─────────────────┘
+│   args.sh   │          │                               ← option/command parsing
 ├─────┬───────┘          │
 │     │                  │
-│  ┌──┴──────┐  ┌───────┘
+│  ┌──┴──────┐  ┌────────┘
 │  │ box.sh  │  │
 │  ├─────────┤  │
 │  │ ansi.sh │  │                     ← terminal output (pick one)
@@ -272,10 +276,13 @@ See [box.sh wiki](https://github.com/uhop/options.bash/wiki/box.sh) for the full
 - **`getopt`** (enhanced version) for `args.sh`.
 - **coreutils** (`sed`, `dirname`, `realpath`, `basename`).
 
-On macOS, the system Bash is 3.x. Install a modern version:
+Optional:
+- **[fzf](https://github.com/junegunn/fzf)** — enables fuzzy tab completion in `args-completion.sh`. Not required for standard completion.
+
+On macOS, the system Bash is 3.x. Install modern versions:
 
 ```bash
-brew install bash
+brew install bash fzf
 ```
 
 ## Release history

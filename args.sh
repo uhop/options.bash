@@ -47,8 +47,11 @@ declare -A args_descriptions
 declare -A args_option_has_arg
 declare -A args_option_arg_optional
 declare -A args_aliases
-declare -a args_immediate_options=("-h" "--help" "-v" "--version")
+declare -a args_immediate_options=("-h" "--help" "-v" "--version" "--bash-completion")
 args_check_command=1
+
+declare -a args_on_options=()
+declare -a args_on_parse=()
 
 # External data structures
 declare -A args_options
@@ -106,6 +109,14 @@ args::option() {
 
 args::immediate() {
   args_immediate_options+=("$@")
+}
+
+args::on_options() {
+  args_on_options+=("$1")
+}
+
+args::on_parse() {
+  args_on_parse+=("$1")
 }
 
 args::try_help() {
@@ -196,6 +207,10 @@ args::parse() {
 
   args_cleaned=("$@")
 
+  for _args_hook in "${args_on_options[@]+"${args_on_options[@]}"}"; do
+    "$_args_hook"
+  done
+
   if [[ "${#args_immediate_options[@]}" -gt 0 ]]; then
     for option in "${args_immediate_options[@]}"; do
       if [[ -v args_options["$option"] ]]; then
@@ -240,4 +255,8 @@ args::parse() {
       args_command="${args_aliases[$current_command]}"
     fi
   fi
+
+  for _args_hook in "${args_on_parse[@]+"${args_on_parse[@]}"}"; do
+    "$_args_hook"
+  done
 }

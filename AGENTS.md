@@ -43,6 +43,7 @@ command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/nu
 . ~/.local/share/libs/scripts/args.sh
 . ~/.local/share/libs/scripts/args-version.sh
 . ~/.local/share/libs/scripts/args-help.sh
+. ~/.local/share/libs/scripts/args-completion.sh
 
 # echo the first argument and run
 echoRun() {
@@ -68,6 +69,7 @@ options.bash/
 ├── args.sh           # CLI option/command parsing (wraps getopt)
 ├── args-help.sh      # Auto-generated colored help screen from args definitions
 ├── args-version.sh   # --version / -v handler
+├── args-completion.sh # Bash completion script generation
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
@@ -94,13 +96,13 @@ options.bash/
 ### Module layers
 
 ```
-┌─────────────┐  ┌───────────────┐
-│  args-help  │  │ args-version  │    ← high-level: help/version handlers
-├─────────────┤  └───────┬───────┘
-│   args.sh   │          │            ← option/command parsing
+┌─────────────┐  ┌───────────────┐  ┌─────────────────┐
+│  args-help  │  │ args-version  │  │ args-completion │  ← high-level handlers
+├─────────────┤  └───────┬───────┘  └─────────────────┘
+│   args.sh   │          │                               ← option/command parsing
 ├─────┬───────┘          │
 │     │                  │
-│  ┌──┴──────┐  ┌───────┘
+│  ┌──┴──────┐  ┌────────┘
 │  │ box.sh  │  │
 │  ├─────────┤  │
 │  │ ansi.sh │  │                     ← terminal output (pick one)
@@ -122,14 +124,17 @@ options.bash/
 - **`args.sh`** handles option/command parsing via `getopt`. It is standalone.
 - **`args-help.sh`** generates a colorized help screen. It sources `ansi.sh`, `string.sh`, and `box.sh`.
 - **`args-version.sh`** prints version and exits. It uses globals set by `args::program`.
+- **`args-completion.sh`** generates bash completion scripts from `args.sh` registration data. It registers an `args::on_options` hook for auto-registration.
 
 ### How option parsing works
 
 1. Call `args::program` to set program name, version, description.
 2. Call `args::option` for each option/command with names, description, argument spec.
 3. Call `args::parse "$@"` to invoke `getopt` and populate `args_options` (associative array) and `args_command`.
-4. Immediate options (`-h`, `-v`) trigger handler functions (`args::option::help`, `args::option::version`) and exit.
-5. Remaining arguments are in `args_cleaned` (array).
+4. Registered `args::on_options` hooks run.
+5. Immediate options (`-h`, `-v`, `--bash-completion`) trigger handler functions (`args::option::help`, `args::option::version`, `args::option::completion`) and exit.
+6. Registered `args::on_parse` hooks run after successful completion.
+7. Remaining arguments are in `args_cleaned` (array).
 
 ### How ANSI output works
 

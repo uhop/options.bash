@@ -11,12 +11,14 @@ ansi-utils.sh         # Shared ANSI utilities: color math, strip, make, output h
 args.sh               # CLI option/command parsing (wraps getopt)
 args-help.sh          # Auto-generated colored help screen from args definitions
 args-version.sh       # --version / -v handler (prints name + version, exits)
+args-completion.sh    # Bash completion script generation from args definitions
 box.sh                # Text box layout engine: normalize, pad, align, stack
 string.sh             # String utilities: pad, clean, length, output helpers
 tests/manual/         # Manual test scripts (visual inspection)
 ├── test-ansi.sh      # Test ansi.sh colors and styles
 ├── test-ansi-tput.sh # Test ansi-tput.sh colors and styles
 ├── test-args.sh      # Test option/command parsing with help screen
+├── test-args-completion.sh # Test completion generation
 ├── test-box.sh       # Test box layout operations
 ├── test-box-stack.sh # Test box stacking (horizontal and vertical)
 └── tput.sh           # Low-level tput batch query helper
@@ -39,6 +41,7 @@ args.sh               ← standalone (no library dependencies)
     ↑
 args-help.sh          ← loads ansi.sh, string.sh, box.sh
 args-version.sh       ← standalone (uses globals from args.sh)
+args-completion.sh    ← loads args.sh (registers args::on_options hook)
 ```
 
 ### Source-time dependencies (what gets loaded when you source a module)
@@ -53,6 +56,7 @@ args-version.sh       ← standalone (uses globals from args.sh)
 | `args.sh` | _(nothing)_ |
 | `args-help.sh` | `ansi.sh`, `string.sh`, `box.sh` |
 | `args-version.sh` | _(nothing, uses `args_program_*` globals)_ |
+| `args-completion.sh` | `args.sh` |
 
 ## Core concepts
 
@@ -115,7 +119,9 @@ Set `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing to suppress these.
    - `args_options` — associative array of parsed options.
    - `args_command` — the matched command (if any).
    - `args_cleaned` — array of remaining positional arguments.
-4. Immediate options (`-h`, `-v` by default) trigger `args::option::help` / `args::option::version` and exit.
+4. Registered `args::on_options` hooks run.
+5. Immediate options (`-h`, `-v`, `--bash-completion` by default) trigger `args::option::help` / `args::option::version` / `args::option::completion` and exit.
+6. Registered `args::on_parse` hooks run after successful completion.
 
 ### Box layout engine
 
@@ -158,6 +164,7 @@ bash tests/test-string.sh             # string.sh tests
 bash tests/test-ansi.sh               # ansi.sh + ansi-utils.sh tests
 bash tests/test-box.sh                # box.sh tests
 bash tests/test-args.sh               # args.sh tests
+bash tests/test-args-completion.sh    # args-completion.sh tests
 ```
 
 The test harness (`test.sh`) follows the same conventions as library modules: include guard, `set -euo pipefail`, `test::` namespace, auto-loads `ansi.sh` for colored output. It provides assertions: `test::equal`, `test::not_equal`, `test::match`, `test::contains`, `test::ok`, `test::fail_`. Each test file calls `test::done` at the end to print a summary and exit with 0 (pass) or 1 (fail).
@@ -174,8 +181,5 @@ bash tests/manual/test-args.sh -v     # Version
 bash tests/manual/test-args.sh --required=foo cmd  # Option parsing
 bash tests/manual/test-box.sh         # Box layout
 bash tests/manual/test-box-stack.sh   # Box stacking
+bash tests/manual/test-args-completion.sh --bash-completion  # Completion script
 ```
-
-## Planned features
-
-- **Autocomplete module** — shell completion based on `args.sh` definitions.

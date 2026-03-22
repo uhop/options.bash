@@ -33,6 +33,7 @@ options.bash is a pure Bash library for building CLI utilities with rich termina
 - `args.sh` — option/command parsing via `getopt`. Standalone.
 - `args-help.sh` — colored help screen generation. Loads `ansi.sh`, `string.sh`, `box.sh`.
 - `args-version.sh` — `--version` handler. Uses `args_program_*` globals.
+- `args-completion.sh` — bash completion generation. Loads `args.sh`, registers `args::on_options` hook.
 - Simple command names (`RED`, `BOLD`, `RESET_ALL`) are defined by default. Suppress with `ANSI_NO_SIMPLE_COMMAND_NAMES=1`.
 
 ## Verification commands

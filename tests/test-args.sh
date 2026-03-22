@@ -96,4 +96,50 @@ args::parse build foo bar
 test::contains "${args_cleaned[*]}" "foo" "parse: positional arg foo"
 test::contains "${args_cleaned[*]}" "bar" "parse: positional arg bar"
 
+# args::on_options — hook before immediate dispatch
+
+_test_on_options_called=0
+_test_on_options_fn() { _test_on_options_called=1; }
+args::on_options _test_on_options_fn
+
+args_options=()
+args_command=""
+args_cleaned=()
+_test_on_options_called=0
+args::parse build
+test::equal "$_test_on_options_called" "1" "on_options: hook called after parse"
+
+args_options=()
+args_command=""
+args_cleaned=()
+_test_on_options_called=0
+args::parse --flag build
+test::equal "$_test_on_options_called" "1" "on_options: hook called with flag"
+
+# args::on_parse — hook registration and dispatch
+
+_test_hook_called=0
+_test_hook_fn() { _test_hook_called=1; }
+args::on_parse _test_hook_fn
+
+args_options=()
+args_command=""
+args_cleaned=()
+_test_hook_called=0
+args::parse build
+test::equal "$_test_hook_called" "1" "on_parse: hook called after parse"
+
+_test_hook2_called=0
+_test_hook2_fn() { _test_hook2_called=1; }
+args::on_parse _test_hook2_fn
+
+args_options=()
+args_command=""
+args_cleaned=()
+_test_hook_called=0
+_test_hook2_called=0
+args::parse build
+test::equal "$_test_hook_called" "1" "on_parse: first hook still called"
+test::equal "$_test_hook2_called" "1" "on_parse: second hook called"
+
 test::done
