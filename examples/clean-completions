@@ -20,7 +20,7 @@ fi
 files=()
 while IFS= read -r -d '' f; do
   files+=("$f")
-done < <(grep -rlZ 'options\.bash-completion v' "$COMP_DIR" 2>/dev/null || true)
+done < <(grep -rl --null 'options\.bash-completion v' "$COMP_DIR" 2>/dev/null || true)
 
 if [[ ${#files[@]} -eq 0 ]]; then
   echo "No options.bash completion files found in $COMP_DIR"
