@@ -9,7 +9,7 @@ The JavaScript sibling project is [console-toolkit](https://github.com/uhop/cons
 - **Rich terminal output** — colors, styles, cursor control, hyperlinks, true color.
 - **Option parsing** — wraps `getopt` with a clean API for options, commands, and arguments.
 - **Auto-generated help** — colored help screens built from your option definitions.
-- **Bash completion** — generate completion scripts from your option definitions, with fzf support.
+- **Bash completion** — generate completion scripts from your option definitions.
 - **Box layout engine** — normalize, pad, align, and stack multi-line text blocks.
 - **Terminal-aware output** — ANSI codes are automatically stripped when output is piped.
 - **Zero dependencies** — pure Bash, no Python, no Node, no compiled binaries.
@@ -276,13 +276,10 @@ See [box.sh wiki](https://github.com/uhop/options.bash/wiki/box.sh) for the full
 - **`getopt`** (enhanced version) for `args.sh`.
 - **coreutils** (`sed`, `dirname`, `realpath`, `basename`).
 
-Optional:
-- **[fzf](https://github.com/junegunn/fzf)** — enables fuzzy tab completion in `args-completion.sh`. Not required for standard completion.
-
-On macOS, the system Bash is 3.x. Install modern versions:
+On macOS, the system Bash is 3.x. Install a modern version:
 
 ```bash
-brew install bash fzf
+brew install bash
 ```
 
 ## Release history

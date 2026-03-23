@@ -154,15 +154,15 @@ Version display handler. No dependencies (uses `args_program_*` globals).
 
 ### args-completion.sh
 
-Bash completion script generation from `args.sh` registration data. Loads `args.sh`. Wraps `args::parse` for auto-registration.
+Bash completion script generation from `args.sh` registration data. Loads `args.sh`.
 
-- `args::completion::generate` — generate a bash completion script and print to stdout. Includes standard `complete -F` function, option argument awareness, command detection, and an `_fzf_complete_<name>` function for fzf integration.
-- `args::completion::register` — write completion script to `~/.local/share/bash-completion/completions/<name>`. Skips if file is newer than tool script. Fails silently if directory is not writable.
+- `args::completion::generate` — generate a bash completion script and print to stdout. Includes a format version signature, standard `complete -F` function, option argument awareness, and command detection.
+- `args::completion::register` — write completion script to `~/.local/share/bash-completion/completions/<name>`. Skips if file has current format version and is newer than tool script. Regenerates on version mismatch. Fails silently if directory is not writable.
 - `args::option::completion` — immediate option handler for `--bash-completion`. Calls `generate` and exits.
 
 On source, registers an `args::on_options` hook that calls `args::completion::register` before immediate dispatch (only for tools that declared `--bash-completion`). This ensures registration happens even when `-h` or `--bash-completion` exit early.
 
-**Optional dependency:** [fzf](https://github.com/junegunn/fzf) — enables fuzzy tab completion via the generated `_fzf_complete_<name>` function. Install with `brew install fzf`. Not required for standard completion.
+Generated files start with `# options.bash-completion v<N>`. Format version changes trigger regeneration regardless of timestamps.
 
 Tools opt in by declaring the option explicitly (like `--help` and `--version`):
 ```bash

@@ -62,16 +62,14 @@ test::contains "$output" "build|b|test|t|deploy" "generate: command case pattern
 test::contains "$output" '--output|-o)' "generate: arg option --output case"
 test::contains "$output" '--timeout|-t)' "generate: arg option --timeout case"
 
-# --- Test: fzf function ---
+# --- Test: signature ---
 
-test::contains "$output" "_fzf_complete_my_tool()" "generate: fzf function name"
-test::contains "$output" "_fzf_complete --height=40% --reverse" "generate: fzf options"
+test::contains "$output" "# options.bash-completion v${args_completion_format_version}" "generate: format version signature"
 
 # --- Test: generated script is valid bash ---
 
 eval "$output"
 test::equal "$(type -t _complete_my_tool)" "function" "generate: function is callable"
-test::equal "$(type -t _fzf_complete_my_tool)" "function" "generate: fzf function is callable"
 
 # --- Test: completion function produces results ---
 
@@ -124,13 +122,22 @@ test::equal "$(test -f "$tmpdir/.local/share/bash-completion/completions/my-tool
 reg_content="$(cat "$tmpdir/.local/share/bash-completion/completions/my-tool")"
 test::contains "$reg_content" "_complete_my_tool()" "register: file contains function"
 
-# --- Test: register skips if file is newer ---
+# --- Test: register skips if file is newer and same version ---
 
 touch -d "2099-01-01" "$tmpdir/.local/share/bash-completion/completions/my-tool"
 local_before="$(cat "$tmpdir/.local/share/bash-completion/completions/my-tool")"
 HOME="$tmpdir" args::completion::register
 local_after="$(cat "$tmpdir/.local/share/bash-completion/completions/my-tool")"
 test::equal "$local_before" "$local_after" "register: skips when file is newer"
+
+# --- Test: register regenerates if format version differs ---
+
+comp_file="$tmpdir/.local/share/bash-completion/completions/my-tool"
+touch -d "2099-01-01" "$comp_file"
+sed -i '1s/.*/# options.bash-completion v0/' "$comp_file"
+HOME="$tmpdir" args::completion::register
+regen_first_line="$(head -1 "$comp_file")"
+test::equal "$regen_first_line" "# options.bash-completion v${args_completion_format_version}" "register: regenerates on version mismatch"
 
 # --- Test: args::parse wrapper calls register ---
 
