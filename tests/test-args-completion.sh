@@ -139,6 +139,15 @@ HOME="$tmpdir" args::completion::register
 regen_first_line="$(head -1 "$comp_file")"
 test::equal "$regen_first_line" "# options.bash-completion v${args_completion_format_version}" "register: regenerates on version mismatch"
 
+# --- Test: register overwrites legacy file (no signature) ---
+
+legacy_file="$tmpdir/.local/share/bash-completion/completions/my-tool"
+echo 'complete -F _old_my_tool my-tool' > "$legacy_file"
+touch -d "2099-01-01" "$legacy_file"
+HOME="$tmpdir" args::completion::register
+legacy_first_line="$(head -1 "$legacy_file")"
+test::equal "$legacy_first_line" "# options.bash-completion v${args_completion_format_version}" "register: overwrites legacy file without signature"
+
 # --- Test: args::parse wrapper calls register ---
 
 tmpdir2="$(mktemp -d)"
