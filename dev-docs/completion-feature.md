@@ -22,7 +22,7 @@ Manually registering completion for every tool is tedious and error-prone. Two m
 
 **`--bash-completion` option** — manual fallback. The user runs `my-tool --bash-completion > ~/.local/share/bash-completion/completions/my-tool` or `eval "$(my-tool --bash-completion)"`.
 
-**Bootstrap-level auto-registration** — the primary mechanism. The bootstrap file (`main.sh`) calls a helper that generates and writes completion files to `~/.local/share/bash-completion/completions/` for all registered tools. A timestamp check avoids redundant writes: the completion file is regenerated only when the tool script is newer.
+**Bootstrap-level auto-registration** — the primary mechanism. The bootstrap file (`bootstrap.sh`) calls a helper that generates and writes completion files to `~/.local/share/bash-completion/completions/` for all registered tools. A timestamp check avoids redundant writes: the completion file is regenerated only when the tool script is newer.
 
 This leverages bash-completion's lazy loading (2.0+): files in `~/.local/share/bash-completion/completions/` are loaded on demand, keyed by command name.
 

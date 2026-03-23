@@ -22,6 +22,7 @@ tests/manual/         # Manual test scripts (visual inspection)
 ├── test-box.sh       # Test box layout operations
 ├── test-box-stack.sh # Test box stacking (horizontal and vertical)
 └── tput.sh           # Low-level tput batch query helper
+examples/             # Code samples (bootstrap, simple tool, cleanup utility, rich output)
 wiki/                 # GitHub wiki documentation (git submodule)
 ```
 
@@ -144,13 +145,13 @@ Boxes can be composed with `box::stack_lr` (side-by-side, must have equal height
 
 ## Bootstrap pattern
 
-A common deployment pattern is a bootstrap file (e.g., `~/.local/libs/main.sh`) that:
+A common deployment pattern is a bootstrap file (e.g., `~/.local/libs/bootstrap.sh`) that:
 1. Auto-updates the library from git on every invocation.
 2. Sources the core modules (`ansi.sh`, `args.sh`, `args-version.sh`, `args-help.sh`).
 3. Defines helper functions (`echoRun`, `echoRunBold`) for colored command execution.
 4. Sets up environment aliases (e.g., `doas` → `sudo`).
 
-Scripts then source this bootstrap with `. ~/.local/libs/main.sh` and immediately have access to all library functions, color globals (`RED`, `BOLD`, `RESET_ALL`, etc.), and helper utilities. This pattern is used by real-world CLI tools like `upd` (system updater), `cln` (cleanup), `arx` (archive viewer/extractor), `jot` (encrypted S3 notes), and `goup` (recursive directory command runner).
+Scripts then source this bootstrap with `. ~/.local/libs/bootstrap.sh` and immediately have access to all library functions, color globals (`RED`, `BOLD`, `RESET_ALL`, etc.), and helper utilities. This pattern is used by real-world CLI tools like `upd` (system updater), `cln` (cleanup), `arx` (archive viewer/extractor), `jot` (encrypted S3 notes), and `goup` (recursive directory command runner).
 
 ## Testing
 

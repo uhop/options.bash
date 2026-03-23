@@ -60,7 +60,7 @@ args::option "-v, --version" "Show version"
 args::option "-h, --help" "Show help"
 ```
 
-This follows the established pattern in existing utilities (`arx`, `upd`, `cln`, `jot`), where every tool explicitly declares the options it supports. The module is sourced from `main.sh` (bootstrap) and available to all tools, but enabling the `--bash-completion` option is a conscious per-tool decision.
+This follows the established pattern in existing utilities (`arx`, `upd`, `cln`, `jot`), where every tool explicitly declares the options it supports. The module is sourced from `bootstrap.sh` (bootstrap) and available to all tools, but enabling the `--bash-completion` option is a conscious per-tool decision.
 
 ### Immediate option registration
 
@@ -163,7 +163,7 @@ Program names may contain characters invalid in bash function names (e.g., `.`, 
 
 ### Registration mechanism
 
-The bootstrap file (`main.sh`) wraps `args::parse` to auto-register completions after every parse. When `args-completion.sh` is sourced after `args.sh`, it saves a reference to the original `args::parse` and installs a wrapper:
+The bootstrap file (`bootstrap.sh`) wraps `args::parse` to auto-register completions after every parse. When `args-completion.sh` is sourced after `args.sh`, it saves a reference to the original `args::parse` and installs a wrapper:
 
 ```bash
 # args-completion.sh installs the wrapper on source:
@@ -185,10 +185,10 @@ Edge cases:
 - **Tool updated** — tool script is newer than completion file. `register` regenerates it.
 - **Unwritable directory** — `register` fails silently.
 
-### Bootstrap `main.sh` changes
+### Bootstrap `bootstrap.sh` changes
 
 ```bash
-# Add to main.sh after existing module sources:
+# Add to bootstrap.sh after existing module sources:
 . ~/.local/share/libs/scripts/args-completion.sh
 ```
 

@@ -33,7 +33,7 @@ LIB_DIR="$HOME/.local/share/libs/scripts"
 source "${LIB_DIR}/args.sh"
 ```
 
-A common pattern is a bootstrap file (e.g., `~/.local/libs/main.sh`) that auto-updates and sources the core modules:
+A common pattern is a bootstrap file (e.g., `~/.local/libs/bootstrap.sh`) that auto-updates and sources the core modules:
 
 ```bash
 # include options.bash
@@ -57,7 +57,7 @@ echoRunBold() {
 }
 ```
 
-Scripts then source it with `. ~/.local/libs/main.sh` and immediately have access to all library functions, color globals, and helper utilities.
+Scripts then source it with `. ~/.local/libs/bootstrap.sh` and immediately have access to all library functions, color globals, and helper utilities.
 
 ## Project structure
 
@@ -75,6 +75,7 @@ options.bash/
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
 ├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
 ├── tests/manual/     # Manual test scripts (visual inspection)
+├── examples/         # Code samples (bootstrap, simple tool, cleanup utility)
 ├── wiki/             # GitHub wiki documentation (submodule)
 ├── LICENSE           # BSD 3-Clause
 └── README.md

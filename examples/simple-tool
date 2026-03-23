@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# A minimal CLI tool demonstrating the full options.bash pattern.
+#
+# Usage:
+#   simple-tool [options] <command>
+#
+# Try:
+#   ./simple-tool -h
+#   ./simple-tool --version
+#   ./simple-tool build
+#   ./simple-tool --output=result.txt build
+
+# --- Library setup ---
+# Option A: direct source (adjust path to your clone)
+LIB_DIR="$(dirname "$(realpath "${BASH_SOURCE:-$0}")")/.."
+source "${LIB_DIR}/ansi.sh"
+source "${LIB_DIR}/args.sh"
+source "${LIB_DIR}/args-help.sh"
+source "${LIB_DIR}/args-version.sh"
+source "${LIB_DIR}/args-completion.sh"
+# Option B: via bootstrap (uncomment and remove the above)
+# . ~/.local/libs/bootstrap.sh
+
+# --- Program definition ---
+script_name=$(basename "$0")
+args::program "$script_name" "1.0.0" "A simple example tool"
+
+# --- Options ---
+args::option "-o, --output" "Output file" "file"
+args::option "--verbose" "Verbose output"
+args::option "--bash-completion" "Output bash completion script"
+args::option "-v, --version" "Show version"
+args::option "-h, --help" "Show help"
+
+# --- Commands ---
+args::option "build, b" "Build the project"
+args::option "test, t" "Run tests"
+
+# --- Parse ---
+args::parse "$@"
+
+# --- Use parsed results ---
+if [[ -v args_options["--verbose"] ]]; then
+  ansi::out "${DIM}verbose mode on${RESET_ALL}"
+fi
+
+if [[ -v args_options["--output"] ]]; then
+  ansi::out "Output file: ${BOLD}${args_options["--output"]}${RESET_ALL}"
+fi
+
+case "${args_command}" in
+  build) ansi::out "${GREEN}Building...${RESET_ALL}" ;;
+  test)  ansi::out "${CYAN}Testing...${RESET_ALL}" ;;
+  *)     ansi::out "${RED}Unknown command: ${args_command}${RESET_ALL}" ;;
+esac

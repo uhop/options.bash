@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Demonstrates ANSI styling and box layout.
+#
+# Try:
+#   ./rich-output
+#   ./rich-output | cat    (ANSI codes are stripped automatically)
+
+LIB_DIR="$(dirname "$(realpath "${BASH_SOURCE:-$0}")")/.."
+source "${LIB_DIR}/ansi.sh"
+source "${LIB_DIR}/string.sh"
+source "${LIB_DIR}/box.sh"
+
+# --- Colors and styles ---
+ansi::out "${BOLD}Colors and styles:${RESET_ALL}"
+ansi::out "  ${RED}red${RESET_ALL}  ${GREEN}green${RESET_ALL}  ${BLUE}blue${RESET_ALL}  ${CYAN}cyan${RESET_ALL}  ${YELLOW}yellow${RESET_ALL}  ${MAGENTA}magenta${RESET_ALL}"
+ansi::out "  ${BOLD}bold${RESET_ALL}  ${DIM}dim${RESET_ALL}  ${ITALIC}italic${RESET_ALL}  ${UNDERLINE}underline${RESET_ALL}"
+ansi::out ""
+
+# --- Composing styles with ansi::make ---
+header="$(ansi::make bold bright_white bg_blue)"
+ansi::out "${header} Custom composed style ${RESET_ALL}"
+ansi::out ""
+
+# --- Box layout ---
+box1="$(box::make "Hello" "World")"
+box1="$(box::exec "$box1" normalize left pad_lr 1 3)"
+
+box2="$(box::make "options.bash" "examples")"
+box2="$(box::exec "$box2" normalize right pad_lr 3 1)"
+
+result="$(box::stack_lr "$box1" "$box2")"
+
+ansi::out "${BOLD}Box layout (side by side):${RESET_ALL}"
+box::out "$result"
+ansi::out ""
+
+# --- Terminal-aware output ---
+ansi::out "${DIM}Pipe this script to 'cat' to see ANSI stripping in action.${RESET_ALL}"

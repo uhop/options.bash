@@ -85,7 +85,7 @@ Commands:
 
 ## Bootstrap pattern
 
-A common pattern is a bootstrap file that auto-updates and sources the core modules. Create `~/.local/libs/main.sh`:
+A common pattern is a bootstrap file that auto-updates and sources the core modules. Create `~/.local/libs/bootstrap.sh`:
 
 ```bash
 # include options.bash
@@ -116,7 +116,7 @@ Then your scripts just source it and go:
 set -euCo pipefail
 shopt -s expand_aliases
 
-. ~/.local/libs/main.sh
+. ~/.local/libs/bootstrap.sh
 
 script_name=$(basename "$0")
 args::program "$script_name" "1.0" "Update software with available package managers"
@@ -154,6 +154,7 @@ options.bash/
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
 ├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
 ├── tests/manual/     # Manual test scripts (visual inspection)
+├── examples/         # Code samples (bootstrap, simple tool, cleanup utility)
 └── wiki/             # GitHub wiki documentation (submodule)
 ```
 

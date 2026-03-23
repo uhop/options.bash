@@ -52,6 +52,7 @@ options.bash is a pure Bash library for building CLI utilities with rich termina
 - Test harness: `test.sh`
 - Automated tests: `tests/test-*.sh`
 - Manual tests: `tests/manual/test-*.sh`
+- Examples: `examples/` (bootstrap, simple tool, cleanup utility, rich output)
 - Wiki docs: `wiki/` (git submodule)
 
 ## When reading the codebase
