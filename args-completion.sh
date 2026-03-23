@@ -126,7 +126,7 @@ args::completion::register() {
   fi
 
   mkdir -p "$comp_dir" 2>/dev/null || return 0
-  args::completion::generate > "$comp_file" 2>/dev/null || return 0
+  args::completion::generate >| "$comp_file" 2>/dev/null || return 0
 }
 
 args::completion::_on_options() {
