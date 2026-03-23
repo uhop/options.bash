@@ -37,7 +37,7 @@ A common pattern is a bootstrap file (e.g., `~/.local/libs/bootstrap.sh`) that a
 
 ```bash
 # include options.bash
-command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/null || true
+command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull --no-recurse-submodules > /dev/null || true
 
 . ~/.local/share/libs/scripts/ansi.sh
 . ~/.local/share/libs/scripts/args.sh

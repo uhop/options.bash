@@ -7,7 +7,7 @@
 # Sources core modules so scripts start with full functionality.
 
 # auto-update
-command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull > /dev/null || true
+command -v git &> /dev/null && git -C ~/.local/share/libs/scripts pull --no-recurse-submodules > /dev/null || true
 
 # core modules
 . ~/.local/share/libs/scripts/ansi.sh
