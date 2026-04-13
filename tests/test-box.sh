@@ -129,4 +129,19 @@ box2=$(box::exec $'ef\ngh' normalize left)
 result=$(box::stack_lr "$box1" "$box2")
 test::equal "$result" $'abef\ncdgh' "stack_lr"
 
+# box::warn — returns 0, writes to stderr
+
+status=0
+box::warn "test warning" 2>/dev/null || status=$?
+test::equal "$status" "0" "warn: returns 0"
+
+result=$(box::warn "hello warn" 2>&1)
+test::contains "$result" "hello warn" "warn: writes to stderr"
+
+# box::err — returns 1
+
+status=0
+box::err "test error" 2>/dev/null || status=$?
+test::equal "$status" "1" "err: returns 1"
+
 test::done

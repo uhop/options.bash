@@ -340,6 +340,29 @@ box::stack_tb() {
   done
 }
 
+box::warn() {
+  local string="$1"
+
+  # from string to lines
+  local lines=()
+  set +e
+  IFS=$'\n' read -rd '' -a lines <<< "$(box::_normalize "$string")"
+  set -e
+
+  # from lines to string
+  if [[ -t 2 || -z "$TERM" ]]; then
+    for line in "${lines[@]}"; do
+      echo -e "$line" >&2
+    done
+    return 0
+  fi
+
+  for line in "${lines[@]}"; do
+    echo -e "$(string::clean "$line")" >&2
+  done
+  return 0
+}
+
 box::err() {
   local string="$1"
 

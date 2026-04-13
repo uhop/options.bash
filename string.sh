@@ -70,6 +70,20 @@ string::pad() {
   printf "%s%s%s" "$pad_left_str" "$string" "$pad_right_str"
 }
 
+string::warn() {
+  if [[ -t 2 || -z "$TERM" ]]; then
+    echo -e "$@" >&2
+    return 0
+  fi
+
+  local args=()
+  for arg in "$@"; do
+    args+=("$(string::clean "$arg")")
+  done
+  echo -e "${args[@]}" >&2
+  return 0
+}
+
 string::err() {
   if [[ -t 2 || -z "$TERM" ]]; then
     echo -e "$@" >&2

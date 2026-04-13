@@ -70,6 +70,26 @@ test::equal "$(ansi::color::make_bright 0)" "8" "make_bright: 0 -> 8"
 test::equal "$(ansi::color::make_bright 1)" "9" "make_bright: 1 -> 9"
 test::equal "$(ansi::color::make_bright 7)" "15" "make_bright: 7 -> 15"
 
+# ansi::warn — returns 0, writes to stderr
+
+status=0
+ansi::warn "test warning" 2>/dev/null || status=$?
+test::equal "$status" "0" "warn: returns 0"
+
+result=$(ansi::warn "hello warn" 2>&1)
+test::contains "$result" "hello warn" "warn: writes to stderr"
+
+# ansi::err — returns 1
+
+status=0
+ansi::err "test error" 2>/dev/null || status=$?
+test::equal "$status" "1" "err: returns 1"
+
+# ansi::out — writes to stdout
+
+result=$(ansi::out "hello out")
+test::contains "$result" "hello out" "out: writes to stdout"
+
 # ANSI_NO_SIMPLE_COMMAND_NAMES suppression
 # (tested implicitly by verifying globals exist above)
 

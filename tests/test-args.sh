@@ -96,6 +96,43 @@ args::parse build foo bar
 test::contains "${args_cleaned[*]}" "foo" "parse: positional arg foo"
 test::contains "${args_cleaned[*]}" "bar" "parse: positional arg bar"
 
+# args::parse — positional arguments with spaces
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse build "hello world" "foo bar"
+test::equal "${args_cleaned[1]}" "hello world" "parse: positional arg with spaces"
+test::equal "${args_cleaned[2]}" "foo bar" "parse: second positional arg with spaces"
+
+# args::parse — positional arguments with special chars
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse build "it's" '$HOME'
+test::equal "${args_cleaned[1]}" "it's" "parse: positional arg with single quote"
+test::equal "${args_cleaned[2]}" '$HOME' "parse: positional arg with dollar sign"
+
+# args::parse — option with optional argument
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse --optional-arg=myval build
+test::equal "${args_options["--optional-arg"]}" "myval" "parse: optional arg with value"
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse --optional-arg build
+test::equal "${args_options["--optional-arg"]}" "" "parse: optional arg without value"
+
+# args::try_help
+
+result=$(args::try_help)
+test::contains "$result" "--help" "try_help: suggests --help"
+
 # args::on_options — hook before immediate dispatch
 
 _test_on_options_called=0

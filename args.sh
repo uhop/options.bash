@@ -125,7 +125,11 @@ args::try_help() {
   elif [[ -v args_aliases["-h"] ]]; then
     echo "Try '${args_program_name} -h' for more information."
   elif [ -n "$args_program_url" ]; then
-    ansi::out "Visit $(ansi::hyperlink "$args_program_url") for more information."
+    if type -t ansi::out &>/dev/null && type -t ansi::hyperlink &>/dev/null; then
+      ansi::out "Visit $(ansi::hyperlink "$args_program_url") for more information."
+    else
+      echo "Visit ${args_program_url} for more information."
+    fi
   fi
 }
 
@@ -157,18 +161,9 @@ args::parse() {
     fi
   done
 
-  local escaped_args=()
-  for arg in "$@"; do
-    if [[ "${arg}" == -* ]]; then
-      escaped_args+=("${arg}")
-    else
-      escaped_args+=("$(printf '%q' "${arg}")")
-    fi
-  done
-
   local parsed
   local status=0
-  parsed=$(getopt -o "${short_options}" -l "${long_options}" -n "${args_program_name}" -- "${escaped_args[@]}") || status=$?
+  parsed=$(getopt -o "${short_options}" -l "${long_options}" -n "${args_program_name}" -- "$@") || status=$?
 
   if [[ $status -ne 0 ]]; then
     if type -t "args::error::getopt" &> /dev/null; then

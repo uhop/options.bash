@@ -79,6 +79,20 @@ ansi::length() {
   echo "${#string_clean}"
 }
 
+ansi::warn() {
+  if [[ -t 2 || -z "$TERM" ]]; then
+    echo -e "$@" >&2
+    return 0
+  fi
+
+  local -a args=()
+  for arg in "$@"; do
+    args+=("$(ansi::strip "$arg")")
+  done
+  echo -e "${args[@]}" >&2
+  return 0
+}
+
 ansi::err() {
   if [[ -t 2 || -z "$TERM" ]]; then
     echo -e "$@" >&2

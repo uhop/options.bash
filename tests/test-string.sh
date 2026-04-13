@@ -62,4 +62,19 @@ test::equal "$(string::length "${BOLD}${GREEN}ok${RESET_ALL}")" "2" "length: ANS
 test::equal "$(string::clean "${RED}hello${RESET_ALL}")" "hello" "clean: strips ANSI"
 test::equal "$(string::clean "${BOLD}ok${RESET_ALL}")" "ok" "clean: strips bold"
 
+# string::warn — returns 0, writes to stderr
+
+status=0
+string::warn "test warning" 2>/dev/null || status=$?
+test::equal "$status" "0" "warn: returns 0"
+
+result=$(string::warn "hello warn" 2>&1)
+test::contains "$result" "hello warn" "warn: writes to stderr"
+
+# string::err — returns 1
+
+status=0
+string::err "test error" 2>/dev/null || status=$?
+test::equal "$status" "1" "err: returns 1"
+
 test::done
