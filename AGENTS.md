@@ -90,7 +90,7 @@ options.bash/
 - **Global variables** use `module_name` prefix (e.g., `ansi_style_colors`, `args_program_name`).
 - **Include guards**: every module checks for a sentinel function at the top and returns early if already loaded.
 - **Auto-dependency loading**: modules resolve their own dependencies relative to `BASH_SOURCE`.
-- **No simple command name pollution** by default can be disabled by setting `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing.
+- **Simple command names** (`RED`, `BOLD`, `RESET_ALL`, etc.) are defined by default. Suppress with `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing.
 
 ## Architecture
 
@@ -183,7 +183,8 @@ args::parse "$@"
 - Every module is independently sourceable (dependencies are auto-resolved).
 - `ansi.sh` and `ansi-tput.sh` are mutually exclusive — source only one.
 - Use `ansi::out` / `box::out` / `string::out` instead of raw `echo` for terminal-safe output.
-- Error output functions (`ansi::err`, `box::err`, `string::err`) write to stderr and return 1.
+- Warning output (`::warn`) writes to stderr and returns 0 — safe under `set -e`.
+- Error output (`::err`) writes to stderr and returns 1.
 - Wiki documentation lives in the `wiki/` submodule.
 - Automated tests live in `tests/` — run with `bash tests/run.sh`.
 - Manual tests (visual inspection) live in `tests/manual/`.

@@ -30,8 +30,7 @@ wiki/                 # GitHub wiki documentation (git submodule)
 
 ```
 string.sh             ← no dependencies (lowest level)
-    ↑
-ansi-utils.sh         ← loads string.sh (via ansi.sh or ansi-tput.sh)
+ansi-utils.sh         ← no dependencies (shared helpers for ansi.sh / ansi-tput.sh)
     ↑
 ansi.sh               ← loads ansi-utils.sh (raw escape sequences)
 ansi-tput.sh          ← loads ansi-utils.sh (tput-based, alternative to ansi.sh)
@@ -50,9 +49,9 @@ args-completion.sh    ← loads args.sh (registers args::on_options hook)
 | Module | Auto-loads |
 |---|---|
 | `string.sh` | _(nothing)_ |
-| `ansi-utils.sh` | _(nothing, but expects `string.sh` functions or degrades gracefully)_ |
-| `ansi.sh` | `ansi-utils.sh` → `string.sh` |
-| `ansi-tput.sh` | `ansi-utils.sh` → `string.sh` |
+| `ansi-utils.sh` | _(nothing)_ |
+| `ansi.sh` | `ansi-utils.sh` |
+| `ansi-tput.sh` | `ansi-utils.sh` |
 | `box.sh` | `string.sh` |
 | `args.sh` | _(nothing)_ |
 | `args-help.sh` | `ansi.sh`, `string.sh`, `box.sh` |
@@ -79,11 +78,11 @@ This means modules can be sourced multiple times safely, and dependency loading 
 
 ### Terminal-aware output
 
-All output functions (`ansi::out`, `box::out`, `string::out`) detect whether stdout/stderr is a terminal:
+Output functions detect whether stdout/stderr is a terminal:
 - **Terminal**: output includes ANSI escape codes.
 - **Pipe/file**: escape codes are automatically stripped.
 
-The check is `[[ -t 1 || -z "$TERM" ]]` (fd 1 for stdout, fd 2 for stderr).
+Stdout functions (`::out`): check `[[ -t 1 || -z "$TERM" ]]`. Stderr functions (`::err`, `::warn`): check `[[ -t 2 || -z "$TERM" ]]`. `::err` returns 1 (signals failure); `::warn` returns 0 (safe under `set -e`).
 
 ### ANSI implementations
 

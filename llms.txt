@@ -40,6 +40,7 @@ String utilities. No dependencies.
 - `string::make_pad LENGTH [CHAR]` — create a padding string of given length.
 - `string::pad STRING LENGTH [ALIGN] [CHAR]` — pad string to length. ALIGN: `left`/`l`, `right`/`r`, `center`/`c`.
 - `string::out ARGS...` — terminal-aware echo (strips ANSI when piped).
+- `string::warn ARGS...` — terminal-aware echo to stderr (returns 0, safe under `set -e`).
 - `string::err ARGS...` — terminal-aware echo to stderr (returns 1).
 
 ### ansi-utils.sh
@@ -60,6 +61,7 @@ Shared ANSI utilities loaded by both `ansi.sh` and `ansi-tput.sh`.
 - `ansi::strip STRING` — remove all ANSI escape codes.
 - `ansi::length STRING` — visible string length (after stripping ANSI).
 - `ansi::out ARGS...` — terminal-aware echo (strips ANSI when piped).
+- `ansi::warn ARGS...` — terminal-aware echo to stderr (returns 0, safe under `set -e`).
 - `ansi::err ARGS...` — terminal-aware echo to stderr (returns 1).
 - `ansi::prompt ARGS...` — like `ansi::out` but no trailing newline.
 
@@ -183,6 +185,7 @@ Text box layout engine for multi-line strings. Loads `string.sh`.
 - `box::stack_lr STRING1 STRING2` — stack side-by-side (must have equal height).
 - `box::stack_tb STRING1 STRING2` — stack vertically (must have equal width).
 - `box::out STRING` — terminal-aware multi-line output.
+- `box::warn STRING` — terminal-aware multi-line output to stderr (returns 0, safe under `set -e`).
 - `box::err STRING` — terminal-aware multi-line output to stderr (returns 1).
 
 ## Bootstrap pattern
