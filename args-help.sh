@@ -191,7 +191,8 @@ args::option::help() {
   if [ -n "$args_program_footer" ]; then
     echo
     ansi::out "${args_program_footer}"
-  elif [ -n "$args_program_url" ]; then
+  fi
+  if [ -n "$args_program_url" ]; then
     echo
     ansi::out "For more information visit: $(ansi::hyperlink "$args_program_url")"
   fi

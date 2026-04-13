@@ -24,3 +24,12 @@ backslashes), producing `echo\ hello` instead of `echo hello`.
 `getopt` already single-quotes its output correctly, so the extra escaping
 was unnecessary. Test added: `tests/test-args.sh` "parse: positional arg
 with spaces".
+
+---
+
+## ~~`args_program_footer` suppresses `args_program_url`~~ FIXED
+
+Changed the `if footer … elif url` logic in `args-help.sh` to two
+independent `if` blocks. When both `args_program_footer` and
+`args_program_url` are set, the help screen now shows the footer first,
+then the URL line. Test added: `tests/test-args-help.sh`.
