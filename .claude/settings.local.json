@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//tmp/**)",
+      "Read(~/.local/bin/**)",
+      "Read(~/.local/libs/**)",
+      "Read(~/.local/share/libs/**)",
+      "Bash(bash tests/:*)",
+      "Bash(bash tests/manual/:*)",
+      "Bash(bash examples/:*)",
+      "Bash(shellcheck:*)",
+      "Bash(git mv:*)",
+      "Bash(git rm:*)",
+      "Bash(ls:*)",
+      "Bash(command ls:*)",
+      "Bash(grep:*)",
+      "Bash(diff:*)",
+      "Bash(cp:*)",
+      "Bash(command cp:*)",
+      "Bash(chmod:*)",
+      "Bash(command chmod:*)",
+      "Bash(mkdir:*)",
+      "Bash(command mkdir:*)",
+      "Bash(cat:*)",
+      "Bash(command cat:*)",
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(echo \"exit: $?\")",
+      "WebSearch",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}
