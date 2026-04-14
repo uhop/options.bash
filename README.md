@@ -145,6 +145,7 @@ options.bash/
 ├── ansi.sh           # ANSI escape codes: colors, styles, cursor, screen control
 ├── ansi-tput.sh      # Alternative ANSI implementation using tput (bash 4.3+)
 ├── ansi-utils.sh     # Shared ANSI utilities: color math, strip, make, output helpers
+├── ansi-semantic.sh  # Semantic color globals: ERROR, WARN, INFO, OK
 ├── args.sh           # CLI option/command parsing (wraps getopt)
 ├── args-help.sh      # Auto-generated colored help screen from args definitions
 ├── args-version.sh   # --version / -v handler
@@ -165,6 +166,7 @@ The full documentation is in the [wiki](https://github.com/uhop/options.bash/wik
 - [ansi.sh](https://github.com/uhop/options.bash/wiki/ansi.sh) — ANSI escape codes (primary module)
 - [ansi-tput.sh](https://github.com/uhop/options.bash/wiki/ansi‐tput.sh) — tput-based alternative
 - [ansi-utils.sh](https://github.com/uhop/options.bash/wiki/ansi‐utils.sh) — shared ANSI utilities
+- [ansi-semantic.sh](https://github.com/uhop/options.bash/wiki/ansi‐semantic.sh) — semantic color globals (ERROR, WARN, INFO, OK)
 - [args.sh](https://github.com/uhop/options.bash/wiki/args.sh) — option and command parsing
 - [args-help.sh](https://github.com/uhop/options.bash/wiki/args‐help.sh) — auto-generated help screen
 - [args-version.sh](https://github.com/uhop/options.bash/wiki/args‐version.sh) — version handler
@@ -194,6 +196,9 @@ For AI assistants: see [llms.txt](https://github.com/uhop/options.bash/blob/main
 │  ├─────────┤  │
 │  │ ansi-   │◄─┘                     ← shared ANSI utilities
 │  │ utils.sh│
+│  ├─────────┤
+│  │ ansi-   │                        ← semantic colors (ERROR, WARN, INFO, OK)
+│  │semantic │
 │  ├─────────┤
 │  │string.sh│                        ← string primitives
 │  └─────────┘

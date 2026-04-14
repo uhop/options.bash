@@ -102,6 +102,23 @@ Additional functions:
 - `ansi::screen::lines`, `ansi::screen::cols`, `ansi::screen::colors` — terminal dimensions/capabilities.
 - `ansi::terminal::name` — terminal long name.
 
+### ansi-semantic.sh
+
+Semantic color globals for CLI feedback. Bash 4.0+. Loads `ansi.sh`.
+
+Globals (always defined):
+- `SEMANTIC_ERROR` — bold bright-white on red background (error messages).
+- `SEMANTIC_WARN` — bold bright-white on blue background (warnings).
+- `SEMANTIC_INFO` — bold cyan (informational).
+- `SEMANTIC_OK` — bold green (success).
+
+Simple names (`ERROR`, `WARN`, `INFO`, `OK`) are defined by default as aliases. Suppress with `ANSI_NO_SEMANTIC_NAMES=1` before sourcing.
+
+Override defaults before sourcing: `ANSI_SEMANTIC_ERROR`, `ANSI_SEMANTIC_WARN`, `ANSI_SEMANTIC_INFO`, `ANSI_SEMANTIC_OK`.
+
+Functions:
+- `ansi::semantic::define [PREFIX]` — output eval-able code defining semantic name variables. With prefix: `PREFIX_ERROR`, etc.
+
 ### args.sh
 
 CLI option and command parsing via `getopt`. Bash 4.0+. No library dependencies.

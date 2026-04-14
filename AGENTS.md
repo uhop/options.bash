@@ -66,6 +66,7 @@ options.bash/
 ├── ansi.sh           # ANSI escape codes: colors, styles, cursor, screen control
 ├── ansi-tput.sh      # Alternative ANSI implementation using tput (bash 4.3+)
 ├── ansi-utils.sh     # Shared ANSI utilities: color math, strip, make, output helpers
+├── ansi-semantic.sh  # Semantic color globals: ERROR, WARN, INFO, OK
 ├── args.sh           # CLI option/command parsing (wraps getopt)
 ├── args-help.sh      # Auto-generated colored help screen from args definitions
 ├── args-version.sh   # --version / -v handler
@@ -114,6 +115,9 @@ options.bash/
 │  │ ansi-   │◄─┘                     ← shared ANSI utilities
 │  │ utils.sh│
 │  ├─────────┤
+│  │ ansi-   │                        ← semantic colors (ERROR, WARN, INFO, OK)
+│  │semantic │
+│  ├─────────┤
 │  │string.sh│                        ← string primitives
 │  └─────────┘
 ```
@@ -122,6 +126,7 @@ options.bash/
 - **`ansi-utils.sh`** provides color math, escape-code stripping, and terminal-aware output. Loaded by both `ansi.sh` and `ansi-tput.sh`.
 - **`ansi.sh`** and **`ansi-tput.sh`** are **alternative** ANSI implementations. Source one, never both. They export the same core API (`ansi::fg`, `ansi::bg`, `ansi::get`, `ansi::make`, `ansi::alias_simple_command_names`).
 - **`box.sh`** is a text layout engine operating on multi-line strings. Depends on `string.sh`.
+- **`ansi-semantic.sh`** defines semantic color globals (`ERROR`, `WARN`, `INFO`, `OK`) composed from base ANSI styles. Loads `ansi.sh`.
 - **`args.sh`** handles option/command parsing via `getopt`. It is standalone.
 - **`args-help.sh`** generates a colorized help screen. It sources `ansi.sh`, `string.sh`, and `box.sh`.
 - **`args-version.sh`** prints version and exits. It uses globals set by `args::program`.

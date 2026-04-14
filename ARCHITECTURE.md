@@ -8,6 +8,7 @@
 ansi.sh               # ANSI escape codes via raw escape sequences (bash 4.0+)
 ansi-tput.sh          # Alternative ANSI implementation via tput (bash 4.3+)
 ansi-utils.sh         # Shared ANSI utilities: color math, strip, make, output helpers
+ansi-semantic.sh      # Semantic color globals: ERROR, WARN, INFO, OK
 args.sh               # CLI option/command parsing (wraps getopt)
 args-help.sh          # Auto-generated colored help screen from args definitions
 args-version.sh       # --version / -v handler (prints name + version, exits)
@@ -16,6 +17,7 @@ box.sh                # Text box layout engine: normalize, pad, align, stack
 string.sh             # String utilities: pad, clean, length, output helpers
 tests/manual/         # Manual test scripts (visual inspection)
 ├── test-ansi.sh      # Test ansi.sh colors and styles
+├── test-ansi-semantic.sh # Test semantic color globals
 ├── test-ansi-tput.sh # Test ansi-tput.sh colors and styles
 ├── test-args.sh      # Test option/command parsing with help screen
 ├── test-args-completion.sh # Test completion generation
@@ -35,6 +37,8 @@ ansi-utils.sh         ← no dependencies (shared helpers for ansi.sh / ansi-tpu
 ansi.sh               ← loads ansi-utils.sh (raw escape sequences)
 ansi-tput.sh          ← loads ansi-utils.sh (tput-based, alternative to ansi.sh)
     ↑
+ansi-semantic.sh      ← loads ansi.sh (semantic color globals)
+    ↑
 box.sh                ← loads string.sh
     ↑
 args.sh               ← standalone (no library dependencies)
@@ -52,6 +56,7 @@ args-completion.sh    ← loads args.sh (registers args::on_options hook)
 | `ansi-utils.sh` | _(nothing)_ |
 | `ansi.sh` | `ansi-utils.sh` |
 | `ansi-tput.sh` | `ansi-utils.sh` |
+| `ansi-semantic.sh` | `ansi.sh` |
 | `box.sh` | `string.sh` |
 | `args.sh` | _(nothing)_ |
 | `args-help.sh` | `ansi.sh`, `string.sh`, `box.sh` |
@@ -162,6 +167,7 @@ The project includes a built-in test harness (`test.sh`) and automated tests in 
 bash tests/run.sh                     # Run all automated tests
 bash tests/test-string.sh             # string.sh tests
 bash tests/test-ansi.sh               # ansi.sh + ansi-utils.sh tests
+bash tests/test-ansi-semantic.sh      # ansi-semantic.sh tests
 bash tests/test-box.sh                # box.sh tests
 bash tests/test-args.sh               # args.sh tests
 bash tests/test-args-completion.sh    # args-completion.sh tests
@@ -175,6 +181,7 @@ Visual inspection tests live in `tests/manual/`:
 
 ```bash
 bash tests/manual/test-ansi.sh        # ANSI colors and styles
+bash tests/manual/test-ansi-semantic.sh  # Semantic color globals
 bash tests/manual/test-ansi-tput.sh   # tput-based colors and styles
 bash tests/manual/test-args.sh -h     # Help screen
 bash tests/manual/test-args.sh -v     # Version
