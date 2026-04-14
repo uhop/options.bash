@@ -12,7 +12,7 @@ source "$script_dir/../../args-version.sh"
 
 args::program "$script_name" "1.0" "Test completion generation"
 
-args_program_required_command="no"
+args_program_default_command="build"
 
 args::option "build, b" "Build the project"
 args::option "test, t" "Run tests" "filter"

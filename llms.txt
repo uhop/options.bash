@@ -140,8 +140,7 @@ Result globals:
 - `args_cleaned` — array of remaining positional arguments.
 
 Configuration globals:
-- `args_program_required_command` — `"yes"` (default) or `"no"`.
-- `args_program_default_command` — default command when none given. Implicitly makes command optional. Help screen annotates with *(default)*.
+- `args_program_default_command` — default command when none given. Makes command optional. Help screen annotates with *(default)*.
 - `args_program_help_style` — `"grid"` (default) or `"list"`.
 - `args_program_usage` — custom usage text (overrides auto-generated).
 - `args_program_header` — text shown after program description.

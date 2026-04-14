@@ -37,7 +37,6 @@ args_program_url=""
 args_program_usage=""
 args_program_header=""
 args_program_footer=""
-args_program_required_command="yes"
 args_program_default_command=""
 args_program_help_style="grid" # grid, list
 
@@ -219,7 +218,7 @@ args::parse() {
   fi
 
   if [[ ${args_check_command} -eq 0 ]]; then
-    local _args_required="${args_program_required_command}"
+    local _args_required="yes"
     if [[ -n "$args_program_default_command" ]]; then _args_required="no"; fi
 
     if [ "$#" -eq 0 ] && [[ ${_args_required} == "yes" ]]; then
@@ -252,6 +251,8 @@ args::parse() {
       fi
     else
       args_command="${args_aliases[$current_command]}"
+      shift
+      args_cleaned=("$@")
     fi
     if [[ -z "$args_command" && -n "$args_program_default_command" ]]; then
       args_command="$args_program_default_command"

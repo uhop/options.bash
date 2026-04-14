@@ -93,8 +93,18 @@ args_options=()
 args_command=""
 args_cleaned=()
 args::parse build foo bar
-test::contains "${args_cleaned[*]}" "foo" "parse: positional arg foo"
-test::contains "${args_cleaned[*]}" "bar" "parse: positional arg bar"
+test::equal "${#args_cleaned[@]}" "2" "parse: command stripped from args_cleaned"
+test::equal "${args_cleaned[0]}" "foo" "parse: positional arg foo"
+test::equal "${args_cleaned[1]}" "bar" "parse: positional arg bar"
+
+# args::parse — command-only (no extra args)
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse build
+test::equal "$args_command" "build" "parse: command-only detected"
+test::equal "${#args_cleaned[@]}" "0" "parse: command-only has empty args_cleaned"
 
 # args::parse — positional arguments with spaces
 
@@ -102,8 +112,8 @@ args_options=()
 args_command=""
 args_cleaned=()
 args::parse build "hello world" "foo bar"
-test::equal "${args_cleaned[1]}" "hello world" "parse: positional arg with spaces"
-test::equal "${args_cleaned[2]}" "foo bar" "parse: second positional arg with spaces"
+test::equal "${args_cleaned[0]}" "hello world" "parse: positional arg with spaces"
+test::equal "${args_cleaned[1]}" "foo bar" "parse: second positional arg with spaces"
 
 # args::parse — positional arguments with special chars
 
@@ -111,8 +121,8 @@ args_options=()
 args_command=""
 args_cleaned=()
 args::parse build "it's" '$HOME'
-test::equal "${args_cleaned[1]}" "it's" "parse: positional arg with single quote"
-test::equal "${args_cleaned[2]}" '$HOME' "parse: positional arg with dollar sign"
+test::equal "${args_cleaned[0]}" "it's" "parse: positional arg with single quote"
+test::equal "${args_cleaned[1]}" '$HOME' "parse: positional arg with dollar sign"
 
 # args::parse — option with optional argument
 
@@ -207,7 +217,8 @@ args_command=""
 args_cleaned=()
 args::parse --flag test extra1 extra2
 test::equal "$args_command" "test" "default_command: explicit with extras"
-test::contains "${args_cleaned[*]}" "extra1" "default_command: extras preserved"
+test::equal "${args_cleaned[0]}" "extra1" "default_command: extras preserved"
+test::equal "${args_cleaned[1]}" "extra2" "default_command: second extra preserved"
 
 # reset default for subsequent test safety
 args_program_default_command=""

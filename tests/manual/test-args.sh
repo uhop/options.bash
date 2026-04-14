@@ -15,7 +15,6 @@ args::program "$script_name" "1.0" "Test program"
 # args_program_header="Some fancyful\ndescription"
 # args_program_footer="Some footer"
 # args_program_help_style="list"
-# args_program_required_command="no"
 
 args::option "cmd" "Sample command
 Sample description"
@@ -40,7 +39,7 @@ for arg in "$@"; do
 done
 
 args::parse "$@"
-eval set -- "${args_cleaned}"
+set -- "${args_cleaned[@]}"
 
 echo "Current arguments ($#): $@"
 for arg in "$@"; do
