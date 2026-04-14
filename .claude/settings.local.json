@@ -1,5 +1,11 @@
 {
   "permissions": {
-    "allow": ["Bash(wc:*)", "Bash(git mv:*)", "Bash(bash tests/run.sh)"]
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(git mv:*)",
+      "Bash(bash tests/run.sh)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
+    ]
   }
 }
