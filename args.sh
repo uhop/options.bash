@@ -38,6 +38,7 @@ args_program_usage=""
 args_program_header=""
 args_program_footer=""
 args_program_required_command="yes"
+args_program_default_command=""
 args_program_help_style="grid" # grid, list
 
 # Internal data structures
@@ -218,7 +219,10 @@ args::parse() {
   fi
 
   if [[ ${args_check_command} -eq 0 ]]; then
-    if [ "$#" -eq 0 ] && [[ ${args_program_required_command} == "yes" ]]; then
+    local _args_required="${args_program_required_command}"
+    if [[ -n "$args_program_default_command" ]]; then _args_required="no"; fi
+
+    if [ "$#" -eq 0 ] && [[ ${_args_required} == "yes" ]]; then
       if type -t "args::error::no_command" &> /dev/null; then
         args::error::no_command
       else
@@ -237,7 +241,7 @@ args::parse() {
       fi
     done
     if [[ $command_found -eq 0 ]]; then
-      if  [[ ${args_program_required_command} == "yes" ]]; then
+      if [[ ${_args_required} == "yes" ]]; then
         if type -t "args::error::unknown_command" &> /dev/null; then
           args::error::unknown_command "$current_command"
         else
@@ -248,6 +252,9 @@ args::parse() {
       fi
     else
       args_command="${args_aliases[$current_command]}"
+    fi
+    if [[ -z "$args_command" && -n "$args_program_default_command" ]]; then
+      args_command="$args_program_default_command"
     fi
   fi
 

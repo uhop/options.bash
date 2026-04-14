@@ -122,11 +122,12 @@ Set `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing to suppress these.
    - `OPTIONAL`: if non-empty, the argument is optional.
 3. `args::parse "$@"` — parse via `getopt`, populate:
    - `args_options` — associative array of parsed options.
-   - `args_command` — the matched command (if any).
+   - `args_command` — the matched command (if any, or the default command).
    - `args_cleaned` — array of remaining positional arguments.
 4. Registered `args::on_options` hooks run.
 5. Immediate options (`-h`, `-v`, `--bash-completion` by default) trigger `args::option::help` / `args::option::version` / `args::option::completion` and exit.
-6. Registered `args::on_parse` hooks run after successful completion.
+6. If no command matched and `args_program_default_command` is set, it is applied.
+7. Registered `args::on_parse` hooks run after successful completion.
 
 ### Box layout engine
 

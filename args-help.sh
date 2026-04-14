@@ -107,6 +107,9 @@ args::option::help() {
     if [ -z "$desc" ]; then
       desc="${args_help_italic}no description available${args_help_reset}"
     fi
+    if [[ "$command" == "$args_program_default_command" ]]; then
+      desc+=" ${args_help_italic}(default)${args_help_reset}"
+    fi
     right+=("$desc")
   done
 
@@ -120,7 +123,7 @@ args::option::help() {
       text+=" ${args_help_option}[options]${args_help_reset}"
     fi
     if [[ "$command_length" -gt "$option_length" ]]; then
-      if [[ "$args_program_required_command" == "yes" ]]; then
+      if [[ "$args_program_required_command" == "yes" && -z "$args_program_default_command" ]]; then
         text+=" ${args_help_command}command${args_help_reset} ${args_help_command_arg}[command arguments]${args_help_reset}"
       else
         text+=" ${args_help_command}[command]${args_help_reset} ${args_help_command_arg}[command arguments]${args_help_reset}"

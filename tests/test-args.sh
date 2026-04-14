@@ -179,4 +179,37 @@ args::parse build
 test::equal "$_test_hook_called" "1" "on_parse: first hook still called"
 test::equal "$_test_hook2_called" "1" "on_parse: second hook called"
 
+# args_program_default_command — default command applied when none given
+
+args_program_default_command="build"
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse --flag
+test::equal "$args_command" "build" "default_command: applied when no command"
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse test
+test::equal "$args_command" "test" "default_command: explicit command overrides"
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse somefile.txt
+test::equal "$args_command" "build" "default_command: non-command arg triggers default"
+test::equal "${args_cleaned[0]}" "somefile.txt" "default_command: positional arg preserved"
+
+args_options=()
+args_command=""
+args_cleaned=()
+args::parse --flag test extra1 extra2
+test::equal "$args_command" "test" "default_command: explicit with extras"
+test::contains "${args_cleaned[*]}" "extra1" "default_command: extras preserved"
+
+# reset default for subsequent test safety
+args_program_default_command=""
+
 test::done

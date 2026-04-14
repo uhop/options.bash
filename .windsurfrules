@@ -137,11 +137,13 @@ options.bash/
 
 1. Call `args::program` to set program name, version, description.
 2. Call `args::option` for each option/command with names, description, argument spec.
-3. Call `args::parse "$@"` to invoke `getopt` and populate `args_options` (associative array) and `args_command`.
-4. Registered `args::on_options` hooks run.
-5. Immediate options (`-h`, `-v`, `--bash-completion`) trigger handler functions (`args::option::help`, `args::option::version`, `args::option::completion`) and exit.
-6. Registered `args::on_parse` hooks run after successful completion.
-7. Remaining arguments are in `args_cleaned` (array).
+3. Optionally set `args_program_default_command` to a registered command name.
+4. Call `args::parse "$@"` to invoke `getopt` and populate `args_options` (associative array) and `args_command`.
+5. Registered `args::on_options` hooks run.
+6. Immediate options (`-h`, `-v`, `--bash-completion`) trigger handler functions (`args::option::help`, `args::option::version`, `args::option::completion`) and exit.
+7. If no command matched and `args_program_default_command` is set, it is applied.
+8. Registered `args::on_parse` hooks run after successful completion.
+9. Remaining arguments are in `args_cleaned` (array).
 
 ### How ANSI output works
 

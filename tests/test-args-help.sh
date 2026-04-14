@@ -52,4 +52,25 @@ output=$(_capture_help '
 lines=$(echo "$output" | grep -c "For more information" || true)
 test::equal "$lines" "0" "help: no URL line when URL not set"
 
+# help: default command annotation
+
+output=$(_capture_help '
+  args::program "tool" "1.0" "Desc"
+  args_program_default_command="edit"
+  args::option "edit" "Edit stuff"
+  args::option "list" "List stuff"
+')
+test::contains "$output" "(default)" "help: default command annotated"
+test::contains "$output" "[command]" "help: usage shows optional command"
+
+# help: no annotation without default
+
+output=$(_capture_help '
+  args::program "tool" "1.0" "Desc"
+  args::option "edit" "Edit stuff"
+  args::option "list" "List stuff"
+')
+lines=$(echo "$output" | grep -c "(default)" || true)
+test::equal "$lines" "0" "help: no annotation without default_command"
+
 test::done
