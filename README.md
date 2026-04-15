@@ -151,6 +151,7 @@ options.bash/
 ├── args-version.sh   # --version / -v handler
 ├── args-completion.sh # Bash completion script generation
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
+├── deps.sh           # External-tool dependency check (deps::need)
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
 ├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
@@ -172,6 +173,7 @@ The full documentation is in the [wiki](https://github.com/uhop/options.bash/wik
 - [args-version.sh](https://github.com/uhop/options.bash/wiki/args‐version.sh) — version handler
 - [args-completion.sh](https://github.com/uhop/options.bash/wiki/args‐completion.sh) — bash completion generation
 - [box.sh](https://github.com/uhop/options.bash/wiki/box.sh) — text box layout engine
+- [deps.sh](https://github.com/uhop/options.bash/wiki/deps.sh) — external-tool dependency check
 - [string.sh](https://github.com/uhop/options.bash/wiki/string.sh) — string utilities
 - [test.sh](https://github.com/uhop/options.bash/wiki/test.sh) — built-in test harness
 
@@ -274,6 +276,34 @@ box::out "$(box::stack_lr "$left" "$right")"
 ```
 
 See [box.sh wiki](https://github.com/uhop/options.bash/wiki/box.sh) for the full command pipeline reference.
+
+## Dependency checking
+
+`deps.sh` provides `deps::need` for asserting that external tools are on `$PATH`. Missing tools are listed in a single line prefixed with the program name; the script then exits 1.
+
+```bash
+source "${LIB_DIR}/deps.sh"
+
+# Hard dependency — check in the preamble.
+deps::need jq curl
+
+# Optional / lazy — check only on the code path that needs the tool.
+case "$args_command" in
+  encrypt) deps::need age ;;
+  compress) deps::need zstd ;;
+esac
+```
+
+The program-name prefix comes from `${args_program_name:-${0##*/}}`, so calling `deps::need` before `args::program` still produces a useful diagnostic. `deps.sh` uses plain `echo` and is safe to source before any ANSI module.
+
+For utilities that deliberately avoid sourcing the library, open-code the same check inline:
+
+```bash
+command -v jq >/dev/null 2>&1 || {
+  echo "${0##*/}: required tool(s) not installed: jq" >&2
+  exit 1
+}
+```
 
 ## Requirements
 

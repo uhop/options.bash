@@ -72,6 +72,7 @@ options.bash/
 ├── args-version.sh   # --version / -v handler
 ├── args-completion.sh # Bash completion script generation
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
+├── deps.sh           # External-tool dependency check (deps::need)
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
 ├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
@@ -131,6 +132,7 @@ options.bash/
 - **`args-help.sh`** generates a colorized help screen. It sources `ansi.sh`, `string.sh`, and `box.sh`.
 - **`args-version.sh`** prints version and exits. It uses globals set by `args::program`.
 - **`args-completion.sh`** generates bash completion scripts from `args.sh` registration data. It registers an `args::on_options` hook for auto-registration.
+- **`deps.sh`** is standalone. It provides `deps::need <tool>...` to assert external binaries are on `$PATH`; missing tools are listed in a single stderr line prefixed with `${args_program_name:-${0##*/}}:` and `exit 1` is triggered. Uses plain `echo` so it is safe to call before any ANSI module loads.
 
 ### How option parsing works
 

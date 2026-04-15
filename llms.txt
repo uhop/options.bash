@@ -188,6 +188,12 @@ Tools opt in by declaring the option explicitly (like `--help` and `--version`):
 args::option "--bash-completion" "Output bash completion script"
 ```
 
+### deps.sh
+
+External-tool dependency check. No dependencies. Uses the `args_program_name` global if set, falls back to `${0##*/}`.
+
+- `deps::need TOOL...` — verify each tool is on `$PATH` via `command -v`. If any are missing, print `<program>: required tool(s) not installed: <missing list>` to stderr (all missing tools on one line, order preserved) and `exit 1`. Zero-arg call is a silent no-op. Uses plain `echo`, so it is safe to call before `ansi.sh` is sourced.
+
 ### box.sh
 
 Text box layout engine for multi-line strings. Loads `string.sh`.
@@ -299,6 +305,30 @@ ansi::err "${BOLD}${RED}Error:${RESET_ALL} Something went wrong"
 # Compose styles
 header="$(ansi::make bold underline cyan)"
 ansi::out "${header}My Header${RESET_ALL}"
+```
+
+### Dependency checking
+
+```bash
+source "/path/to/options.bash/deps.sh"
+
+# Hard dependency — fail early, before args::program if you want, or after.
+# Deliberately makes --help/--version fail on hosts without the tool.
+deps::need jq curl
+
+# Optional / lazy dependency — check only on the code path that uses it.
+# Good for multi-subcommand utilities that dispatch to different tools.
+case "$args_command" in
+  encrypt) deps::need age ;;
+  compress) deps::need zstd ;;
+esac
+
+# Inline fallback for a utility that deliberately doesn't source the library
+# (e.g. a slim wrapper that wants to stay dependency-free):
+command -v jq >/dev/null 2>&1 || {
+  echo "${0##*/}: required tool(s) not installed: jq" >&2
+  exit 1
+}
 ```
 
 ### Box layout

@@ -14,6 +14,7 @@ args-help.sh          # Auto-generated colored help screen from args definitions
 args-version.sh       # --version / -v handler (prints name + version, exits)
 args-completion.sh    # Bash completion script generation from args definitions
 box.sh                # Text box layout engine: normalize, pad, align, stack
+deps.sh               # External-tool dependency check (deps::need)
 string.sh             # String utilities: pad, clean, length, output helpers
 tests/manual/         # Manual test scripts (visual inspection)
 ├── test-ansi.sh      # Test ansi.sh colors and styles
@@ -46,6 +47,7 @@ args.sh               ← standalone (no library dependencies)
 args-help.sh          ← loads ansi.sh, string.sh, box.sh
 args-version.sh       ← standalone (uses globals from args.sh)
 args-completion.sh    ← loads args.sh (registers args::on_options hook)
+deps.sh               ← standalone (uses args_program_name global if set)
 ```
 
 ### Source-time dependencies (what gets loaded when you source a module)
@@ -62,6 +64,7 @@ args-completion.sh    ← loads args.sh (registers args::on_options hook)
 | `args-help.sh` | `ansi.sh`, `string.sh`, `box.sh` |
 | `args-version.sh` | _(nothing, uses `args_program_*` globals)_ |
 | `args-completion.sh` | `args.sh` |
+| `deps.sh` | _(nothing)_ |
 
 ## Core concepts
 
@@ -172,6 +175,7 @@ bash tests/test-ansi-semantic.sh      # ansi-semantic.sh tests
 bash tests/test-box.sh                # box.sh tests
 bash tests/test-args.sh               # args.sh tests
 bash tests/test-args-completion.sh    # args-completion.sh tests
+bash tests/test-deps.sh               # deps.sh tests
 ```
 
 The test harness (`test.sh`) follows the same conventions as library modules: include guard, `set -euo pipefail`, `test::` namespace, auto-loads `ansi.sh` for colored output. It provides assertions: `test::equal`, `test::not_equal`, `test::match`, `test::contains`, `test::ok`, `test::fail_`. Each test file calls `test::done` at the end to print a summary and exit with 0 (pass) or 1 (fail).
