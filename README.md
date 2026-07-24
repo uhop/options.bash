@@ -20,7 +20,7 @@ The JavaScript sibling project is [console-toolkit](https://github.com/uhop/cons
 Clone the full repo:
 
 ```bash
-git clone git@github.com:uhop/options.bash.git
+git clone https://github.com/uhop/options.bash.git
 ```
 
 Or add as a sparse worktree (only `.sh` files — ideal for consuming in your projects):
@@ -28,7 +28,7 @@ Or add as a sparse worktree (only `.sh` files — ideal for consuming in your pr
 ```bash
 mkdir -p ~/.local/share/libs
 cd ~/.local/share/libs
-git clone --filter=blob:none --sparse git@github.com:uhop/options.bash scripts
+git clone --filter=blob:none --sparse https://github.com/uhop/options.bash.git scripts
 cd scripts
 git sparse-checkout set --no-cone '/*.sh' '/README.md'
 ```
@@ -162,12 +162,12 @@ options.bash/
 
 ## Docs
 
-The full documentation is in the [wiki](https://github.com/uhop/options.bash/wiki):
+The full documentation is in the **[wiki](https://github.com/uhop/options.bash/wiki)** — browse the [index](https://github.com/uhop/options.bash/wiki/Home), or [search it](https://uhop.github.io/wiki-search/app/?wiki=uhop/options.bash) by name:
 
 - [ansi.sh](https://github.com/uhop/options.bash/wiki/ansi.sh) — ANSI escape codes (primary module)
 - [ansi-tput.sh](https://github.com/uhop/options.bash/wiki/ansi‐tput.sh) — tput-based alternative
 - [ansi-utils.sh](https://github.com/uhop/options.bash/wiki/ansi‐utils.sh) — shared ANSI utilities
-- [ansi-semantic.sh](https://github.com/uhop/options.bash/wiki/ansi‐semantic.sh) — semantic color globals (ERROR, WARN, INFO, OK)
+- [ansi-semantic.sh](https://github.com/uhop/options.bash/wiki/ansi-semantic.sh) — semantic color globals (ERROR, WARN, INFO, OK)
 - [args.sh](https://github.com/uhop/options.bash/wiki/args.sh) — option and command parsing
 - [args-help.sh](https://github.com/uhop/options.bash/wiki/args‐help.sh) — auto-generated help screen
 - [args-version.sh](https://github.com/uhop/options.bash/wiki/args‐version.sh) — version handler

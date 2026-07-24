@@ -12,7 +12,7 @@ For detailed module docs see the [wiki](https://github.com/uhop/options.bash/wik
 This project uses a git submodule for the wiki:
 
 ```bash
-git clone --recursive git@github.com:uhop/options.bash.git
+git clone --recursive https://github.com/uhop/options.bash.git
 cd options.bash
 ```
 
@@ -21,7 +21,7 @@ To use in your project, clone as a sparse worktree:
 ```bash
 mkdir -p ~/.local/share/libs
 cd ~/.local/share/libs
-git clone --filter=blob:none --sparse git@github.com:uhop/options.bash scripts
+git clone --filter=blob:none --sparse https://github.com/uhop/options.bash.git scripts
 cd scripts
 git sparse-checkout set --no-cone '/*.sh' '/README.md'
 ```
@@ -93,6 +93,7 @@ options.bash/
 - **Include guards**: every module checks for a sentinel function at the top and returns early if already loaded.
 - **Auto-dependency loading**: modules resolve their own dependencies relative to `BASH_SOURCE`.
 - **Simple command names** (`RED`, `BOLD`, `RESET_ALL`, etc.) are defined by default. Suppress with `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing.
+- **No narrating comments** — comments are short *why*-markers only (a non-trivial decision or constraint, an algorithm reference); never restate *what* the code does.
 
 ## Architecture
 
