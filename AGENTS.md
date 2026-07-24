@@ -199,3 +199,13 @@ args::parse "$@"
 - Wiki documentation lives in the `wiki/` submodule.
 - Automated tests live in `tests/` — run with `bash tests/run.sh`.
 - Manual tests (visual inspection) live in `tests/manual/`.
+
+## Releasing
+
+No `package.json` — the version lives in the git tag (naked semver, e.g. `1.4.0`) and the release-history surfaces. Per release:
+
+1. Update the `README.md` release table (cliff-notes row + keep the wiki footer link) and `wiki/Release‐history.md` (full entry; the wiki page name uses a U+2010 hyphen).
+2. Rebuild the wiki search index: `cd wiki && npx wiki-search-index --wiki . --repo uhop/options.bash`.
+3. Gates: `bash tests/run.sh`; run each script in `tests/manual/` (visual inspection); verify the sparse-worktree story — `git clone --filter=blob:none --sparse <repo> t`, `git -C t sparse-checkout set --no-cone '/*.sh' '/README.md'`, then source a module from the clone.
+4. If the generated completion format changed, bump `args_completion_format_version` in `args-completion.sh` so deployed completion files regenerate.
+5. Check the `LICENSE` year covers the current year. The user cuts the tag and pushes (wiki commit + parent pointer bump + main commit).
