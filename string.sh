@@ -79,7 +79,7 @@ string::warn() {
     return 0
   fi
 
-  local args=()
+  local args=() arg
   for arg in "$@"; do
     args+=("$(string::clean "$arg")")
   done
@@ -93,7 +93,7 @@ string::err() {
     return 1
   fi
 
-  local args=()
+  local args=() arg
   for arg in "$@"; do
     args+=("$(string::clean "$arg")")
   done
@@ -107,7 +107,7 @@ string::out() {
     return 0
   fi
 
-  local args=()
+  local args=() arg
   for arg in "$@"; do
     args+=("$(string::clean "$arg")")
   done

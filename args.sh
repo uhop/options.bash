@@ -73,7 +73,7 @@ args::option() {
   # arg_optional: "" - required argument
   # arg_optional: "opt" - optional argument, where "opt" is a non-empty string
 
-  local names
+  local names name
   IFS=', ' read -ra names <<< "$1"
   args_names["${names[0]}"]="$1"
   args_list+=("${names[0]}")
@@ -136,6 +136,7 @@ args::try_help() {
 args::parse() {
   local long_options=""
   local short_options=""
+  local option command _args_hook
 
   for option in "${!args_aliases[@]}"; do
     local command="${args_aliases[$option]}"

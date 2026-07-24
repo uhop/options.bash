@@ -126,6 +126,7 @@ declare -g -A ansi_style_sgr_commands=(
 )
 
 ansi::sgr::populate_colors() {
+  local color
   for color in "${!ansi_style_colors[@]}"; do
     ansi_style_sgr_commands["fg_${color}"]="\e[$((${ansi_style_colors[$color]} + 30))m"
     ansi_style_sgr_commands["bg_${color}"]="\e[$((${ansi_style_colors[$color]} + 40))m"
@@ -143,7 +144,7 @@ declare -g -A ansi_style_sgr_extended_colors=(
 )
 
 ansi::sgr::define_commands() {
-  local prefix="${1:-}"
+  local prefix="${1:-}" command
   prefix="${prefix^^}"
 
   for command in "${!ansi_style_sgr_commands[@]}"; do
@@ -152,7 +153,7 @@ ansi::sgr::define_commands() {
 }
 
 ansi::alias_simple_command_names() {
-  local prefix="${1:-}"
+  local prefix="${1:-}" color name
   prefix="${prefix^^}"
 
   for color in "${!ansi_style_colors[@]}"; do
@@ -180,6 +181,7 @@ ansi::get() {
 
 ansi::sgr::make() {
   local string=""
+  local arg
   for arg in "$@"; do
     local code="$(ansi::get "$arg")"
     if [ -n "$code" ]; then

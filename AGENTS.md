@@ -94,6 +94,7 @@ options.bash/
 - **Auto-dependency loading**: modules resolve their own dependencies relative to `BASH_SOURCE`.
 - **Simple command names** (`RED`, `BOLD`, `RESET_ALL`, etc.) are defined by default. Suppress with `ANSI_NO_SIMPLE_COMMAND_NAMES=1` before sourcing.
 - **No narrating comments** — comments are short *why*-markers only (a non-trivial decision or constraint, an algorithm reference); never restate *what* the code does.
+- **Loop iterators are `local`** — bash `for` variables are function-global; an undeclared iterator leaks into the caller and can wedge the caller's own loop. Declare every iterator (`local i line arg`) at function top; generated code (completion scripts) must declare its iterators too. Regression guard: `tests/test-scoping.sh`.
 
 ## Architecture
 

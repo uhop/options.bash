@@ -55,6 +55,7 @@ ansi::extract_sgr_commands() {
 
 ansi::make() {
   local string=""
+  local arg
   for arg in "$@"; do
     local code="$(ansi::get "$arg")"
     if [ -n "$code" ]; then
@@ -86,6 +87,7 @@ ansi::warn() {
   fi
 
   local -a args=()
+  local arg
   for arg in "$@"; do
     args+=("$(ansi::strip "$arg")")
   done
@@ -100,6 +102,7 @@ ansi::err() {
   fi
 
   local -a args=()
+  local arg
   for arg in "$@"; do
     args+=("$(ansi::strip "$arg")")
   done
@@ -114,6 +117,7 @@ ansi::out() {
   fi
 
   local -a args=()
+  local arg
   for arg in "$@"; do
     args+=("$(ansi::strip "$arg")")
   done
@@ -128,6 +132,7 @@ ansi::prompt() {
   fi
 
   local -a args=()
+  local arg
   for arg in "$@"; do
     args+=("$(ansi::strip "$arg")")
   done

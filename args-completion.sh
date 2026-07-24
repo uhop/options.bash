@@ -6,7 +6,7 @@ set -euo pipefail
 
 source "$(dirname "$(realpath "${BASH_SOURCE:-$0}")")/args.sh"
 
-args_completion_format_version=1
+args_completion_format_version=2
 
 args::option::completion() {
   args::completion::generate
@@ -22,6 +22,7 @@ args::completion::generate() {
   local options=()
   local commands=()
   local arg_option_keys=()
+  local key n
 
   for key in "${args_list[@]}"; do
     local names_str="${args_names[$key]}"
@@ -85,7 +86,7 @@ args::completion::generate() {
     local cmd_pattern
     cmd_pattern=$(IFS='|'; echo "${commands[*]}")
     echo ''
-    echo '  local has_command=0'
+    echo '  local has_command=0 i'
     echo '  for ((i=1; i<COMP_CWORD; i++)); do'
     echo '    case "${COMP_WORDS[i]}" in'
     echo "      ${cmd_pattern}) has_command=1; break ;;"

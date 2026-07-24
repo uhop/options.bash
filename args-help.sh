@@ -40,7 +40,7 @@ args_help_format_option() {
     return
   fi
 
-  local names
+  local names name
   IFS=', ' read -ra names <<< "$1"
 
   local text=""
@@ -78,6 +78,7 @@ args::option::help() {
 
   local -a left=()
   local -a right=()
+  local option command i
 
   for option in "${args_list[@]}"; do
     if [[ "$option" != "-"* ]]; then continue; fi

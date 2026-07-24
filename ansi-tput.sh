@@ -97,6 +97,7 @@ declare -g -A ansi_tput_controls=(
 declare -g -A ansi_tput_color_codes=()
 
 ansi::tput::populate_colors() {
+  local color
   for color in "${!ansi_tput_colors[@]}"; do
     ansi_tput_color_codes["fg_${color}"]="setaf ${ansi_tput_colors[$color]}"
     ansi_tput_color_codes["bg_${color}"]="setab ${ansi_tput_colors[$color]}"
@@ -118,6 +119,7 @@ ansi::tput::collect_codes() {
 
   local names=()
   local string=""
+  local name i
   for name in "${!assoc[@]}"; do
     names+=("$name")
     string+="${assoc[$name]}\nlongname\n"
@@ -143,7 +145,7 @@ ansi::tput::collect_codes() {
 }
 
 ansi::tput::define_colors() {
-  local prefix="${1:-}"
+  local prefix="${1:-}" color
   prefix="${prefix^^}"
 
   local fast_result="$(ansi::tput::collect_codes ansi_tput_color_codes)"
@@ -168,7 +170,7 @@ ansi::tput::define_colors() {
 }
 
 ansi::tput::alias_simple_color_names() {
-  local prefix="${1:-}"
+  local prefix="${1:-}" color
   prefix="${prefix^^}"
 
   for color in "${!ansi_tput_colors[@]}"; do
@@ -178,7 +180,7 @@ ansi::tput::alias_simple_color_names() {
 }
 
 ansi::tput::define_controls() {
-  local prefix="${1:-}"
+  local prefix="${1:-}" style
   prefix="${prefix^^}"
 
   local fast_result="$(ansi::tput::collect_codes ansi_tput_controls)"
@@ -197,7 +199,7 @@ ansi::tput::define_controls() {
 }
 
 ansi::tput::alias_simple_style_names() {
-  local prefix="${1:-}"
+  local prefix="${1:-}" name
   prefix="${prefix^^}"
 
   for name in "${ansi_tput_text_styles[@]}"; do

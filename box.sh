@@ -26,6 +26,7 @@ box::_normalize() {
 }
 
 box::make_lines() {
+  local line
   for line in "$@"; do
     box::_normalize "$line"
   done
@@ -70,6 +71,7 @@ box::get_height() {
 box::exec() {
   local string="$1"
   local pad=' '
+  local i line
 
   # from string to lines
   local lines=()
@@ -309,6 +311,7 @@ box::make() {
 box::stack_lr() {
   local string1="$1"
   local string2="$2"
+  local i line
 
   # from string to lines
   local lines1=()
@@ -341,6 +344,7 @@ box::stack_lr() {
 box::stack_tb() {
   local string1="$1"
   local string2="$2"
+  local line
 
   # from string to lines
   local lines1=()
@@ -369,6 +373,7 @@ box::stack_tb() {
 
 box::warn() {
   local string="$1"
+  local line
 
   # from string to lines
   local lines=()
@@ -392,6 +397,7 @@ box::warn() {
 
 box::err() {
   local string="$1"
+  local line
 
   # from string to lines
   local lines=()
@@ -415,6 +421,7 @@ box::err() {
 
 box::out() {
   local string="$1"
+  local line
 
   # from string to lines
   local lines=()
