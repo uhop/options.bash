@@ -14,3 +14,10 @@ deps::need() {
     exit 1
   fi
 }
+
+deps::have() {
+  local cmd
+  for cmd in "$@"; do
+    command -v "$cmd" >/dev/null 2>&1 || return 1
+  done
+}

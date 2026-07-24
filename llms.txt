@@ -193,6 +193,7 @@ args::option "--bash-completion" "Output bash completion script"
 External-tool dependency check. No dependencies. Uses the `args_program_name` global if set, falls back to `${0##*/}`.
 
 - `deps::need TOOL...` — verify each tool is on `$PATH` via `command -v`. If any are missing, print `<program>: required tool(s) not installed: <missing list>` to stderr (all missing tools on one line, order preserved) and `exit 1`. Zero-arg call is a silent no-op. Uses plain `echo`, so it is safe to call before `ansi.sh` is sourced.
+- `deps::have TOOL...` — silent predicate: return 0 when every tool is on `$PATH`, 1 at the first missing one. No output, never exits. Zero-arg call returns 0. For soft fallbacks (use `bat` if present, else `cat`).
 
 ### box.sh
 
@@ -322,6 +323,9 @@ case "$args_command" in
   encrypt) deps::need age ;;
   compress) deps::need zstd ;;
 esac
+
+# Soft fallback — silent 0/1 probe.
+if deps::have bat; then bat "$file"; else cat "$file"; fi
 
 # Inline fallback for a utility that deliberately doesn't source the library
 # (e.g. a slim wrapper that wants to stay dependency-free):

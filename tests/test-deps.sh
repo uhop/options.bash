@@ -56,4 +56,31 @@ status=0
 output=$(deps::need __missing_z 2>&1) || status=$?
 test::match "$output" "^my-tool:" "need: uses args_program_name when set"
 
+# deps::have — all present
+
+status=0
+output=$(deps::have bash ls 2>&1) || status=$?
+test::equal "$status" "0" "have: all present exits 0"
+test::equal "$output" "" "have: all present silent"
+
+# deps::have — zero-arg
+
+status=0
+output=$(deps::have 2>&1) || status=$?
+test::equal "$status" "0" "have: zero-arg exits 0"
+
+# deps::have — missing
+
+status=0
+output=$(deps::have __missing_tool_abc 2>&1) || status=$?
+test::equal "$status" "1" "have: missing exits 1"
+test::equal "$output" "" "have: missing silent"
+
+# deps::have — mixed present/missing
+
+status=0
+output=$(deps::have bash __missing_x ls 2>&1) || status=$?
+test::equal "$status" "1" "have: mixed exits 1"
+test::equal "$output" "" "have: mixed silent"
+
 test::done

@@ -151,7 +151,7 @@ options.bash/
 ├── args-version.sh   # --version / -v handler
 ├── args-completion.sh # Bash completion script generation
 ├── box.sh            # Text box layout engine: normalize, pad, align, stack
-├── deps.sh           # External-tool dependency check (deps::need)
+├── deps.sh           # External-tool dependency check (deps::need, deps::have)
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
 ├── tests/            # Automated tests (test-string.sh, test-ansi.sh, etc.)
@@ -279,7 +279,7 @@ See [box.sh wiki](https://github.com/uhop/options.bash/wiki/box.sh) for the full
 
 ## Dependency checking
 
-`deps.sh` provides `deps::need` for asserting that external tools are on `$PATH`. Missing tools are listed in a single line prefixed with the program name; the script then exits 1.
+`deps.sh` provides `deps::need` for asserting that external tools are on `$PATH`. Missing tools are listed in a single line prefixed with the program name; the script then exits 1. The companion `deps::have` is a silent predicate — exit 0 when every listed tool is present, 1 otherwise — for soft fallbacks.
 
 ```bash
 source "${LIB_DIR}/deps.sh"
@@ -292,6 +292,9 @@ case "$args_command" in
   encrypt) deps::need age ;;
   compress) deps::need zstd ;;
 esac
+
+# Soft fallback — probe without failing.
+if deps::have bat; then bat "$file"; else cat "$file"; fi
 ```
 
 The program-name prefix comes from `${args_program_name:-${0##*/}}`, so calling `deps::need` before `args::program` still produces a useful diagnostic. `deps.sh` uses plain `echo` and is safe to source before any ANSI module.

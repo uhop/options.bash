@@ -14,7 +14,7 @@ args-help.sh          # Auto-generated colored help screen from args definitions
 args-version.sh       # --version / -v handler (prints name + version, exits)
 args-completion.sh    # Bash completion script generation from args definitions
 box.sh                # Text box layout engine: normalize, pad, align, stack
-deps.sh               # External-tool dependency check (deps::need)
+deps.sh               # External-tool dependency check (deps::need, deps::have)
 string.sh             # String utilities: pad, clean, length, output helpers
 tests/manual/         # Manual test scripts (visual inspection)
 ├── test-ansi.sh      # Test ansi.sh colors and styles
