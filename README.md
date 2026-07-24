@@ -328,10 +328,13 @@ brew install bash
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.4.0 | 2026-07-24 | `box::exec` `frame` command (5 border themes + custom), `deps::have` predicate, multibyte padding fix, loop-variable scoping fixes (completion files regenerate). |
 | 1.3.0 | 2026-04-15 | `ansi-semantic.sh` (ERROR/WARN/INFO/OK), `args_program_default_command`, `args_cleaned` strips matched command, `args_program_required_command` removed, `deps.sh`. |
 | 1.2.0 | 2026-04-12 | Bug fixes (`args::parse` spaces, `args::try_help` standalone), `::warn` functions, expanded tests. |
 | 1.1.0 | 2026-03-23 | Bash completion generation, examples, hook simplification. |
 | 1.0.0 | 2026-03-21 | Initial release. |
+
+For details see the [release history in the wiki](https://github.com/uhop/options.bash/wiki/Release‐history).
 
 ## License
 
