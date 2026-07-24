@@ -115,6 +115,47 @@ result=$(box::exec $'a\nbc' sp '.' n l ph 1 1 pv 1 1)
 expected=$'....\n.a..\n.bc.\n....'
 test::equal "$result" "$expected" "exec aliases: sp n ph pv"
 
+# box::exec — frame
+
+result=$(box::exec $'a\nbc' normalize left frame ascii)
+test::equal "$result" $'+--+\n|a |\n|bc|\n+--+' "exec frame ascii"
+
+result=$(box::exec "ab" frame unicode)
+test::equal "$result" $'┌──┐\n│ab│\n└──┘' "exec frame unicode"
+
+result=$(box::exec "x" frame rounded)
+test::equal "$result" $'╭─╮\n│x│\n╰─╯' "exec frame rounded"
+
+# box::exec — frame: pad before = inner padding, pad after = outer margin
+
+result=$(box::exec "x" pad_lr 1 1 frame ascii)
+test::equal "$result" $'+---+\n| x |\n+---+' "exec frame inner padding"
+
+result=$(box::exec "x" frame ascii pad_lr 1 1)
+test::equal "$result" $' +-+ \n |x| \n +-+ ' "exec frame outer margin"
+
+# box::exec — frame custom theme via box_theme_<name> global
+
+box_theme_stars='******'
+result=$(box::exec "x" frame stars)
+test::equal "$result" $'***\n*x*\n***' "exec frame custom theme"
+
+# box::exec — frame grows dimensions by 2
+
+test::equal "$(box::get_width "$(box::exec "ab" frame unicode)")" "4" "frame width +2"
+test::equal "$(box::get_height "$(box::exec "ab" frame unicode)")" "3" "frame height +2"
+
+# box::exec — frame invalid theme
+
+status=0
+output=$(box::exec "x" frame nope 2>&1) || status=$?
+test::equal "$status" "1" "exec frame unknown theme exits 1"
+test::contains "$output" "Invalid frame theme" "exec frame unknown theme message"
+
+status=0
+output=$(box::exec "x" frame 'no-pe' 2>&1) || status=$?
+test::equal "$status" "1" "exec frame malformed theme name exits 1"
+
 # box::stack_tb
 
 box1=$(box::exec $'ab\ncd' normalize left)

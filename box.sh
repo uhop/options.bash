@@ -14,6 +14,13 @@ if ! type string::err >/dev/null 2>&1; then
 fi
 unset -f _load_dependencies
 
+# frame theme format: 6 chars — TL TR BL BR corners + horizontal + vertical
+box_theme_ascii='++++-|'
+box_theme_unicode='┌┐└┘─│'
+box_theme_rounded='╭╮╰╯─│'
+box_theme_double='╔╗╚╝═║'
+box_theme_heavy='┏┓┗┛━┃'
+
 box::_normalize() {
   sed 's/\(\r\n\|\n\|\\r\\n\|\\n\)/\n/g' <<< "$1"
 }
@@ -241,6 +248,26 @@ box::exec() {
         for ((i=0; i<bottom; ++i)); do
           temp_lines+=("$pad_string")
         done
+
+        lines=("${temp_lines[@]}")
+        ;;
+
+      frame | f)
+        shift
+        local theme_var="box_theme_$1"
+        if [[ ! "$1" =~ ^[A-Za-z0-9_]+$ || -z "${!theme_var:-}" ]]; then
+          string::err "Error: Invalid frame theme '$1'"
+          return 1
+        fi
+        local theme="${!theme_var}"
+
+        local h_line=$(string::make_pad "$(string::length "${lines[0]}")" "${theme:4:1}")
+
+        local temp_lines=("${theme:0:1}${h_line}${theme:1:1}")
+        for line in "${lines[@]}"; do
+          temp_lines+=("${theme:5:1}${line}${theme:5:1}")
+        done
+        temp_lines+=("${theme:2:1}${h_line}${theme:3:1}")
 
         lines=("${temp_lines[@]}")
         ;;

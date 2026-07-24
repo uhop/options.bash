@@ -204,8 +204,9 @@ Text box layout engine for multi-line strings. Loads `string.sh`.
 - `box::get_width STRING` — width of first line (visible characters).
 - `box::get_height STRING` — number of lines.
 - `box::exec STRING CMD...` — process string through a command pipeline.
-  Commands: `normalize ALIGN`, `pad_lr LEFT RIGHT`, `pad_tb TOP BOTTOM`, `align_lr ALIGN WIDTH`, `align_tb ALIGN HEIGHT`, `set_pad CHAR`, `clean`, `extract FROM COUNT`.
-  Aliases: `n`, `ph`, `pv`, `ah`, `av`, `sp`, `c`, `e`.
+  Commands: `normalize ALIGN`, `pad_lr LEFT RIGHT`, `pad_tb TOP BOTTOM`, `align_lr ALIGN WIDTH`, `align_tb ALIGN HEIGHT`, `frame THEME`, `set_pad CHAR`, `clean`, `extract FROM COUNT`.
+  Aliases: `n`, `ph`, `pv`, `ah`, `av`, `f`, `sp`, `c`, `e`.
+  Frame themes: `ascii`, `unicode`, `rounded`, `double`, `heavy`; custom via a 6-char `box_theme_<name>` global (TL TR BL BR corners + horizontal + vertical). Padding before `frame` = inner padding, after = outer margin.
 - `box::stack_lr STRING1 STRING2` — stack side-by-side (must have equal height).
 - `box::stack_tb STRING1 STRING2` — stack vertically (must have equal width).
 - `box::out STRING` — terminal-aware multi-line output.

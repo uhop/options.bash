@@ -21,6 +21,8 @@ test::equal "$(string::make_pad 5)" "     " "make_pad: spaces"
 test::equal "$(string::make_pad 3 '.')" "..." "make_pad: dots"
 test::equal "$(string::make_pad 4 '*')" "****" "make_pad: stars"
 test::equal "$(string::make_pad 1 '#')" "#" "make_pad: single char"
+test::equal "$(string::make_pad 3 '─')" "───" "make_pad: multibyte char"
+test::equal "$(string::make_pad 2 '·')" "··" "make_pad: multibyte middle dot"
 
 # string::pad — left align
 

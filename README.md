@@ -150,7 +150,7 @@ options.bash/
 ├── args-help.sh      # Auto-generated colored help screen from args definitions
 ├── args-version.sh   # --version / -v handler
 ├── args-completion.sh # Bash completion script generation
-├── box.sh            # Text box layout engine: normalize, pad, align, stack
+├── box.sh            # Text box layout engine: normalize, pad, align, frame, stack
 ├── deps.sh           # External-tool dependency check (deps::need, deps::have)
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
@@ -273,6 +273,9 @@ box::out "$box"
 left=$(box::exec "$(box::make "A" "B")" pad_lr 1 1)
 right=$(box::exec "$(box::make "1" "2")" pad_lr 1 1)
 box::out "$(box::stack_lr "$left" "$right")"
+
+# Frame a box (themes: ascii, unicode, rounded, double, heavy)
+box::out "$(box::exec "$(box::make "Hello" "World")" pad_lr 1 1 frame rounded)"
 ```
 
 See [box.sh wiki](https://github.com/uhop/options.bash/wiki/box.sh) for the full command pipeline reference.

@@ -13,7 +13,7 @@ args.sh               # CLI option/command parsing (wraps getopt)
 args-help.sh          # Auto-generated colored help screen from args definitions
 args-version.sh       # --version / -v handler (prints name + version, exits)
 args-completion.sh    # Bash completion script generation from args definitions
-box.sh                # Text box layout engine: normalize, pad, align, stack
+box.sh                # Text box layout engine: normalize, pad, align, frame, stack
 deps.sh               # External-tool dependency check (deps::need, deps::have)
 string.sh             # String utilities: pad, clean, length, output helpers
 tests/manual/         # Manual test scripts (visual inspection)

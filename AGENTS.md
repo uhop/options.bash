@@ -71,7 +71,7 @@ options.bash/
 ├── args-help.sh      # Auto-generated colored help screen from args definitions
 ├── args-version.sh   # --version / -v handler
 ├── args-completion.sh # Bash completion script generation
-├── box.sh            # Text box layout engine: normalize, pad, align, stack
+├── box.sh            # Text box layout engine: normalize, pad, align, frame, stack
 ├── deps.sh           # External-tool dependency check (deps::need, deps::have)
 ├── string.sh         # String utilities: pad, clean, length, output helpers
 ├── test.sh           # Built-in test harness: assertions, colored output, runner
@@ -157,7 +157,7 @@ options.bash/
 ### How box layout works
 
 1. Create a multi-line string with `box::make_lines` or `box::make`.
-2. Pipe through `box::exec` with a chain of commands: `normalize`, `pad_lr`, `pad_tb`, `align_lr`, `align_tb`, `set_pad`, `clean`, `extract`.
+2. Pipe through `box::exec` with a chain of commands: `normalize`, `pad_lr`, `pad_tb`, `align_lr`, `align_tb`, `frame`, `set_pad`, `clean`, `extract`.
 3. Stack boxes with `box::stack_lr` or `box::stack_tb`.
 4. Output with `box::out` (terminal-aware, strips ANSI when piped).
 

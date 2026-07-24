@@ -35,7 +35,10 @@ string::make_pad() {
   if [[ "$pad" == ' ' ]]; then
     printf "%${length}s" ''
   else
-    printf "%${length}s" '' | tr ' ' "$pad_clean"
+    # ${var// /c} instead of tr: tr is byte-oriented and mangles multibyte pads
+    local spaces
+    printf -v spaces "%${length}s" ''
+    printf '%s' "${spaces// /$pad_clean}"
   fi
 }
 
